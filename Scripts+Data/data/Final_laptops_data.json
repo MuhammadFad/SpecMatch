@@ -2,10 +2,8 @@
   {
     "url": "https://www.paklap.pk/infinix-inbook-air-xl442-core-i3-laptop-pakistan.html",
     "name": "Infinix InBook Air XL442 - Alder Lake - 12th Gen Core i3 1215U Processor 8-GB 256-GB SSD Intel Integrated Graphics 14\" WUXGA 1200p LCD 300nits Display 60Hz W11 (Grey, 1 Year Local Warranty NEW)",
-    "price": "Rs. 99,900.00",
+    "price": 99900.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/i/n/infinix_inbook_air_xl442_core_i3_laptop_pakistan_2_.jpg"
     ],
     "specifications": {
@@ -57,10 +55,8 @@
   {
     "url": "https://www.paklap.pk/hp-15-fd0532nia-13th-gen-core-i3-new-laptop-pakistan.html",
     "name": "HP 15 FD0532nia - Raptor Lake - 13th Gen Core i3 1315U Processor 4-GB 256-GB SSD Intel® UHD Graphics 15.6\" Full HD 1080p MicroEdge AG Display Backlit KB (Natural silver, NEW)",
-    "price": "Rs. 105,000.00",
+    "price": 105000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_laptop_15_fd0532nia_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -112,10 +108,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-v15-g4-13th-gen-core-i3-laptop-pakistan.html",
     "name": "Lenovo V15 G4 - Raptor Lake - 13th Gen Core i3 Hexa-core (6 Core) Processor 8-GB 256-GB SSD Intel Integrated GC 15.6\" Full HD 1080p Display Dolby Audio TPM2.0 (Business Black, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 105,900.00",
+    "price": 105900.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_v15_g4_laptop_pakistan_7__1.jpg"
     ],
     "specifications": {
@@ -167,10 +161,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-slim-3-15-13th-gen-ci3-laptop-pakistan.html",
     "name": "Lenovo IdeaPad Slim 3 15 - Raptor Lake - 13th Gen Core i3 1315u Processor 8-GB 512-GB SSD Intel UHD Graphics 15.6\" Full HD 1080p AG 250nits Display TPM2.0 (Arctic Grey, NEW)",
-    "price": "Rs. 107,500.00",
+    "price": 107500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_ideapad_slim_3_15_laptop_pakistan_1__2.jpg"
     ],
     "specifications": {
@@ -222,10 +214,10 @@
   {
     "url": "https://www.paklap.pk/dell-vostro-15-3530-13th-gen-core-i3-laptop-pakistan.html",
     "name": "Dell Vostro 15 3530 - Raptor Lake  - 13th Gen Core i3 1305U Processor 8-GB 512-GB SSD Intel Iris Xe Graphics 15.6\" FHD 1080p 120Hz 250 nits Narrow Border Display (Carbon Black, NEW)",
-    "price": "Rs. 108,999.00",
+    "price": 108999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_vostro_15_3530.13_am_1_2.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_vostro_15_3530.28_am_2.jpg"
     ],
     "specifications": {
       "Brand": "Dell",
@@ -276,10 +268,8 @@
   {
     "url": "https://www.paklap.pk/hp-elitebook-640-g10-13th-gen-ci3-laptop-pakistan.html",
     "name": "HP EliteBook 640 G10 Notebook PC - Raptor Lake - 13th Gen Core i3 1315u Processor 8-GB 512-GB SSD Intel UHD Graphics 14\" Full HD 1080p IPS Narrow Bezel AG Display Backlit KB FP Reader (Silver, Open Box)",
-    "price": "Rs. 110,000.00",
+    "price": 110000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_elitebook_640_g10_notebook_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -331,10 +321,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-3-11th-gen-ci5-laptop-price-pakistan.html",
     "name": "Lenovo IdeaPad 3 15 - Tiger Lake - 11th Gen Core i5 QuadCore Processor 8-GB to 20-GB 1-TB HDD Intel Iris Xe Graphics 15.6\" Full HD 1080p Display TPM 2.0 (Platinum Grey, NEW)",
-    "price": "Rs. 122,500.00",
+    "price": 122500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/5/1/51oppy9kr3l._ac_sl1500_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo-ideapad-3-15-price-in-pakistan.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -385,10 +375,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-v15-g5-13th-gen-core-i3-1315u-laptop-price-pakistan.html",
     "name": "Lenovo V15 G5 - Raptor Lake - 13th Gen Core i3 1315U Processor 8-GB 256-GB SSD Intel UHD Integrated GC 15.6\" Full HD 1080p Display TPM2.0 (Business Black, Lenovo 1 Year Direct Local Warranty, NEW)",
-    "price": "Rs. 123,500.00",
+    "price": 123500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_v15_g5_core_i3_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -440,10 +428,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-slim-3-13th-gen-ci5-local-warranty-laptop-pakistan.html",
     "name": "Lenovo IdeaPad Slim 3 15 - Raptor Lake - 13th Gen Core i5 13420H Processor 8-GB 512GB SSD Intel Integrated Graphics 15.6\" Full HD 1080p IPS AG Display TPM2.0 (Arctic Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 132,000.00",
+    "price": 132000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_ideapad_slim_3_15_laptop_pakistan_4__1.jpg"
     ],
     "specifications": {
@@ -495,10 +481,8 @@
   {
     "url": "https://www.paklap.pk/asus-vivobook-15-x1504va-intel-core-5-laptop-pakistan.html",
     "name": "Asus VivoBook 15 X1504VA - Raptor Lake - Intel Core 5 120U Processor 8-GB 512-GB SSD Intel Integrated Graphics 15.6\" Full HD 1080p IPS Display DOS (Cool Silver, NEW)",
-    "price": "Rs. 137,500.00",
+    "price": 137500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_vivobook_15_x1504va-nj2920_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -550,10 +534,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkbook-16-g6-13th-gen-intel-core-i3-laptop-pakistan.html",
     "name": "Lenovo ThinkBook 16 G6 - Raptor Lake - 13th Gen Intel Core i3 1315U 6-Core Processor 8-GB 512-GB SSD Intel UHD Graphics 16\" WUXGA 1200p IPS AG Display Dolby Audio Backlit KB FP Reader TPM 2.0 (Arctic Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 139,000.00",
+    "price": 139000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkbook_16_g6_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -605,10 +587,9 @@
   {
     "url": "https://www.paklap.pk/dell-vostro-15-3530-13th-generation-core-i5-laptop-price-pakistan.html",
     "name": "Dell Vostro 15 3530 - Raptor Lake - 13th Gen Core i5 1334u Deca-Core Processor 8-GB 512-GB SSD Intel Iris Xe Graphics 15.6\" FHD 1080p 120Hz 250 nits Narrow Border Display (Carbon Black, NEW)",
-    "price": "Rs. 139,999.00",
+    "price": 139999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_vostro_15_3530.28_am.jpg"
     ],
     "specifications": {
       "Brand": "Dell",
@@ -659,10 +640,8 @@
   {
     "url": "https://www.paklap.pk/hp-15-fd0647tu-13th-gen-core-i5-laptop-pakistan.html",
     "name": "HP 15 FD0647TU - Raptor Lake - 13th Gen Core i5 1334U Processor 8-GB 512-GB SSD Intel Iris Xe Graphics 15.6\" FHD 1080p Micro-Edge 250nits AG Display Backlit KB TPM W11 (Natural Silver, HP Direct Local Warranty, NEW)",
-    "price": "Rs. 143,999.00",
+    "price": 143999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_15_fd0647tu_laptop_pakistan_2_.jpg"
     ],
     "specifications": {
@@ -714,10 +693,11 @@
   {
     "url": "https://www.paklap.pk/asus-vivo-book-15-x1504va-nj104-13th-gen-core-i5-laptop-pakistan.html",
     "name": "Asus VivoBook 15 X1504VA - Tiger Lake - 13th Gen Core i5 1335U 8GB 512GB SSD GDDR4 15.6\" Full HD IPS 1080p 60Hz 250nits AG Display DOS (New, Cool Silver, Asus 2 year Asus Direct Local Warranty)",
-    "price": "Rs. 144,999.00",
+    "price": 144999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_vivobook_15_x1504va_core_i5_price_in_pakistan_1_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_vivobook_15_x1504va_core_i5_price_in_pakistan_3_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_vivobook_15_x1504va_core_i5_price_in_pakistan_4_.jpg"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -768,10 +748,8 @@
   {
     "url": "https://www.paklap.pk/dell-15-dc15250-13th-gen-core-i5-laptop-pakistan.html",
     "name": "Dell 15 DC15250 Laptop - Raptor Lake - 13th Gen Core i5 1334u Processor 8-GB 512-GB SSD Intel UHD Graphics 15.6\" FHD 120Hz WVA IPS AG Display Backlit KB  (Carbon Black, 1 Years Dell Direct Local Warranty)",
-    "price": "Rs. 146,999.00",
+    "price": 146999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_15_dc15250_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -822,10 +800,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-v15-g5-13th-gen-core-i5-laptop-price-pakistan.html",
     "name": "Lenovo V15 G5 - Raptor Lake - 13th Gen Core i5 13420H 8-Core Processor 8-GB 512-GB SSD Intel UHD Graphics 15.6\" Full HD 1080p Display TPM2.0 (Business Black, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 150,999.00",
+    "price": 150999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_v15_g5_13th_gen_core_i5_laptop_price_pakistan_2_.jpg"
     ],
     "specifications": {
@@ -877,10 +853,8 @@
   {
     "url": "https://www.paklap.pk/hp-omnibook-5-flip-14-fp0013-core-5-2025-touchscreen-laptop-pakistan.html",
     "name": "HP OmniBook 5 Flip 14 FP0013 - Intel Core 5 120U Processor 8-GB 512-GB SSD Intel Integrated GC 14.0\" 2K WUXGA 1200p IPS LED Touchscreen Convertible Display Backlit KB W11 (Glacier Silver, NEW)",
-    "price": "Rs. 156,900.00",
+    "price": 156900.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omnibook_5_flip_14_fp0013_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -932,10 +906,9 @@
   {
     "url": "https://www.paklap.pk/dell-vostro-15-3530-13th-generation-core-i7-laptop-price-pakistan.html",
     "name": "Dell Vostro 15 3530 - Raptor Lake - 13th Gen Core i7 1355U Processor 8-GB 512-GB SSD Intel Iris Xe Graphics 15.6\" FHD 1080p Narrow Border Display (Carbon Black, NEW)",
-    "price": "Rs. 163,999.00",
+    "price": 163999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/702d85193f4c6af6bb773c850e52617f/d/e/dell_vostro_15_3530.30_am_1.jpg"
     ],
     "specifications": {
       "Brand": "Dell",
@@ -986,10 +959,10 @@
   {
     "url": "https://www.paklap.pk/asus-expertbook-14-b3402-12th-generation-core-i5-laptop-pakistan.html",
     "name": "Asus ExpertBook B3 Flip 14 B3402FBA - 12th Gen Core i5 1235u Processor 8-GB 512-GB SSD Intel Iris Xe Graphics 14\" Full HD 1080p 250nits Touchscreen Convertible x360 Display FP Reader (Star Black, 1 Year Asus Direct Local Warranty)",
-    "price": "Rs. 172,999.00",
+    "price": 172999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/w/h/whatsapp_image_2024-10-16_at_11.30.29_am.jpeg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/w/h/whatsapp_image_2024-10-16_at_11.30.42_am.jpeg"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -1040,10 +1013,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-slim-5-14-intel-core-ultra-5-laptop-pakistan.html",
     "name": "Lenovo IdeaPad Slim 5 14 - Intel Core Ultra 5 125H 14-Core Processor 16-GB 512-GB SSD Intel Arc Graphics 14\" WUXGA 1200p IPS 300nits Display DolbyAudio TPM 2.0 (Cloud Grey, NEW)",
-    "price": "Rs. 183,999.00",
+    "price": 183999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_ideapad_slim_5_14_-_intel_core_ultra_5_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -1095,10 +1066,10 @@
   {
     "url": "https://www.paklap.pk/dell-inspiron-15-3530-13th-generation-ci5-price-reviews-pakistan.html",
     "name": "Dell Inspiron 15 3530 - Raptor Lake - 13th Gen Core i5 1334u Deca-Core Processor 8-GB 512GB SSD Intel UHD Graphics 15.6\" Full HD 1080p AG 250nits 120Hz Touchscreen  Display W11 (Carbon Black,  NEW)",
-    "price": "Rs. 141,000.00",
+    "price": 141000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_inspiron_15_3530_5_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_inspiron_15_3530_1_.jpg"
     ],
     "specifications": {
       "Brand": "Dell",
@@ -1149,10 +1120,8 @@
   {
     "url": "https://www.paklap.pk/hp-victus-15-fa2013dx-13th-gen-core-i5-nvidia-rtx-3050-gaming-laptop-pakistan.html",
     "name": "HP VICTUS 15 FA2013DX Gaming Laptop - Raptor Lake - 13th Gen Core i5 13420H Processor 8-GB 512-GB SSD 6-GB NVIDIA GeForce RTX3050 GDDR6 GC 15.6\" Full HD 1080p IPS 144Hz 300nits MicroEdge Display Backlit KB W11 (Mica Silver, NEW)",
-    "price": "Rs. 193,000.00",
+    "price": 193000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_victus_15_fa2013dx_gaming_laptop_-_raptor_lake_-_13th_gen_core_i5_13420h_1__1.png"
     ],
     "specifications": {
@@ -1204,10 +1173,8 @@
   {
     "url": "https://www.paklap.pk/hp-omnibook-x-flip-14-fm0096tu-intel-core-ultra-7-laptop-pakistan.html",
     "name": "HP OmniBook X Flip 14 FM0096TU - Lunar Lake - Intel Core Ultra 7 256V Processor 16-GB 512-GB 8-GB Intel Arc 130V Graphics 14\" 2k 1200p IPS Touchscreen Convertible Display Backlit KB DTS:X® Ultra Audio TPM W11 (Meteor Silver, HP Direct Local Warranty, NEW)",
-    "price": "Rs. 292,000.00",
+    "price": 292000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omnibook_x_flip_14_fm0096tu_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -1259,10 +1226,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-legion-5-16-core-ultra-9-rtx-5060-gaming-laptop-pakistan.html",
     "name": "Lenovo Legion 5 16 - Arrow Lake - Intel Core Ultra 9 275HX Processor 32-GB 1-TB SSD 8-GB NVIDIA GeForce RTX 5060 GDDR7 GC 16\" WQXGA 1600p IPS 240Hz G-Sync Display Nahimic Audio RGB Backlit KB (Storm Grey, NEW)",
-    "price": "Rs. 470,000.00",
+    "price": 470000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_legion_5_16_intel_core_ultra_9_laptop_pakistan_1__2.jpg"
     ],
     "specifications": {
@@ -1314,10 +1279,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-slim-3-15-13th-gen-core-i7-new-2025-laptop-pakistan.html",
     "name": "Lenovo IdeaPad Slim 3 15 - Raptor Lake - 13th Gen Core i7 13620H Processor 16-GB 512-GB Intel Integrated Graphics 15.6\" Full HD 1080p IPS 300nits AG Display Dolby Audio Backlit KB FP Reader TPM2.0 (Arctic Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 184,500.00",
+    "price": 184500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_ideapad_slim_3_15_laptop_pakistan_2__2_1.jpg"
     ],
     "specifications": {
@@ -1369,10 +1332,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-v15-g4-13th-gen-core-i7-laptop-price-pakistan.html",
     "name": "Lenovo V15 G4 - Raptor Lake - 13th Gen Core i7 13620H 10-Core Processor 16-GB 1-TB SSD Intel UHD Graphics 15.6\" Full HD 1080p AG Display Dolby Audio TPM2.0 W11 (Business Black, NEW)",
-    "price": "Rs. 184,999.00",
+    "price": 184999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_v15_g4_13th_gen_core_i7_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -1424,10 +1385,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-v15-g4-13th-generation-core-i7-new-laptop-pakistan.html",
     "name": "Lenovo V15 G4 - Raptor Lake - 13th Gen Core i7 13620H Processor 8-GB 512-GB SSD Intel UHD Integrated GC 15.6\" Full HD 1080p Display Dolby Audio TPM2.0 (Business Black, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 185,000.00",
+    "price": 185000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_v15_g5_core_i7_laptop_price_in_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -1479,10 +1438,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-slim-5-14-core-ultra-5-laptop-pakistan.html",
     "name": "Lenovo IdeaPad Slim 5 14 - Intel Core Ultra 5 125H 14-Core Processor 16-GB 512-GB SSD Intel Arc Graphics 14\" WUXGA 1200p IPS 300nits Display DolbyAudio TPM 2.0 (Cloud Grey, Lenovo Direct Local Warranty)",
-    "price": "Rs. 196,500.00",
+    "price": 196500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_slim_5_14_new.40_pm.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_slim_5_14_new.11_pm.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -1533,10 +1492,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-v15-g5-13th-gen-core-i7-13620h-laptop-price-pakistan.html",
     "name": "Lenovo V15 G5 - Raptor Lake - 13th Gen Core i7 13620H Processor 8-GB 512-GB SSD Intel UHD Integrated GC 15.6\" Full HD 1080p Display TPM2.0 (Business Black, Lenovo 1 Year Direct Local Warranty, NEW)",
-    "price": "Rs. 196,500.00",
+    "price": 196500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_v15_g5_core_i7_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -1588,10 +1545,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-5-core-i7-13th-gen-laptop-pakistan.html",
     "name": "Lenovo IdeaPad Slim 5 16 - Raptor Lake - 13th Gen Core i7-13620H Processor 16-GB 512-GB SSD UHD Graphics 16\" WUXGA 1200p IPS 60Hz Display DolbyAudio Backlit KB TPM2.0 (Luna Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 200,000.00",
+    "price": 200000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_ideapad_slim_3_15_core_i7_6_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_ideapad_slim_3_15_core_i7_7_.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -1642,10 +1599,10 @@
   {
     "url": "https://www.paklap.pk/hp-omnibook-5-flip-14-fp0023dx-core-7-laptop-2025-pakistan.html",
     "name": "HP OmniBook 5 Flip 14 FP0023dx - Intel Core 7 150U Processor 16-GB 512-GB SSD Intel Integrated GC 14\" 2K WUXGA 1200p IPS LED Touchscreen Convertible Display Backlit KB W11 (Glacier Silver NEW)",
-    "price": "Rs. 202,500.00",
+    "price": 202500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omnibook_5_flip_14_fp0023dx_price_in_pakistan.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omnibook_flip_5_14_fh0013.16_pm_1.jpg"
     ],
     "specifications": {
       "Brand": "Hp",
@@ -1696,10 +1653,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkbook-16-g8-intel-core-ultra-5-laptop-pakistan.html",
     "name": "Lenovo ThinkBook 16 G8 - Arrow Lake - Intel Core Ultra 5 225U 12-Core Processor 8-GB 512GB SSD Intel Integrated GC 16\" WUXGA 1200p IPS AG 300nits Display Dolby Audio Backlit KB FPR TPM 2.0 (Bag Included, Arctic Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 205,000.00",
+    "price": 205000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkbook_16_g8_-_intel_core_5_210h_processor_3__2.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkbook_16_g8_-_intel_core_5_210h_processor_9__1.jpg"
     ],
     "specifications": {
       "Brand": "Hp",
@@ -1750,10 +1707,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-t14-gen-3-12th-gen-core-i5-laptop-price-pakistan.html",
     "name": "Lenovo ThinkPad T14 Gen 3 - 12th Gen Core i5 1235u Processor 8-GB 512GB SSD Intel Iris Xe Graphics 14\" WUXGA IPS 300nits AG Display Dolby Audio BKB FPR TPM (Thunder Black, 3 Years Direct Local Warranty, NEW)",
-    "price": "Rs. 215,000.00",
+    "price": 215000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/w/h/whatsapp_image_2024-10-10_at_2.12.40_pm.jpeg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/w/h/whatsapp_image_2024-10-10_at_2.12.53_pm.jpeg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -1804,10 +1761,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-e16-gen-1-13th-13420h-ci5-laptop-price-reviews-pakistan.html",
     "name": "Lenovo ThinkPad E16 Gen 1 - Raptor Lake - 13th Gen Core i5 13420H Octa-Core Processor 8-GB to 40-GB 512GB SSD Intel Integrated GC 16\" WUXGA IPS AG 300nits Display Backlit KB FP Reader (Graphite Black, Bag Included, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 218,500.00",
+    "price": 218500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/s/c/screenshot_2023-12-15_at_4.20.01_pm_1_1.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/e/1/e16_gen_1_lenovo_thinkpad.55_pm_1_1.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -1858,10 +1815,8 @@
   {
     "url": "https://www.paklap.pk/hp-victus-15-fa2082wm-13th-gen-core-i5-rtx-4050-gpu-laptop-pakistan.html",
     "name": "HP Victus 15 FA2082WM - Raptor Lake - 13th Gen Core i5 13420H Processor 16-GB 512-GB SSD 6-GB NVIDIA GeForce RTX 4050 GDDR6 GC 15.6\" Full HD 1080p IPS 144Hz 300nits MicroEdge AG Display B&O Play Backlit KB W11 (Mica Silver, NEW)",
-    "price": "Rs. 221,900.00",
+    "price": 221900.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_victus_15_fa2082wn_laptop_pakistan_6_.jpg"
     ],
     "specifications": {
@@ -1913,10 +1868,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-loq-15-amd-ryzen-5-rtx-4050-gpu-gaming-laptop-pakistan.html",
     "name": "Lenovo LOQ 15 - AMD Ryzen 5 7235HS Processor 12-GB 512-GB SSD 6-GB NVIDIA GeForce RTX 4050 GDDR6 GC 15.6\" FHD 1080p IPS 300nits AG 144Hz G-Sync Display BKB TPM2.0 W11 (Luna Grey, NEW)",
-    "price": "Rs. 221,999.00",
+    "price": 221999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_loq_15_core_i5_2025_price_in_pakistan_3.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_loq_15_core_i5_2027_price_in_pakistan_1_3.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -1967,10 +1922,9 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkbook-16-g8-core-7-2025-laptop-pakistan.html",
     "name": "Lenovo ThinkBook 16 G8 - Intel Core 7 240H 10-Core Processor 8-GB 512-GB SSD Intel Integrated Graphics 16\" WUXGA 1200p IPS AG 300nits Display Dolby Audio Backlit KB FP Reader TPM 2.0 (Bag Included, Arctic Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 226,000.00",
+    "price": 226000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkbook_16_g8_-_intel_core_5_210h_processor_3__1.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -2021,10 +1975,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkbook-14-g8-intel-core-7-new-2025-laptop-pakistan.html",
     "name": "Lenovo ThinkBook 14 G8 - Raptor Lake - Intel Core 7 240H 10-Core Processor 8-GB 512-GB SSD Intel Integrated Graphics 14\" WUXGA 1200p IPS AG Display Dolby Audio Backlit KB FP Reader TPM 2.0 (Arctic Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 230,000.00",
+    "price": 230000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkbook_14_g8_core_7_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -2076,10 +2028,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-5-2-in-1-16-intel-core-ultra-7-touchscreen-convertible-laptop-pakistan.html",
     "name": "Lenovo IdeaPad 5 2-in-1 16 - Arrow Lake - Intel® Core Ultra 7 255U Processor 32-GB 1-TB SSD 16\" WUXGA 1200p IPS 300nits 60Hz Touchscreen Convertible Display DolbyAudio Backlit KB W11 TPM 2.0 (Optional Lenovo Digital Pen 2, Cosmic Blue, Open Box)",
-    "price": "Rs. 230,000.00",
+    "price": 230000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_ideapad_5_2-in-1_16_intel_core_ultra_7_touchscreen_convertible_laptop_pakistan_1__1.jpg"
     ],
     "specifications": {
@@ -2131,10 +2081,10 @@
   {
     "url": "https://www.paklap.pk/dell-inspiron-16-5640-intel-core-7-laptop-pakistan.html",
     "name": "Dell Inspiron 16 5640 - Intel Core 7 150U Processor 16-GB 1-TB SSD Intel Graphics 16\" FHD+ 1200p 60Hz WVA 250nits Display Backlit KB FP Reader (Ice Blue, Dell Direct Local Warranty, NEW)",
-    "price": "Rs. 232,500.00",
+    "price": 232500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_ins_16_7640.30_pm_1.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_ins_16_7640.38_pm_1.jpg"
     ],
     "specifications": {
       "Brand": "Dell",
@@ -2185,10 +2135,8 @@
   {
     "url": "https://www.paklap.pk/hp-probook-460-g11-intel-core-ultra-7-laptop-pakistan.html",
     "name": "HP ProBook 460 G11 - Intel Core Ultra 7 155U 12-Core Processor 16-GB 512-GB SSD Intel Integrated GC 16\" WUXGA 1200p IPS AG 300nits Display PolyStudio Audio Backlit KB FP Reader (Pike Silver, NEW)",
-    "price": "Rs. 233,000.00",
+    "price": 233000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_probook_460_g11_laptop_pakistan_1__1.jpg"
     ],
     "specifications": {
@@ -2240,10 +2188,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-e14-gen-7-intel-core-5-laptop-pakistan.html",
     "name": "Lenovo ThinkPad E14 Gen 7 - Raptor Lake - Intel® Core™ 5 210H 8-Core Processor 8-GB 512GB SSD Intel Integrated Graphics 14\" WUXGA IPS AG 300nits Display Backlit KB FP Reader TPM 2.0 (Black, Bag Included, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 235,000.00",
+    "price": 235000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_e16_gen_7_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -2295,10 +2241,8 @@
   {
     "url": "https://www.paklap.pk/hp-victus-15-fa2737tx-13th-gen-core-i5-rtx-3050-gpu-laptop-pakistan.html",
     "name": "HP Victus 15 FA2737TX - Raptor Lake - 13th Gen Core i5 13420H Processor 16-GB 512-GB SSD 6-GB NVIDIA GeForce RTX 3050 GDDR6 GC 15.6\" Full HD 1080p IPS 144Hz MicroEdge AG Display DTS:X® Ultra Audio BKB W11 (Mica Silver, HP Direct Local Warranty, NEW)",
-    "price": "Rs. 240,000.00",
+    "price": 240000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_victus_15_fa2737tx_gaming_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -2350,10 +2294,11 @@
   {
     "url": "https://www.paklap.pk/lenovo-legion-go-amd-ryzen-z1-extreme-handheld-gaming-tablet-2024-pakistan.html",
     "name": "Lenovo Legion Go 8APUI - AMD Ryzen Z1 Extreme Processor 16GB 1-TB SSD Integrated AMD Radeon Graphics 8.8\" WQXGA IPS 500nits 144Hz Corning Gorilla Glass Lowlight Touch Display HD Audio with Stereo Speakers W11 (Shadow Black, Lenovo Direct Local Warranty)",
-    "price": "Rs. 240,000.00",
+    "price": 240000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/5/1/51p9kf1bfwl._ac_sl1200_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/3/1/31kpqqxodxl._ac_sl1200_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/5/1/51bq5rmnzal._ac_sl1200_.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -2404,10 +2349,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-e16-gen-3-intel-core-ultra-5-laptop-pakistan.html",
     "name": "Lenovo ThinkPad E16 Gen 3 - Arrow Lake - Intel® Core™ Ultra 5 225U 12-Core Processor 8-GB 512GB SSD Intel Integrated Graphics 16\" WUXGA IPS AG 300nits Display Backlit KB FP Reader TPM 2.0 (Black, Bag Included, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 242,000.00",
+    "price": 242000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_e16_gen_3_laptop_pakistan_5__1.jpg"
     ],
     "specifications": {
@@ -2459,10 +2402,8 @@
   {
     "url": "https://www.paklap.pk/hp-victus-15-fb3093dx-amd-ryzen-7-rtx-4050-gpu-gaming-laptop-pakistan.html",
     "name": "HP VICTUS 15 FB3093dx Gaming Laptop - AMD Ryzen 7 7445HS 6-Core Processor 16-GB 512-GB SSD 6-GB NVIDIA GeForce RTX4050 GDDR6 GC 15.6\" Full HD 1080p IPS 144Hz 300nits MicroEdge Display Backlit KB W11 (Mica Silver, NEW)",
-    "price": "Rs. 244,999.00",
+    "price": 244999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_victus_15_fb3093dx_gaming_laptop_pakistan_2_.jpg"
     ],
     "specifications": {
@@ -2514,10 +2455,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-slim-5-intel-core-ultra-7-14-inch-laptop-pakistan.html",
     "name": "Lenovo IdeaPad Slim 5 14 - Meteor Lake - Intel Core Ultra 7 155H 16-Core Processor 16-GB 512-GB SSD Intel Arc GC 14\" WUXGA 1200p  AG 300nits Display Dolby Audio Backlit KB (Cloud Grey, Lenovo Direct Warranty)",
-    "price": "Rs. 245,000.00",
+    "price": 245000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_slim_5_14_-_meteor_lake_-_intel_core_ultra_7_1_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_slim_5_14_-_meteor_lake_-_intel_core_ultra_7_2_.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -2568,10 +2509,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkbook-16-g8-intel-core-7-laptop-price-pakistan.html",
     "name": "Lenovo ThinkBook 16 G8 - Arrow Lake - Intel Core 7 240H 10-Core Processor 16-GB 512-GB SSD Intel Integrated GC 16\" WUXGA 1200p IPS AG 300nits Display Dolby Audio Backlit KB FPR TPM 2.0 (Bag Included, Arctic Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 248,500.00",
+    "price": 248500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkbook_16_g8_intel_core_7_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -2623,10 +2562,10 @@
   {
     "url": "https://www.paklap.pk/hp-probook-460-g11-intel-core-ultra-7-laptop-price-pakistan.html",
     "name": "HP ProBook 460 G11 - Intel Core Ultra 7 155U Processor 8-GB 512-GB SSD Intel Integrated GC 16\" WUXGA 1200p IPS AG 300nits Display PolyStudio Audio (Pike Silver, HP Direct Local Warranty)",
-    "price": "Rs. 250,000.00",
+    "price": 250000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_probook_460_g11_-_.59_pm.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_probook_460_g11_-_.10_pm_1.jpg"
     ],
     "specifications": {
       "Brand": "Hp",
@@ -2677,10 +2616,8 @@
   {
     "url": "https://www.paklap.pk/hp-omnibook-5-16-af1072tu-intel-core-ultra-7-laptop-pakistan.html",
     "name": "HP OmniBook 5 16 AF1072TU - Arrow Lake - Intel Core Ultra 7 255U Processor 16-GB RAM 512-GB Intel Integrated Graphics 16\" 2k 1200p IPS Micro-Edge AG Display Backlit KB DTS:X® Ultra Audio TPM W11 (Glacier Silver, HP Direct Local Warranty, NEW)",
-    "price": "Rs. 250,000.00",
+    "price": 250000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omnibook_5_16_af1072tu_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -2732,10 +2669,11 @@
   {
     "url": "https://www.paklap.pk/lenovo-yoga-7-2-in-1-core-ultra-7-laptop-pakistan.html",
     "name": "Lenovo Yoga 7 2 in 1 16 - Intel Core Ultra 7 155U Processor 16-GB 1-TB SSD Intel Integrated Graphics 16\" WUXGA 1200p IPS 300nits DolbyVision MicroEdge Touchscreen Convertible Display BKB FP Reader W11 TPM (Optional Lenovo Digital Pen 2, Storm Grey, NEW)",
-    "price": "Rs. 250,000.00",
+    "price": 250000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/6/5/6571369_rd-min.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/6/5/6571369ld-min.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/6/5/6571369cv1d-min.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -2786,10 +2724,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkbook-16-g8-core-ultra-7-laptop-price-pakistan.html",
     "name": "Lenovo ThinkBook 16 G8 - Arrow Lake - Intel Core Ultra 7 255H 16-Core Processor 8-GB 512-GB SSD Intel Arc 140T GC 16\" WUXGA 1200p IPS AG 300nits Display Dolby Audio Backlit KB FPR TPM 2.0 (Bag Included, Arctic Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 251,500.00",
+    "price": 251500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkbook_16_g8_intel_ultra_7_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -2841,10 +2777,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-ideapad-5-amd-ryzen-7-laptop-pakistan.html",
     "name": "Lenovo IdeaPad 5 16 2-in-1 - AMD Ryzen AI 7 350 Processor 16-GB 1-TB SSD AMD Radeon™ 860M Graphics 16\" WUXGA Touchscreen Convertible Display Dolby Audio TPM 2.0 W11 (Optional Lenovo Digital Pen 2, Cosmic Blue, NEW)",
-    "price": "Rs. 255,000.00",
+    "price": 255000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_ideapad_5_16_2-in-1_-_amd_ryzen_ai_7_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -2896,10 +2830,11 @@
   {
     "url": "https://www.paklap.pk/hp-omnibook-x-flip-16-as0023dx-core-ultra-7-new-laptop-2025-pakistan.html",
     "name": "HP OmniBook X AS0023dx Flip 16 2 in 1 Laptop - Intel Core Ultra 7 256V 8-Core Processor 16-GB 1-TB SSD 8-GB Intel Arc 140-V Graphics 16\" 2K 1200p IPS MicroEdge Touchscreen Convertible Display PolyStudio DTS:X Ultra Audio Backlit KB W11 (Eclipse Gray, NEW)",
-    "price": "Rs. 257,999.00",
+    "price": 257999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omnibook_x_flip_16_as0023dx.28_am.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omnibook_x_flip_16_as0023dx.30_am.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omnibook_x_flip_16_as0023dx.40_am.jpg"
     ],
     "specifications": {
       "Brand": "Hp",
@@ -2950,10 +2885,8 @@
   {
     "url": "https://www.paklap.pk/hp-victus-15-fa2738tx-13th-gen-core-i5-rtx-4050-gpu-gaming-laptop-pakistan.html",
     "name": "HP Victus 15 FA2738TX - Raptor Lake - 13th Gen Core i5 13420H Processor 16-GB 512-GB SSD 6-GB NVIDIA GeForce RTX 4050 GDDR6 GC 15.6\" Full HD 1080p IPS 144Hz MicroEdge AG Display DTS:X® Ultra Audio BKB W11 (Mica Silver, HP Direct Local Warranty, NEW)",
-    "price": "Rs. 272,500.00",
+    "price": 272500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_victus_15_fa2738tx_gaming_laptop_pakistan_6_.jpg"
     ],
     "specifications": {
@@ -3005,10 +2938,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-e14-gen-7-intel-core-7-new-2025-laptop-pakistan.html",
     "name": "Lenovo ThinkPad E14 Gen 7 - Raptor Lake - Intel® Core™ 7 240H 10-Core Processor 16-GB 512GB SSD Intel Integrated Graphics 14\" WUXGA IPS AG 300nits Display Backlit KB FP Reader TPM 2.0 (Black, Bag Included, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 279,999.00",
+    "price": 279999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_e16_gen_7_laptop_pakistan_1__1.jpg"
     ],
     "specifications": {
@@ -3060,10 +2991,10 @@
   {
     "url": "https://www.paklap.pk/hp-elite-book-660-g11-core-ultra-7-laptop-pakistan.html",
     "name": "HP Elitebook 660 G11 - Intel Core Ultra 7 155U 12-Core Processor 8-GB 512-GB SSD Intel Integrated GC 16\" WUXGA 1200p IPS AG 300nits Display PolyStudio Audio Backlit KB FP Reader (Silver, HP Direct Local Warranty, NEW)",
-    "price": "Rs. 287,000.00",
+    "price": 287000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_elitebook_650_g11_16_naturalsilver_wwan_t_ircam_fpr_coreset_whitebg_rear_m1552861_1_.png",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_elitebook_650_g11_16_naturalsilver_wwan_t_ircam_fpr_coreset_ahs_whitebg_frontopen_m1578885_1_.png"
     ],
     "specifications": {
       "Brand": "Hp",
@@ -3114,10 +3045,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-e14-gen-7-intel-core-ultra-7-laptop-price-pakistan.html",
     "name": "Lenovo ThinkPad E14 Gen 7 - Intel Core Ultra 7 255H 16-Core Processor 16-GB 512-GB SSD Intel Arc 140T Graphics 14\" WUXGA IPS AG 300nits Display Backlit KB FP Reader TPM 2.0 (Black, Bag Included, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 287,000.00",
+    "price": 287000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_e14_gen_7_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -3169,10 +3098,10 @@
   {
     "url": "https://www.paklap.pk/hp-elite-book-640-g11-core-ultra-7-laptop-pakistan.html",
     "name": "HP Elitebook 640 G11 - Intel Core Ultra 7 155U 12-Core Processor 8-GB 512-GB SSD Intel Integrated GC 14\" WUXGA 1200p IPS AG 300nits Display PolyStudio Audio Backlit KB FP Reader (Silver, Bag Included, HP Direct Local Warranty, NEW)",
-    "price": "Rs. 287,500.00",
+    "price": 287500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_elitebook_640_g11_-_intel_core_ultra_7_155u_1_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_elitebook_640_g11_-_intel_core_ultra_7_155u_2_.jpg"
     ],
     "specifications": {
       "Brand": "Hp",
@@ -3223,10 +3152,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-e16-gen-3-intel-core-ultra-7-laptop-pakistan.html",
     "name": "Lenovo ThinkPad E16 Gen 3 - Arrow Lake - Intel® Core™ Ultra 7 255H 16-Core Processor 16-GB 512GB SSD Intel Arc Graphics 16\" WUXGA IPS AG 300nits Display Backlit KB FP Reader TPM 2.0 (Black, Bag Included, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 295,000.00",
+    "price": 295000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_e16_gen_3_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -3278,10 +3205,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-slim-7-14-aura-edition-intel-core-ultra-7-2025-laptop-pakistan.html",
     "name": "Lenovo Slim 7 14 Aura Edition - Meteor Lake - Intel Core Ultra 7 258V 8-Core Processor 32-GB 1-TB SSD Intel Arc GC 14\" WUXGA 1200p OLED 60Hz DolbyVision HDR Touchscreen Display DolbyAtmos Audio Backlit KB W11 (Luna Grey, NEW)",
-    "price": "Rs. 300,000.00",
+    "price": 300000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_slim_7_14_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -3333,10 +3258,10 @@
   {
     "url": "https://www.paklap.pk/dell-latitude-14-5450-intel-core-ultra-7-new-laptop-pakistan.html",
     "name": "Dell Latitude 14 5450 - Meteor Lake - Intel Core Ultra 7 155U Processor 8-GB 512-GB Intel Integrated Graphics 14\" Full HD 1080p IPS AG 250nits Display WavesMaxx Audio Pro Backlit KB FP Reader (Titan Grey, 3 Years Dell Direct Local Warranty)",
-    "price": "Rs. 322,500.00",
+    "price": 322500.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_latitude_15_5450.00_pm.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_latitude_15_5450.07_pm.jpg"
     ],
     "specifications": {
       "Brand": "Dell",
@@ -3387,10 +3312,8 @@
   {
     "url": "https://www.paklap.pk/hp-victus-15-fa2209tx-14th-gen-core-i7-rtx-4050-gpu-gaming-laptop-pakistan.html",
     "name": "HP Victus 15 FA2209TX - Raptor Lake - 14th Gen Core i7 14650HX Processor 16-GB 512-GB SSD 6-GB NVIDIA GeForce RTX 4050 GDDR6 GC 15.6\" Full HD 1080p IPS 144Hz MicroEdge AG Display DTS:X® Ultra Audio BKB W11 (Mica Silver, HP Direct Local Warranty, NEW)",
-    "price": "Rs. 325,000.00",
+    "price": 325000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_victus_15_fa2209tx_gaming_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -3442,10 +3365,8 @@
   {
     "url": "https://www.paklap.pk/hp-victus-15-fa2787nr-13th-gen-core-i7-rtx-5060-gpu-gaming-laptop-pakistan.html",
     "name": "HP Victus 15 FA2787NR - Raptor Lake - 13th Gen Core i7 13620H Processor 16-GB 512-GB SSD 8-GB NVIDIA GeForce RTX 5060 GDDR7 GC 15.6\" Full HD 1080p IPS 144Hz MicroEdge AG Display DTS:X® Ultra Audio BKB W11 (Mica Silver, NEW)",
-    "price": "Rs. 339,999.00",
+    "price": 339999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_victus_15_fa2787nr_gaming_laptop_1_.jpg"
     ],
     "specifications": {
@@ -3497,10 +3418,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-t14-gen-6-intel-core-ultra-5-laptop-price-pakistan.html",
     "name": "Lenovo ThinkPad T14 Gen 6 - Intel Core Ultra 5 255U Processor 16-GB 512-GB SSD Integrated Intel Graphics 14\" WUXGA 1200p IPS 400nits AG Display Dolby Audio BKB FPR TPM (Black, 3 Years Direct Local Warranty, NEW)",
-    "price": "Rs. 340,000.00",
+    "price": 340000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_t14_gen_6_intel_core_ultra_5_1_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_t14_gen_6_intel_core_ultra_5_5_.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -3551,10 +3472,10 @@
   {
     "url": "https://www.paklap.pk/asus-vivobook-pro-15-m6506mu-intel-core-ultra-7-laptop-pakistan.html",
     "name": "Asus VivoBook Pro 15 N6506MU - Intel Core Ultra 7 155H 16-Core Processor 16-GB 1-TB SSD 6-GB Nvidia RTX 4050 GDDR6 GC 15.6\" 3K OLED 120Hz 400 Nits HDR Display Backlit KB (Cool Silver, 2 Year Asus Direct Local Warranty)",
-    "price": "Rs. 360,999.00",
+    "price": 360999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/w/h/whatsapp_image_2024-10-16_at_1.40.19_pm.jpeg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/w/h/whatsapp_image_2024-10-16_at_1.39.51_pm.jpeg"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -3605,10 +3526,10 @@
   {
     "url": "https://www.paklap.pk/asus-vivo-book-16-v3607vu-intel-core-7-laptop-pakistan.html",
     "name": "Asus VivoBook 16 V3607VU - Raptor Lake - Intel Core 7 240H Processor 16-GB 1-TB SSD 6-GB NVIDIA RTX4050 GDDR6 GC 16\" WUXGA 1200p 144Hz Display Backlit KB DOS (Matte Black, 2 Years ASUS Direct Local Warranty)",
-    "price": "Rs. 360,999.00",
+    "price": 360999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/u/n/unnamed-51-78721-0-070525072657761.png",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/u/n/unnamed-52-78721-0-070525072653869.png"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -3659,10 +3580,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-legion-5-15-amd-ryzen-7-nvidia-rtx-5060-gpu-gaming-laptop-pakistan.html",
     "name": "Lenovo Legion 5 15 - AMD Ryzen™ 7 260 Processor 16-GB 512-GB SSD 8-GB NVIDIA GeForce RTX 5060 GDDR7 GC 15.1\" WQXGA 1600p OLED 165Hz Dolby Vision Display Nahimic Audio 24-Zone RGB BKB (Eclipse Black, NEW)",
-    "price": "Rs. 375,000.00",
+    "price": 375000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_legion_pro_5_15_-_amd_ryzen_7_rtx_5060_gaming_laptop_pakistan_12_.jpg"
     ],
     "specifications": {
@@ -3714,10 +3633,10 @@
   {
     "url": "https://www.paklap.pk/asus-zenbook-13-ux5304ma-core-ultra-7-laptop-pakistan.html",
     "name": "ASUS Zenbook S 13 OLED UX5304MA - Intel Core Ultra 7 155U Processor 16-GB 1-TB SSD Intel Graphics 13.3\" 3K 1800p OLED 60Hz 600nits HDR Display Harman Kardon Audio Backlit KB W11 TPM 2.0 (Ponder Blue, 2 Years ASUS Direct Local Warranty, NEW)",
-    "price": "Rs. 375,999.00",
+    "price": 375999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_zenbook_13_ux5304ma_5_.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_zenbook_13_ux5304ma_3_.jpg"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -3767,10 +3686,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-legion-5-14th-gen-core-i7-rtx-5050-gpu-gaming-laptop-pakistan.html",
     "name": "Lenovo Legion 5 15 - Raptor Lake - 14th Gen Core i7 14700HX 20-Core Processor 16-GB 1-TB SSD 8-GB NVIDIA GeForce RTX 5050 GDDR7 GC 15.1\" WQXGA 1600p OLED IPS 165Hz Display Nahimic Audio RGB Backlit KB TPM W11 (Eclipse Black, NEW)",
-    "price": "Rs. 385,000.00",
+    "price": 385000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_legion_5_15_core_i7_gaming_laptop_pakistan_1__1.jpg"
     ],
     "specifications": {
@@ -3822,10 +3739,9 @@
   {
     "url": "https://www.paklap.pk/asus-vivo-book-pro-15-n6506mv-core-ultra-7-laptop-pakistan.html",
     "name": "Asus VivoBook Pro 15 N6506MV - Intel Core Ultra 7 155H Processor 16-GB 1-TB SSD 8-GB Nvidia RTX 4060 GDDR6 GC 15.6\" 3K OLED 120Hz 400 Nits HDR Display Backlit KB (Cool Silver, 2 Year Asus Direct Local Warranty)",
-    "price": "Rs. 386,999.00",
+    "price": 386999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus-vivobook-pro-15-n6506mv-ma022-ultra-7-155u-price-in-pakistan-5-600x600.png"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -3876,10 +3792,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-t14-gen-5-core-ultra-7-new-2025-laptop-pakistan.html",
     "name": "Lenovo ThinkPad T14 Gen 5 - Meteor Lake - Core Ultra 7 155H 16-Core Processor 16-GB 512-GB SSD Intel Arc Graphics 14\" 2.8k 1800p OLED AG 400nits Display Backlit KB FP Reader TPM 2.0 (Black, Lenovo 3 Year Direct Local Warranty, NEW)",
-    "price": "Rs. 405,000.00",
+    "price": 405000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_t14_gen_5_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -3930,10 +3844,10 @@
   {
     "url": "https://www.paklap.pk/asus-zenbook-14-ux3405ma-core-ultra-9-laptop-pakistan.html",
     "name": "Asus Zenbook 14 UX3405MA - Intel Core Ultra 9 185H Processor 16-GB 1-TB SSD Intel Arc Graphics 14.0\" WUXGA 1200p OLED Touchscreen Display Backlit KB W11 (Ponder Blue, 2 Year Asus Direct Local Warranty)",
-    "price": "Rs. 406,999.00",
+    "price": 406999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/u/n/unnamed-37-78721-0-070525065201109.png",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/u/n/unnamed-40-78721-0-070525065157629.png"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -3984,10 +3898,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-t14-gen-5-intel-core-ultra-7-new-laptop-pakistan.html",
     "name": "Lenovo ThinkPad T14 Gen 5 - Meteor Lake - Intel® Core™ Ultra 7 155U 12-Core Processor 16-GB 1-TB SSD Intel Integrated Graphics 14\" WUXGA IPS AG 400nits Display Backlit KB FP Reader TPM 2.0 (Black, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 409,999.00",
+    "price": 409999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_t14_gen_7_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -4039,10 +3951,10 @@
   {
     "url": "https://www.paklap.pk/asus-zenbook-s-14-ux5406sa-core-ultra-7-touch-screen-laptop-pakistan.html",
     "name": "ASUS Zenbook S 14 UX5406SA - Intel Core Ultra 7 256V 8-Core Processor 16-GB 1-TB SSD Intel Arc Graphics 14.0\" WUXGA 1200p OLED Touchscreen Display Backlit KB W11 (Scandinavian White, 2 Year Asus Direct Local Warranty)",
-    "price": "Rs. 436,999.00",
+    "price": 436999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/1/_/1_59c37ab9-5447-4a9e-9572-3ad51558a609_500x.png",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/5/_/5_3f63639e-50c1-476f-aa8d-994ba37dd73d_500x.png"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -4093,10 +4005,8 @@
   {
     "url": "https://www.paklap.pk/asus-vivo-book-pro-15-n6506cu-core-ultra-7-rtx-4050-gpu-laptop-pakistan.html",
     "name": "Asus VivoBook Pro 15 N6506CU - Intel Core Ultra 7 255H Processor 16-GB 1-TB SSD 6-GB Nvidia RTX 4050 GDDR6 GC 15.6\" 3K OLED 120Hz 400 Nits HDR Display Backlit KB (Cool Silver, 2 Year Asus Direct Local Warranty)",
-    "price": "Rs. 439,999.00",
+    "price": 439999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_vivobook_pro_15_n6506cu_gaming_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -4148,10 +4058,9 @@
   {
     "url": "https://www.paklap.pk/asus-zenbook-14-ux3405ca-ultra-9-touchscreen-laptop-pakistan.html",
     "name": "ASUS Zenbook 14 UX3405CA - Intel Core Ultra 9 285H Processor 16-GB 1-TB SSD Intel Arc Graphics 14.0 3K OLED 120Hz Touchscreen Display Backlit Chiclet KB Harmon Kardon Audio W11 TPM 2.0 (Ponder Blue, 2 Years ASUS Direct Local Warranty, NEW)",
-    "price": "Rs. 441,999.00",
+    "price": 441999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_zenbook_ux3405ca.08_pm.jpg"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -4200,10 +4109,8 @@
   {
     "url": "https://www.paklap.pk/asus-rog-strix-g16-g615jmr-core-i7-rtx-5060-gpu-gaming-laptop-pakistan.html",
     "name": "ASUS ROG STRIX G16 G615JMR-AS74 - Raptor Lake - 14th Gen Core i7 14650HX Processor 16-GB 1-TB SSD NVIDIA GeForce RTX 5060 GC 16\" 1200p IPS 165Hz 300nits AG Display RGB Backlit KB TPM W11 (Eclipse Grey, NEW)",
-    "price": "Rs. 450,000.00",
+    "price": 450000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/a/s/asus_rog_strix_g615jmr-as74_gaming_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -4255,10 +4162,8 @@
   {
     "url": "https://www.paklap.pk/hp-omen-slim-gaming-16-an0119nr-core-ultra-9-nvidia-rtx-5070-gpu-pakistan.html",
     "name": "HP OMEN 16 AN0119nr Slim Gaming Laptop  - Intel Core Ultra 9 285H Processor 16-GB 1-TB SSD 8-GB NVIDIA GeForce RTX5070 GDDR7 GC 16\" WQXGA IPS 240Hz MicroEdge AG Display DTS:X® Ultra Audio Backlit KB W11 TPM (Shadow Black, NEW)",
-    "price": "Rs. 479,999.00",
+    "price": 479999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/h/p/hp_omen_16_gaming_laptop_price_in_pakistan_1__1.jpg"
     ],
     "specifications": {
@@ -4310,10 +4215,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-t16-gen-4-intel-core-ultra-7-laptop-price-pakistan.html",
     "name": "Lenovo ThinkPad T16 Gen 4 - Intel Core Ultra 7 255U Processor 16-GB 512-GB SSD Integrated Intel Graphics 16\" WUXGA 1200p IPS 400nits AG Display Dolby Audio BKB FPR TPM W11 Pro (Black, 3 Years Direct Local Warranty, NEW)",
-    "price": "Rs. 483,000.00",
+    "price": 483000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_t16_gen_4_intel_core_ultra_7_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -4365,10 +4268,10 @@
   {
     "url": "https://www.paklap.pk/lenovo-legion-pro-5-14th-gen-core-i7-rtx-4060-gaming-laptop-pakistan.html",
     "name": "Lenovo Legion Pro 5 - Raptor Lake - 14th Gen Core i7 14650HX 16-Core Processor 16-GB 1-TB SSD 8-GB NVIDIA GeForce RTX4060 GDDR6 GC 16\" WQXGA 1600p IPS 240Hz G-Sync Display Nahimic Audio 4-Zone RGB BKB (Onyx Grey, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 487,000.00",
+    "price": 487000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_legion_pro_5_14th.18_pm.jpg",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_legion_pro_5_14th.41_pm.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -4419,10 +4322,10 @@
   {
     "url": "https://www.paklap.pk/asus-tuf-a14-fa401wu-ryzen-ai-9-cpu-nvidia-rtx-4050-gpu-gaming-laptop-pakistan.html",
     "name": "Asus TUF A14 FA401WU-RG047W Gaming Laptop - AMD Ryzen AI 9 HX370 Processor 32GB 1TB SSD 6GB Nvidia RTX4050 GDDR5 GC 14.0\" 2k WQXGA 165Hz G-Sync Display RGB Backlit KB W11 (Grey, 2 Year Asus Direct Local Warranty)",
-    "price": "Rs. 506,999.00",
+    "price": 506999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/f/a/fa401wu.png",
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/9/f/9f96c0c6cf0ca39e89af1795388e8e5a.jpg"
     ],
     "specifications": {
       "Brand": "Asus",
@@ -4473,10 +4376,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-t16-gen-4-intel-core-ultra-7-2025-laptop-price-pakistan.html",
     "name": "Lenovo ThinkPad T16 Gen 4 - Intel Core Ultra 7 255U Processor 16-GB 1-TB SSD Integrated Intel Graphics 16\" WUXGA 1200p IPS 400nits AG Display Dolby Audio BKB FPR TPM (Black, 3 Years Direct Local Warranty, NEW)",
-    "price": "Rs. 515,000.00",
+    "price": 515000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_t16_gen_4_-_intel_core_ultra_7_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -4528,10 +4429,8 @@
   {
     "url": "https://www.paklap.pk/dell-xps-16-9640-core-ultra-7-rtx-4050-gpu-laptop-price-pakistan.html",
     "name": "Dell XPS 16 9640 - Meteor Lake - Intel Core Ultra 7 155H Processor 16-GB 1-TB SSD 6-GB NVIDIA GeForce RTX 4050 GC 16.3\" 2K 1200p Infinity Edge WVA Display Dolby Atmos BKB FPR W11 (PLATINUM, NEW)",
-    "price": "Rs. 569,999.00",
+    "price": 569999.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/d/e/dell_xps_16_9640_core_ultra_7_laptop_price_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -4583,10 +4482,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-legion-pro-5-16-intel-core-ultra-7-nvidia-rtx-5060-gaming-laptop-pakistan.html",
     "name": "Lenovo Legion Pro 5 16 - Arrow Lake - Intel Core Ultra 7 255HX 20-Core Processor 32-GB 1-TB SSD 8-GB NVIDIA GeForce RTX5060 GDDR7 GC 16\" WQXGA 1600p OLED 165Hz G-Sync Display Nahimic Audio 24-Zone RGB BKB (Eclipse Black, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 625,000.00",
+    "price": 625000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_legion_pro_5_intel_core_ultra_7_gaming_laptop_pakistan_15__1.jpg"
     ],
     "specifications": {
@@ -4638,10 +4535,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-legion-pro-5-core-ultra-9-rtx-5070-gpu-gaming-laptop-2025-pakistan.html",
     "name": "Lenovo Legion Pro 5 - Arrow Lake - Intel Core Ultra 9 275HX 24Core Processor 32-GB 1-TB SSD 8-GB NVIDIA GeForce RTX5070 GDDR7 GC 16\" WQXGA 1600p OLED IPS 165Hz G-Sync Display Nahimic Audio 24-Zone RGB BKB (Eclipse Black, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 680,000.00",
+    "price": 680000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_legion_5_16_intel_core_ultra_9_laptop_pakistan_1_.jpg"
     ],
     "specifications": {
@@ -4693,10 +4588,9 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-x1-carbon-gen-13-aura-edition-intel-core-ultra-7-laptop-price-pakistan.html",
     "name": "Lenovo ThinkPad X1 Carbon Gen 13 Aura Edition - Intel Core Ultra 7 258V Processor 32-GB 1-TB SSD Intel Arc 140V Graphics 14\" 2.8K 1800p OLED 500nit AG Display Dolby Atmos Backlit KB FPR TPM W11 (Black, 3 Years Direct Local Warranty, NEW)",
-    "price": "Rs. 760,000.00",
+    "price": 760000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/t/h/thinkpad_x1_carbon_gen_13_aura_edition_1_.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -4747,10 +4641,9 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-x1-carbon-gen-13-aura-edition-intel-core-ultra-7-laptop-pakistan.html",
     "name": "Lenovo ThinkPad X1 Carbon Gen 13 Aura Edition - Intel Core Ultra 7 258V Processor 32-GB 1-TB SSD Intel Arc 140V Graphics 14\" WUXGA 1200p IPS Touchscreen AG Display Dolby Atmos BKB TPM FPR W11 (Black, 3 Years Direct Local Warranty, NEW)",
-    "price": "Rs. 760,000.00",
+    "price": 760000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg"
+      "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/t/h/thinkpad_x1_carbon_gen_13_aura_edition_1_.jpg"
     ],
     "specifications": {
       "Brand": "Lenovo",
@@ -4801,10 +4694,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-p1-gen-7-intel-core-ultra-9-rtx-4070-gpu-professional-laptop-pakistan.html",
     "name": "Lenovo ThinkPad P1 Gen 7 - Intel Core Ultra 9 185H vPro Processor 64-GB 4-TB SSD 8-GB NVIDIA GeForce RTX 4070 GDDR6 GC 16ʺ WQUXGA 2400p Touchscreen Display Dolby Audio BKB FPR TPM (Black, 3 Years Direct Local Warranty, NEW)",
-    "price": "Rs. 975,000.00",
+    "price": 975000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_p1_gen_7_-_intel_core_ultra_9_rtx_4070_gaming_laptop_pakistan_1__1_1.jpg"
     ],
     "specifications": {
@@ -4856,10 +4747,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-thinkpad-p1-gen-7-intel-core-ultra-9-rtx-4070-gpu-laptop-pakistan.html",
     "name": "Lenovo ThinkPad P1 Gen 7 - Intel Core Ultra 9 185H vPro Processor 64-GB 4-TB SSD 8-GB NVIDIA GeForce RTX 4070 GDDR6 GC 16ʺ WQUXGA 2400p Touchscreen Display Dolby Audio BKB FPR TPM (Black, 3 Years Direct Local Warranty, NEW)",
-    "price": "Rs. 975,000.00",
+    "price": 975000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_thinkpad_p1_gen_7_-_intel_core_ultra_9_rtx_4070_gaming_laptop_pakistan_7_.jpg"
     ],
     "specifications": {
@@ -4911,10 +4800,8 @@
   {
     "url": "https://www.paklap.pk/lenovo-legion-pro-7-core-ultra-9-rtx-5090-gpu-2025-gaming-laptop-pakistan.html",
     "name": "Lenovo Legion Pro 7 - Arrow Lake - Intel Core Ultra 9 275HX Processor 64-GB 2-TB SSD 24-GB NVIDIA GeForce RTX5090 GDDR7 GC 16\" WQXGA 1600p OLED 240Hz G-Sync Display Nahimic Audio Per-key RGB BKB (Eclipse Black, Lenovo Direct Local Warranty, NEW)",
-    "price": "Rs. 1,435,000.00",
+    "price": 1435000.0,
     "images": [
-      "https://www.paklap.pk/media/catalog/category/laptop-price-in-pakistan.jpg",
-      "https://www.paklap.pk/media/catalog/category/used-laptop-price-in-pakistan.jpg",
       "https://www.paklap.pk/media/catalog/product/cache/2cc443e44e97595ea39006016c876eaa/l/e/lenovo_legion_pro_7_laptop_pakistan_5__2.jpg"
     ],
     "specifications": {
