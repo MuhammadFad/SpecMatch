@@ -9,5 +9,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "module",
+  "dependencies": {
+    "@langchain/cerebras": "^1.0.1",
+    "@langchain/core": "^1.1.5",
+    "dotenv": "^17.2.3",
+    "langchain": "^1.2.0"
+  }
 }
