@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import Laptop from './models/Laptop.js'; // Your Data Model
+import Laptop from '../models/Laptop.js'; // Your Data Model
 import { transformParentToChildren } from './migration.js'; // Your Logic
+
+//Usage: Move migration_script.js and migration.js to backend/, then run the former
 
 dotenv.config();
 
