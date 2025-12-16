@@ -14,7 +14,7 @@
  * 
  * AVAILABLE ENDPOINTS:
  * 
- * | Method | Endpoint              | Description                              |
+ * | Method | Endpoint             | Description                              |
  * |--------|----------------------|------------------------------------------|
  * | GET    | /search              | Search laptops with filters              |
  * | GET    | /rank                | Get top-ranked laptops by criteria       |
@@ -97,7 +97,7 @@ router.get('/search', laptopController.searchLaptops);
  *   data: [...]
  * }
  */
-router.get('/rank', laptopController.getRankedLaptops);
+router.get('/rank', laptopController.getRaPnkedLaptops);
 
 
 // =============================================================================
