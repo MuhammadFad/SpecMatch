@@ -115,13 +115,19 @@
             <!-- Games Tab -->
             <div class="tab-content" id="gamesContent">
                 <div class="section-header">
-                    <h2><i class="fas fa-gamepad"></i> Search Games</h2>
+                    <h2><i class="fas fa-gamepad"></i> Popular Games</h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="popular">Popular</button>
+                        <button class="filter-btn" data-filter="action">Action</button>
+                        <button class="filter-btn" data-filter="rpg">RPG</button>
+                        <button class="filter-btn" data-filter="fps">FPS</button>
+                    </div>
                 </div>
                 <div class="items-grid" id="gamesGrid">
                     <!-- Games will be loaded here -->
-                    <div class="games-placeholder">
-                        <i class="fas fa-search"></i>
-                        <p>Search for a game to check compatibility</p>
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Loading games...</span>
                     </div>
                 </div>
             </div>
@@ -342,6 +348,8 @@
                 // Load content
                 if (tabName === 'laptops') {
                     loadLaptops();
+                } else if (tabName === 'games') {
+                    loadGames();
                 }
             });
         });
@@ -411,6 +419,58 @@
             loadLaptops(query);
         }
 
+        // Load games from Games collection
+        async function loadGames(query = '') {
+            const grid = document.getElementById('gamesGrid');
+            grid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><span>Loading games...</span></div>';
+            
+            try {
+                const url = query 
+                    ? `http://localhost:3000/api/games/search?q=${encodeURIComponent(query)}`
+                    : `http://localhost:3000/api/games/search?limit=20`;
+                    
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (data.data && data.data.length > 0) {
+                    displayGamesFromDB(data.data);
+                } else {
+                    grid.innerHTML = '<div class="no-results"><i class="fas fa-gamepad"></i><p>No games found. Try searching!</p></div>';
+                }
+            } catch (err) {
+                console.error("Error loading games:", err);
+                grid.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i><p>Failed to load games</p></div>';
+            }
+        }
+
+        function displayGamesFromDB(games) {
+            const grid = document.getElementById('gamesGrid');
+            grid.innerHTML = games.map(game => `
+                <div class="item-card game-card">
+                    <div class="card-image">
+                        <img src="${game.image || `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steam_app_id}/header.jpg`}" 
+                             alt="${game.name}"
+                             onerror="this.src='https://via.placeholder.com/300x140?text=Game'">
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">${game.name}</h3>
+                        <div class="game-req">
+                            <span><i class="fas fa-memory"></i> ${game.requirements?.minimum?.ram_gb || '?'} GB RAM</span>
+                            <span><i class="fas fa-hdd"></i> ${game.requirements?.minimum?.storage_gb || '?'} GB</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-check" onclick="checkCompatibilityDB('${game._id}', '${game.name.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-desktop"></i> Can I Run It?
+                            </button>
+                            <button class="btn-best" onclick="findBestLaptopsDB('${game._id}', '${game.name.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-laptop"></i> Best Laptops
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         // Search games
         async function searchGames(query) {
             if (!query || query.length < 2) {
@@ -465,7 +525,18 @@
             `).join('');
         }
 
-        // Game compatibility check
+        // Game compatibility check (from DB)
+        function checkCompatibilityDB(gameId, gameName) {
+            localStorage.setItem('checkGame', JSON.stringify({ gameId, name: gameName, fromDB: true }));
+            window.location.href = 'compatibility.html';
+        }
+
+        function findBestLaptopsDB(gameId, gameName) {
+            localStorage.setItem('checkGame', JSON.stringify({ gameId, name: gameName, fromDB: true }));
+            window.location.href = 'best-laptops.html';
+        }
+
+        // Game compatibility check (from Steam lookup)
         function checkCompatibility(appid, gameName) {
             // Store game info and redirect to compatibility page
             localStorage.setItem('checkGame', JSON.stringify({ appid, name: gameName }));
@@ -546,7 +617,9 @@
         window.toggleChatbot = toggleChatbot;
         window.sendMessage = sendMessage;
         window.checkCompatibility = checkCompatibility;
+        window.checkCompatibilityDB = checkCompatibilityDB;
         window.findBestLaptops = findBestLaptops;
+        window.findBestLaptopsDB = findBestLaptopsDB;
         window.viewLaptop = viewLaptop;
 
         // Load laptops on page load
