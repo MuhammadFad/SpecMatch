@@ -21,7 +21,7 @@
  */
 
 import express from 'express';
-import * as chatBotController from './controllers/chatBotController.js';
+import * as chatBotController from '../controllers/chatbotController.js';
 
 const router = express.Router();
 
