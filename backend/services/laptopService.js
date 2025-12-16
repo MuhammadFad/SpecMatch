@@ -269,42 +269,97 @@ export const getTopRanked = async (criteria, limit = 10) => {
 
     switch (criteria) {
         case 'gaming':
-            // Best GPUs for gaming
+            // Improved gaming score:
+            // - GPU weighted most (60%)
+            // - CPU matters for CPU-bound titles (25%)
+            // - RAM & display refresh provide small boosts (10% + 5%)
+            // - Small VRAM bonus for larger VRAM
             pipeline = [
                 { $match: { 'gpu.score': { $exists: true, $gt: 0 } } },
-                { $sort: { 'gpu.score': -1 } },
+                {
+                    $addFields: {
+                        _gpu: { $ifNull: ['$gpu.score', 0] },
+                        _cpu: { $ifNull: ['$cpu.score', 0] },
+                        _ram: { $ifNull: ['$ram.score', 0] },
+                        _display_refresh: { $ifNull: [{ $arrayElemAt: ['$displays.refresh_rate_hz', 0] }, 60] },
+                        _vram_gb: { $ifNull: ['$gpu.vram_gb', 0] }
+                    }
+                },
+                {
+                    $addFields: {
+                        gamingScore: {
+                            $round: [{
+                                $add: [
+                                    { $multiply: ['$_gpu', 0.60] },
+                                    { $multiply: ['$_cpu', 0.25] },
+                                    { $multiply: ['$_ram', 0.10] },
+                                    { $multiply: [{ $min: [120, '$_display_refresh'] }, 0.05] },
+                                    // vram bonus: +2 points per doubling above 4GB
+                                    { $multiply: [{ $log10: { $add: ['$_vram_gb', 1] } }, 4] }
+                                ]
+                            }, 2]
+                        }
+                    }
+                },
+                { $sort: { gamingScore: -1 } },
                 { $limit: limit }
             ];
             break;
 
         case 'performance':
-            // Combined CPU + GPU power
+            // Improved performance score:
+            // - CPU dominates (multi-core + single-core approximated via score)
+            // - GPU contributes (20%) for mixed workloads
+            // - RAM matters marginally
             pipeline = [
                 {
                     $addFields: {
-                        combinedScore: { $add: ['$cpu.score', '$gpu.score'] }
+                        _cpu: { $ifNull: ['$cpu.score', 0] },
+                        _gpu: { $ifNull: ['$gpu.score', 0] },
+                        _ram: { $ifNull: ['$ram.score', 0] },
+                        _cores: { $ifNull: ['$cpu.cores', 4] }
                     }
                 },
-                { $sort: { combinedScore: -1 } },
+                {
+                    $addFields: {
+                        performanceScore: {
+                            $round: [{
+                                $add: [
+                                    { $multiply: ['$_cpu', 0.65] },
+                                    { $multiply: ['$_gpu', 0.20] },
+                                    { $multiply: ['$_ram', 0.10] },
+                                    // small cores bonus
+                                    { $multiply: [{ $max: [0, { $subtract: ['$_cores', 4] }] }, 0.5] }
+                                ]
+                            }, 2]
+                        }
+                    }
+                },
+                { $sort: { performanceScore: -1 } },
                 { $limit: limit }
             ];
             break;
 
         case 'value':
-            // Best bang for buck (score per dollar)
+            // Improved value formula:
+            // - Use performance per dollar but smooth price impact with log to avoid tiny prices dominating
             pipeline = [
+                { $match: { 'pricing.estimated_price_usd': { $gt: 0 } } },
                 {
-                    $match: {
-                        'pricing.estimated_price_usd': { $gt: 0 }
+                    $addFields: {
+                        perf: { $add: [{ $ifNull: ['$cpu.score', 0] }, { $ifNull: ['$gpu.score', 0] }] },
+                        price: '$pricing.estimated_price_usd'
                     }
                 },
                 {
                     $addFields: {
                         valueScore: {
-                            $divide: [
-                                { $add: ['$cpu.score', '$gpu.score'] },
-                                '$pricing.estimated_price_usd'
-                            ]
+                            $round: [{
+                                $multiply: [
+                                    { $divide: ['$perf', { $add: [{ $ln: { $add: ['$price', 10] } }, 1] }] },
+                                    10
+                                ]
+                            }, 4]
                         }
                     }
                 },
@@ -314,24 +369,61 @@ export const getTopRanked = async (criteria, limit = 10) => {
             break;
 
         case 'portable':
-            // Lightest laptops
+            // Improved portability score:
+            // - Combine light weight, good battery, and decent CPU efficiency
             pipeline = [
                 { $match: { 'chassis.weight_kg': { $gt: 0 } } },
-                { $sort: { 'chassis.weight_kg': 1 } },
+                {
+                    $addFields: {
+                        _weight: { $ifNull: ['$chassis.weight_kg', 3] },
+                        _battery: { $ifNull: ['$battery.score', 50] },
+                        _cpu: { $ifNull: ['$cpu.score', 50] }
+                    }
+                },
+                {
+                    $addFields: {
+                        portableScore: {
+                            $round: [{
+                                $add: [
+                                    { $multiply: [{ $subtract: [100, { $multiply: ['$_weight', 10] }] }, 0.45] },
+                                    { $multiply: ['$_battery', 0.35] },
+                                    { $multiply: ['$_cpu', 0.20] }
+                                ]
+                            }, 2]
+                        }
+                    }
+                },
+                { $sort: { portableScore: -1 } },
                 { $limit: limit }
             ];
             break;
 
         case 'budget':
-            // Best performance under $800
+            // Budget: prefer balanced performance, RAM, and SSD presence under price cap
             pipeline = [
                 { $match: { 'pricing.estimated_price_usd': { $lte: 800 } } },
                 {
                     $addFields: {
-                        combinedScore: { $add: ['$cpu.score', '$gpu.score'] }
+                        _cpu: { $ifNull: ['$cpu.score', 0] },
+                        _gpu: { $ifNull: ['$gpu.score', 0] },
+                        _ram: { $ifNull: ['$ram.score', 0] },
+                        _has_ssd: { $cond: [{ $regexMatch: { input: { $ifNull: ['$storage.type', 'ssd'] }, regex: /ssd/i } }, 1, 0] }
                     }
                 },
-                { $sort: { combinedScore: -1 } },
+                {
+                    $addFields: {
+                        budgetScore: {
+                            $round: [{
+                                $add: [
+                                    { $multiply: [{ $add: ['$_cpu', '$_gpu'] }, 0.5] },
+                                    { $multiply: ['$_ram', 0.3] },
+                                    { $multiply: ['$_has_ssd', 10] }
+                                ]
+                            }, 2]
+                        }
+                    }
+                },
+                { $sort: { budgetScore: -1 } },
                 { $limit: limit }
             ];
             break;

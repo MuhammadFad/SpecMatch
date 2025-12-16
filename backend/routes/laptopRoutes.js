@@ -97,7 +97,7 @@ router.get('/search', laptopController.searchLaptops);
  *   data: [...]
  * }
  */
-router.get('/rank', laptopController.getRaPnkedLaptops);
+router.get('/rank', laptopController.getRankedLaptops);
 
 
 // =============================================================================
