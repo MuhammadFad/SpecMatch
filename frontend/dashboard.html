@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpecMatch - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-laptop"></i>
+            <span>SpecMatch</span>
+        </div>
+        
+        <div class="nav-center">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="laptops">
+                    <i class="fas fa-laptop"></i>
+                    <span>Laptops</span>
+                </button>
+                <button class="nav-tab" data-tab="games">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Games</span>
+                </button>
+            </div>
+            
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search laptops...">
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName">User</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- User's Laptop Card -->
+        <div class="user-laptop-card">
+            <div class="card-header">
+                <h3><i class="fas fa-laptop-code"></i> Your Current Laptop</h3>
+                <button class="btn-edit" onclick="openEditModal()">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+            </div>
+            <div class="laptop-specs" id="userLaptopSpecs">
+                <div class="spec-item">
+                    <i class="fas fa-building"></i>
+                    <span class="spec-label">Brand</span>
+                    <span class="spec-value" id="specCompany">-</span>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-microchip"></i>
+                    <span class="spec-label">Processor</span>
+                    <span class="spec-value" id="specCore">-</span>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-bolt"></i>
+                    <span class="spec-label">Generation</span>
+                    <span class="spec-value" id="specGeneration">-</span>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-memory"></i>
+                    <span class="spec-label">RAM</span>
+                    <span class="spec-value" id="specRam">-</span>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-hdd"></i>
+                    <span class="spec-label">Storage</span>
+                    <span class="spec-value" id="specSsd">-</span>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-tv"></i>
+                    <span class="spec-label">GPU</span>
+                    <span class="spec-value" id="specGpu">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Tabs -->
+        <div class="content-section">
+            <!-- Laptops Tab (Default Active) -->
+            <div class="tab-content active" id="laptopsContent">
+                <div class="section-header">
+                    <h2><i class="fas fa-laptop"></i> Available Laptops</h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="gaming">Gaming</button>
+                        <button class="filter-btn" data-filter="business">Business</button>
+                        <button class="filter-btn" data-filter="budget">Budget</button>
+                    </div>
+                </div>
+                <div class="items-grid" id="laptopsGrid">
+                    <!-- Laptops will be loaded here -->
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Loading laptops...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Tab -->
+            <div class="tab-content" id="gamesContent">
+                <div class="section-header">
+                    <h2><i class="fas fa-gamepad"></i> Search Games</h2>
+                </div>
+                <div class="items-grid" id="gamesGrid">
+                    <!-- Games will be loaded here -->
+                    <div class="games-placeholder">
+                        <i class="fas fa-search"></i>
+                        <p>Search for a game to check compatibility</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- AI Chatbot Floating Button -->
+    <button class="chatbot-btn" onclick="toggleChatbot()">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- AI Chatbot Panel -->
+    <div class="chatbot-panel" id="chatbotPanel">
+        <div class="chatbot-header">
+            <div class="chatbot-title">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <button class="chatbot-close" onclick="toggleChatbot()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="chat-message bot">
+                <div class="message-content">
+                    👋 Hi! I'm your SpecMatch AI assistant. Ask me about laptop recommendations or game compatibility!
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatInput" placeholder="Ask me anything...">
+            <button onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Edit Laptop Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Your Laptop Specs</h3>
+                <button class="modal-close" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editLaptopForm">
+                <div class="modal-grid">
+                    <div class="input-group">
+                        <label for="editCompany">Brand</label>
+                        <select id="editCompany" required>
+                            <option value="">Select Brand</option>
+                            <option value="Dell">Dell</option>
+                            <option value="HP">HP</option>
+                            <option value="Lenovo">Lenovo</option>
+                            <option value="ASUS">ASUS</option>
+                            <option value="Acer">Acer</option>
+                            <option value="MSI">MSI</option>
+                            <option value="Apple">Apple</option>
+                            <option value="Razer">Razer</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="editGeneration">Generation</label>
+                        <select id="editGeneration" required>
+                            <option value="">Select Generation</option>
+                            <option value="14th Gen">14th Gen (Intel)</option>
+                            <option value="13th Gen">13th Gen (Intel)</option>
+                            <option value="12th Gen">12th Gen (Intel)</option>
+                            <option value="11th Gen">11th Gen (Intel)</option>
+                            <option value="Ryzen 7000">Ryzen 7000</option>
+                            <option value="Ryzen 6000">Ryzen 6000</option>
+                            <option value="Ryzen 5000">Ryzen 5000</option>
+                            <option value="Apple M3">Apple M3</option>
+                            <option value="Apple M2">Apple M2</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="editCore">Processor</label>
+                        <select id="editCore" required>
+                            <option value="">Select Processor</option>
+                            <option value="Intel Core i9">Intel Core i9</option>
+                            <option value="Intel Core i7">Intel Core i7</option>
+                            <option value="Intel Core i5">Intel Core i5</option>
+                            <option value="Intel Core i3">Intel Core i3</option>
+                            <option value="AMD Ryzen 9">AMD Ryzen 9</option>
+                            <option value="AMD Ryzen 7">AMD Ryzen 7</option>
+                            <option value="AMD Ryzen 5">AMD Ryzen 5</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="editRam">RAM</label>
+                        <select id="editRam" required>
+                            <option value="">Select RAM</option>
+                            <option value="8GB">8 GB</option>
+                            <option value="16GB">16 GB</option>
+                            <option value="32GB">32 GB</option>
+                            <option value="64GB">64 GB</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="editSsd">Storage</label>
+                        <select id="editSsd" required>
+                            <option value="">Select Storage</option>
+                            <option value="256GB">256 GB</option>
+                            <option value="512GB">512 GB</option>
+                            <option value="1TB">1 TB</option>
+                            <option value="2TB">2 TB</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="editGpu">Graphics Card</label>
+                        <select id="editGpu">
+                            <option value="Integrated">Integrated</option>
+                            <option value="NVIDIA RTX 4090">NVIDIA RTX 4090</option>
+                            <option value="NVIDIA RTX 4080">NVIDIA RTX 4080</option>
+                            <option value="NVIDIA RTX 4070">NVIDIA RTX 4070</option>
+                            <option value="NVIDIA RTX 4060">NVIDIA RTX 4060</option>
+                            <option value="NVIDIA RTX 3080">NVIDIA RTX 3080</option>
+                            <option value="NVIDIA RTX 3070">NVIDIA RTX 3070</option>
+                            <option value="NVIDIA RTX 3060">NVIDIA RTX 3060</option>
+                            <option value="AMD RX 7900">AMD RX 7900</option>
+                            <option value="AMD RX 7800">AMD RX 7800</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCywnIfR3dhZAWLT-1Nn6iz_6BCBgipLqE",
+            authDomain: "specmatch-auth.firebaseapp.com",
+            projectId: "specmatch-auth",
+            storageBucket: "specmatch-auth.firebasestorage.app",
+            messagingSenderId: "170230638392",
+            appId: "1:170230638392:web:b321a6925f740afd16c3cd"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Check auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById("userName").textContent = user.displayName || user.email.split('@')[0];
+                loadUserData(user.uid);
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Logout
+        window.logout = () => {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            });
+        };
+
+        // Load user data from MongoDB
+        async function loadUserData(uid) {
+            try {
+                const res = await fetch(`http://localhost:5000/get-user/${uid}`);
+                const data = await res.json();
+                if (data.success && data.user) {
+                    displayUserSpecs(data.user.currentLaptop);
+                }
+            } catch (err) {
+                console.error("Error loading user:", err);
+            }
+        }
+
+        window.loadUserData = loadUserData;
+
+        // Display user laptop specs
+        function displayUserSpecs(laptop) {
+            if (!laptop) return;
+            document.getElementById("specCompany").textContent = laptop.company || "-";
+            document.getElementById("specCore").textContent = laptop.core || "-";
+            document.getElementById("specGeneration").textContent = laptop.generation || "-";
+            document.getElementById("specRam").textContent = laptop.ram || "-";
+            document.getElementById("specSsd").textContent = laptop.ssd || "-";
+            document.getElementById("specGpu").textContent = laptop.graphicsCard || "-";
+        }
+
+        window.displayUserSpecs = displayUserSpecs;
+    </script>
+
+    <script>
+        // Tab switching
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const searchInput = document.getElementById('searchInput');
+
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                // Update active tab
+                navTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update content
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(`${tabName}Content`).classList.add('active');
+                
+                // Update search placeholder
+                searchInput.placeholder = `Search ${tabName}...`;
+                
+                // Load content
+                if (tabName === 'laptops') {
+                    loadLaptops();
+                }
+            });
+        });
+
+        // Search functionality
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = e.target.value;
+                const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+                
+                if (activeTab === 'laptops') {
+                    searchLaptops(query);
+                } else {
+                    searchGames(query);
+                }
+            }, 300);
+        });
+
+        // Load laptops
+        async function loadLaptops(query = '') {
+            const grid = document.getElementById('laptopsGrid');
+            grid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><span>Loading...</span></div>';
+            
+            try {
+                const url = query 
+                    ? `http://localhost:3000/api/laptops/search?q=${encodeURIComponent(query)}`
+                    : `http://localhost:3000/api/laptops/search`;
+                    
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (data.laptops && data.laptops.length > 0) {
+                    displayLaptops(data.laptops);
+                } else {
+                    grid.innerHTML = '<div class="no-results"><i class="fas fa-laptop"></i><p>No laptops found</p></div>';
+                }
+            } catch (err) {
+                console.error("Error loading laptops:", err);
+                grid.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i><p>Failed to load laptops</p></div>';
+            }
+        }
+
+        function displayLaptops(laptops) {
+            const grid = document.getElementById('laptopsGrid');
+            grid.innerHTML = laptops.map(laptop => `
+                <div class="item-card laptop-card">
+                    <div class="card-image">
+                        <img src="${laptop.image || 'https://via.placeholder.com/300x200?text=Laptop'}" alt="${laptop.name}">
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">${laptop.name || laptop.brand + ' Laptop'}</h3>
+                        <div class="card-specs">
+                            <span><i class="fas fa-microchip"></i> ${laptop.cpu?.name || 'N/A'}</span>
+                            <span><i class="fas fa-tv"></i> ${laptop.gpu?.name || 'Integrated'}</span>
+                            <span><i class="fas fa-memory"></i> ${laptop.ram?.size_gb || 'N/A'} GB</span>
+                        </div>
+                        <div class="card-price">$${laptop.price || 'N/A'}</div>
+                        <button class="btn-view" onclick="viewLaptop('${laptop._id}')">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchLaptops(query) {
+            loadLaptops(query);
+        }
+
+        // Search games
+        async function searchGames(query) {
+            if (!query || query.length < 2) {
+                document.getElementById('gamesGrid').innerHTML = `
+                    <div class="games-placeholder">
+                        <i class="fas fa-search"></i>
+                        <p>Search for a game to check compatibility</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const grid = document.getElementById('gamesGrid');
+            grid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><span>Searching...</span></div>';
+            
+            try {
+                const res = await fetch(`http://localhost:3000/api/games/lookup?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                
+                if (data.results && data.results.length > 0) {
+                    displayGames(data.results);
+                } else {
+                    grid.innerHTML = '<div class="no-results"><i class="fas fa-gamepad"></i><p>No games found</p></div>';
+                }
+            } catch (err) {
+                console.error("Error searching games:", err);
+                grid.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i><p>Failed to search games</p></div>';
+            }
+        }
+
+        function displayGames(games) {
+            const grid = document.getElementById('gamesGrid');
+            grid.innerHTML = games.map(game => `
+                <div class="item-card game-card">
+                    <div class="card-image">
+                        <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/header.jpg" 
+                             alt="${game.name}"
+                             onerror="this.src='https://via.placeholder.com/300x140?text=Game'">
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">${game.name}</h3>
+                        <div class="card-actions">
+                            <button class="btn-check" onclick="checkCompatibility(${game.appid}, '${game.name.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-desktop"></i> Can I Run It?
+                            </button>
+                            <button class="btn-best" onclick="findBestLaptops(${game.appid}, '${game.name.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-laptop"></i> Best Laptops
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Game compatibility check
+        function checkCompatibility(appid, gameName) {
+            // Store game info and redirect to compatibility page
+            localStorage.setItem('checkGame', JSON.stringify({ appid, name: gameName }));
+            window.location.href = 'compatibility.html';
+        }
+
+        function findBestLaptops(appid, gameName) {
+            localStorage.setItem('checkGame', JSON.stringify({ appid, name: gameName }));
+            window.location.href = 'best-laptops.html';
+        }
+
+        function viewLaptop(laptopId) {
+            window.location.href = `laptop-details.html?id=${laptopId}`;
+        }
+
+        // Chatbot
+        function toggleChatbot() {
+            const panel = document.getElementById('chatbotPanel');
+            panel.classList.toggle('open');
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const messagesDiv = document.getElementById('chatMessages');
+            
+            // Add user message
+            messagesDiv.innerHTML += `
+                <div class="chat-message user">
+                    <div class="message-content">${message}</div>
+                </div>
+            `;
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // Send to chatbot API
+            try {
+                const res = await fetch('http://localhost:3000/api/chatbot/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await res.json();
+                
+                messagesDiv.innerHTML += `
+                    <div class="chat-message bot">
+                        <div class="message-content">${data.response || 'Sorry, I could not understand that.'}</div>
+                    </div>
+                `;
+            } catch (err) {
+                messagesDiv.innerHTML += `
+                    <div class="chat-message bot">
+                        <div class="message-content">Sorry, I'm having trouble connecting. Please try again.</div>
+                    </div>
+                `;
+            }
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Enter key for chat
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Edit Modal
+        function openEditModal() {
+            document.getElementById('editModal').classList.add('open');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('open');
+        }
+
+        window.openEditModal = openEditModal;
+        window.closeEditModal = closeEditModal;
+        window.toggleChatbot = toggleChatbot;
+        window.sendMessage = sendMessage;
+        window.checkCompatibility = checkCompatibility;
+        window.findBestLaptops = findBestLaptops;
+        window.viewLaptop = viewLaptop;
+
+        // Load laptops on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLaptops();
+        });
+    </script>
+</body>
+</html>
