@@ -12,6 +12,58 @@ const STEAM_KEY = process.env.STEAM_API_KEY;
 const MONGO_URI = process.env.MONGODB_URI;
 const GAMES_TO_FETCH = 30; // Number of games to fetch detailed info for
 
+/**
+ * Parse HTML description from Steam into clean text
+ * @param {string} html - Raw HTML from Steam API
+ * @param {number} maxLength - Maximum characters to return (default 500)
+ * @returns {string} Clean text description
+ */
+function parseDescription(html, maxLength = 500) {
+    if (!html) return '';
+
+    let text = html
+        // Remove video/image containers entirely
+        .replace(/<span class="bb_img_ctn">.*?<\/span>/gs, '')
+        .replace(/<video[^>]*>.*?<\/video>/gs, '')
+        .replace(/<img[^>]*>/gi, '')
+        // Remove DLC/Edition sections (everything before "About the Game")
+        .replace(/^.*?<h1>About the Game<\/h1>/is, '')
+        // Convert headers to text with newlines
+        .replace(/<h[12][^>]*>(.*?)<\/h[12]>/gi, '\n$1\n')
+        .replace(/<h2 class="bb_tag"[^>]*>(.*?)<\/h2>/gi, '\n$1\n')
+        // Convert list items
+        .replace(/<li[^>]*>(.*?)<\/li>/gi, '• $1\n')
+        // Convert breaks and paragraphs to newlines
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n')
+        .replace(/<p[^>]*>/gi, '')
+        // Remove all remaining HTML tags
+        .replace(/<[^>]+>/g, '')
+        // Decode HTML entities
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, ' ')
+        // Clean up whitespace
+        .replace(/\n{3,}/g, '\n\n')
+        .replace(/[ \t]+/g, ' ')
+        .trim();
+
+    // Truncate to maxLength at word boundary
+    if (text.length > maxLength) {
+        text = text.substring(0, maxLength);
+        const lastSpace = text.lastIndexOf(' ');
+        if (lastSpace > maxLength * 0.8) {
+            text = text.substring(0, lastSpace);
+        }
+        text += '...';
+    }
+
+    return text;
+}
+
 // Helper function to parse system requirements
 function parseRequirements(requirementsText) {
     if (!requirementsText) return null;
@@ -82,9 +134,16 @@ async function fetchGameDetails(appId) {
             return null;
         }
 
+        // Build description: prefer short_description, fallback to parsed about_the_game
+        let description = data.short_description || '';
+        if (!description && data.about_the_game) {
+            description = parseDescription(data.about_the_game, 500);
+        }
+
         const gameData = {
             steam_app_id: data.steam_appid,
             name: data.name,
+            description: description,
             image: data.header_image || '',
             requirements: {
                 minimum: {},

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const gameSchema = new mongoose.Schema({
     steam_app_id: { type: Number, unique: true, index: true },
     name: { type: String, index: true },
+    description: String, // Short description from Steam
     image: String, // Header image URL
 
     // We map these DIRECTLY to Laptop Schema fields

@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import laptopRoutes from './routes/laptopRoutes.js';
 import gameRoutes from './routes/gameRoutes.js';
 import compatibilityRoutes from './routes/compatibilityRoutes.js';
+import chatbotRoutes from './routes/chatbotRoutes.js';
 
 const app = express()
 const port = process.env.PORT || 3000;
@@ -56,6 +57,15 @@ app.use('/api/games', gameRoutes);
  * - Check multiple laptops vs one game (find winners)
  */
 app.use('/api/compatibility', compatibilityRoutes);
+
+/**
+ * CHATBOT DOMAIN: /api/chat
+ * -------------------------
+ * RAG-powered laptop recommendation chatbot
+ * - Semantic search + filters
+ * - LLM-generated responses
+ */
+app.use('/api/chat', chatbotRoutes);
 
 // =============================================================================
 // HEALTH CHECK

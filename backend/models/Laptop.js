@@ -41,14 +41,14 @@ const laptopSchema = new mongoose.Schema({
     },
 
     ram: {
-        size_gb: { type: Number, index: true },
+        size_gb: { type: Number }, // index defined below
         type: { type: String },           // from 'prod' (DDR4/DDR5)
         frequency_mhz: Number,  // from 'freq'
         score: Number           // from 'rating'
     },
 
     storage: {
-        capacity_gb: { type: Number, index: true },
+        capacity_gb: { type: Number }, // index defined below
         type: { type: String },           // SSD/HDD
         read_speed_mbps: Number, // from 'readspeed'
         score: Number           // from 'rating'
