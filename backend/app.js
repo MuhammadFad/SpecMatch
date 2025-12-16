@@ -6,6 +6,7 @@ import laptopRoutes from './routes/laptopRoutes.js';
 import gameRoutes from './routes/gameRoutes.js';
 import compatibilityRoutes from './routes/compatibilityRoutes.js';
 import chatbotRoutes from './routes/chatbotRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 const app = express()
 const port = process.env.PORT || 3000;
@@ -66,6 +67,15 @@ app.use('/api/compatibility', compatibilityRoutes);
  * - LLM-generated responses
  */
 app.use('/api/chat', chatbotRoutes);
+
+/**
+ * USER DOMAIN: /api/users
+ * -----------------------
+ * User authentication sync and laptop management
+ * - Save/get user after Firebase auth
+ * - CRUD for user's personal laptops
+ */
+app.use('/api/users', userRoutes);
 
 // =============================================================================
 // HEALTH CHECK
