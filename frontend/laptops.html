@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptops - SpecMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/styles/main.css">
+    <link rel="stylesheet" href="public/styles/catalog.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="navbar-brand">
+                    <i class="fas fa-laptop"></i>
+                    <span>SpecMatch</span>
+                </a>
+                <div class="navbar-menu">
+                    <a href="index.html" class="navbar-link">Home</a>
+                    <a href="laptops.html" class="navbar-link active">Laptops</a>
+                    <a href="games.html" class="navbar-link">Games</a>
+                </div>
+                <div class="navbar-actions" id="authSection"></div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="catalog-container">
+                <!-- Sidebar Filters -->
+                <aside class="sidebar" id="filterSidebar">
+                    <div class="sidebar-header">
+                        <h3><i class="fas fa-filter"></i> Filters</h3>
+                        <button class="btn-ghost btn-sm" id="clearFilters">Clear All</button>
+                    </div>
+
+                    <!-- Ranking Mode -->
+                    <div class="filter-group">
+                        <label class="filter-label">Ranking Mode</label>
+                        <select class="form-select" id="rankBy">
+                            <option value="">Default (Relevance)</option>
+                            <option value="gaming">Best for Gaming</option>
+                            <option value="performance">High Performance</option>
+                            <option value="value">Best Value</option>
+                            <option value="portable">Most Portable</option>
+                            <option value="budget">Budget Friendly</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="filter-group">
+                        <label class="filter-label">Price Range</label>
+                        <div class="range-inputs">
+                            <input type="number" class="form-input" id="minPrice" placeholder="Min">
+                            <span>-</span>
+                            <input type="number" class="form-input" id="maxPrice" placeholder="Max">
+                        </div>
+                    </div>
+
+                    <!-- Brand -->
+                    <div class="filter-group">
+                        <label class="filter-label">Brand</label>
+                        <select class="form-select" id="brand">
+                            <option value="">All Brands</option>
+                        </select>
+                    </div>
+
+                    <!-- RAM -->
+                    <div class="filter-group">
+                        <label class="filter-label">Minimum RAM</label>
+                        <select class="form-select" id="minRam">
+                            <option value="">Any</option>
+                        </select>
+                    </div>
+
+                    <!-- Storage -->
+                    <div class="filter-group">
+                        <label class="filter-label">Minimum Storage</label>
+                        <select class="form-select" id="minStorage">
+                            <option value="">Any</option>
+                        </select>
+                    </div>
+
+                    <!-- GPU Manufacturer -->
+                    <div class="filter-group">
+                        <label class="filter-label">GPU Brand</label>
+                        <div class="checkbox-group" id="gpuBrands">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Refresh Rate -->
+                    <div class="filter-group">
+                        <label class="filter-label">Min Refresh Rate</label>
+                        <select class="form-select" id="minRefreshRate">
+                            <option value="">Any</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary w-full" id="applyFilters">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </aside>
+
+                <!-- Main Content -->
+                <div class="catalog-main">
+                    <!-- Search Bar -->
+                    <div class="search-header">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" id="searchInput" placeholder="Search laptops...">
+                        </div>
+                        <div class="search-meta" id="searchMeta">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Game Filter Banner (when filtering by game) -->
+                    <div class="game-filter-banner hidden" id="gameFilterBanner">
+                        <div class="banner-content">
+                            <i class="fas fa-gamepad"></i>
+                            <span>Showing laptops that can run: <strong id="gameFilterName"></strong></span>
+                        </div>
+                        <button class="btn-ghost btn-sm" id="clearGameFilter">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+
+                    <!-- Results Grid -->
+                    <div class="results-grid" id="resultsGrid">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading laptops...</p>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Chatbot FAB -->
+        <button class="chatbot-fab" onclick="window.location.href='index.html#chatbot'" title="AI Assistant">
+            <i class="fas fa-robot"></i>
+        </button>
+    </div>
+
+    <script type="module">
+        import { api } from './public/scripts/api.js';
+        import { formatPrice, formatStorage, getUrlParams, setUrlParams, debounce } from './public/scripts/utils.js';
+
+        // State
+        let currentPage = 1;
+        let totalPages = 1;
+        let filters = {};
+        let filterOptions = {};
+
+        // DOM Elements
+        const resultsGrid = document.getElementById('resultsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchMeta = document.getElementById('searchMeta');
+        const pagination = document.getElementById('pagination');
+
+        // Initialize from URL params
+        function initFromUrl() {
+            const params = getUrlParams();
+
+            if (params.q) {
+                searchInput.value = params.q;
+                filters.q = params.q;
+            }
+            if (params.rankBy) {
+                document.getElementById('rankBy').value = params.rankBy;
+                filters.rankBy = params.rankBy;
+            }
+            if (params.gameId) {
+                filters.gameId = params.gameId;
+                // Show game filter banner
+                showGameFilterBanner(params.gameName || 'Selected Game');
+            }
+            if (params.page) {
+                currentPage = parseInt(params.page);
+            }
+        }
+
+        // Load filter options
+        async function loadFilterOptions() {
+            try {
+                const response = await api.getFilterOptions();
+                if (response.success) {
+                    filterOptions = response.data;
+                    populateFilterDropdowns();
+                }
+            } catch (error) {
+                console.error('Error loading filter options:', error);
+            }
+        }
+
+        // Populate filter dropdowns
+        function populateFilterDropdowns() {
+            // Brands
+            const brandSelect = document.getElementById('brand');
+            filterOptions.brands?.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandSelect.appendChild(option);
+            });
+
+            // RAM sizes
+            const ramSelect = document.getElementById('minRam');
+            filterOptions.ramSizes?.forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = `${size} GB+`;
+                ramSelect.appendChild(option);
+            });
+
+            // Storage sizes
+            const storageSelect = document.getElementById('minStorage');
+            filterOptions.storageSizes?.forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = size >= 1024 ? `${size / 1024} TB+` : `${size} GB+`;
+                storageSelect.appendChild(option);
+            });
+
+            // GPU brands
+            const gpuContainer = document.getElementById('gpuBrands');
+            filterOptions.gpuManufacturers?.forEach(brand => {
+                const label = document.createElement('label');
+                label.className = 'filter-checkbox';
+                label.innerHTML = `
+                    <input type="checkbox" value="${brand}" name="gpuBrand">
+                    <span>${brand}</span>
+                `;
+                gpuContainer.appendChild(label);
+            });
+
+            // Refresh rates
+            const refreshSelect = document.getElementById('minRefreshRate');
+            filterOptions.refreshRates?.forEach(rate => {
+                const option = document.createElement('option');
+                option.value = rate;
+                option.textContent = `${rate} Hz+`;
+                refreshSelect.appendChild(option);
+            });
+        }
+
+        // Collect filters from form
+        function collectFilters() {
+            filters = {};
+
+            const q = searchInput.value.trim();
+            if (q) filters.q = q;
+
+            const rankBy = document.getElementById('rankBy').value;
+            if (rankBy) filters.rankBy = rankBy;
+
+            const minPrice = document.getElementById('minPrice').value;
+            if (minPrice) filters.minPrice = minPrice;
+
+            const maxPrice = document.getElementById('maxPrice').value;
+            if (maxPrice) filters.maxPrice = maxPrice;
+
+            const brand = document.getElementById('brand').value;
+            if (brand) filters.brand = brand;
+
+            const minRam = document.getElementById('minRam').value;
+            if (minRam) filters.minRam = minRam;
+
+            const minStorage = document.getElementById('minStorage').value;
+            if (minStorage) filters.minStorage = minStorage;
+
+            const minRefreshRate = document.getElementById('minRefreshRate').value;
+            if (minRefreshRate) filters.minRefreshRate = minRefreshRate;
+
+            // GPU brands (checkboxes)
+            const gpuChecked = document.querySelectorAll('input[name="gpuBrand"]:checked');
+            if (gpuChecked.length === 1) {
+                filters.gpuBrand = gpuChecked[0].value;
+            }
+
+            return filters;
+        }
+
+        // Search laptops
+        async function searchLaptops(page = 1) {
+            resultsGrid.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Searching...</p>
+                </div>
+            `;
+
+            try {
+                const params = {
+                    ...filters,
+                    page,
+                    limit: 20
+                };
+
+                const response = await api.searchLaptops(params);
+
+                if (response.success) {
+                    renderResults(response.data.laptops);
+                    updateMeta(response.data);
+                    updatePagination(response.data.page, response.data.totalPages);
+                    currentPage = response.data.page;
+                    totalPages = response.data.totalPages;
+
+                    // Update URL
+                    setUrlParams({ ...filters, page: currentPage > 1 ? currentPage : null });
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsGrid.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Error loading laptops. Please try again.</p>
+                        <button class="btn btn-secondary" onclick="location.reload()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render results
+        function renderResults(laptops) {
+            if (!laptops || laptops.length === 0) {
+                resultsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>No laptops found matching your criteria</p>
+                        <button class="btn btn-secondary" onclick="document.getElementById('clearFilters').click()">Clear Filters</button>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsGrid.innerHTML = laptops.map(laptop => `
+                <div class="laptop-card card" onclick="window.location.href='laptop.html?slug=${laptop.slug}'">
+                    <div class="card-image-wrapper">
+                        <img src="${laptop.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                             alt="${laptop.name}" 
+                             class="card-image"
+                             loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        ${laptop.compatibilityVerdict ? `
+                            <span class="compatibility-badge verdict-${laptop.compatibilityVerdict.toLowerCase()}">
+                                ${laptop.compatibilityVerdict}
+                            </span>
+                        ` : ''}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-subtitle">${laptop.brand}</div>
+                        <div class="card-title">${laptop.name}</div>
+                        <div class="specs">
+                            ${laptop.cpu?.name ? `<span class="spec-tag"><i class="fas fa-microchip"></i> ${truncateCpu(laptop.cpu.name)}</span>` : ''}
+                            ${laptop.gpu?.name ? `<span class="spec-tag"><i class="fas fa-tv"></i> ${truncateGpu(laptop.gpu.name)}</span>` : ''}
+                            ${laptop.ram?.size_gb ? `<span class="spec-tag"><i class="fas fa-memory"></i> ${laptop.ram.size_gb}GB</span>` : ''}
+                            ${laptop.storage?.capacity_gb ? `<span class="spec-tag"><i class="fas fa-hdd"></i> ${formatStorage(laptop.storage.capacity_gb)}</span>` : ''}
+                        </div>
+                        <div class="card-footer-inline">
+                            <div class="price">${formatPrice(laptop.pricing?.estimated_price_usd)}</div>
+                            ${laptop.chassis?.weight_kg ? `<div class="weight"><i class="fas fa-weight-hanging"></i> ${laptop.chassis.weight_kg.toFixed(1)} kg</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function truncateCpu(name) {
+            // "Intel Core i7-12700H" -> "i7-12700H"
+            return name.replace(/Intel Core |AMD Ryzen /gi, '').split(' ').slice(0, 2).join(' ');
+        }
+
+        function truncateGpu(name) {
+            // "NVIDIA GeForce RTX 4070" -> "RTX 4070"
+            return name.replace(/NVIDIA GeForce |AMD Radeon /gi, '').split(' ').slice(0, 2).join(' ');
+        }
+
+        // Update meta info
+        function updateMeta(data) {
+            const parts = [];
+            if (data.total) parts.push(`${data.total.toLocaleString()} laptops found`);
+            if (data.rankBy) parts.push(`Ranked by: ${data.rankBy}`);
+
+            searchMeta.innerHTML = parts.join(' • ');
+        }
+
+        // Update pagination
+        function updatePagination(current, total) {
+            if (total <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            // Previous button
+            html += `<button class="pagination-btn" ${current === 1 ? 'disabled' : ''} data-page="${current - 1}">
+                <i class="fas fa-chevron-left"></i>
+            </button>`;
+
+            // Page numbers
+            const maxVisible = 5;
+            let start = Math.max(1, current - Math.floor(maxVisible / 2));
+            let end = Math.min(total, start + maxVisible - 1);
+
+            if (end - start + 1 < maxVisible) {
+                start = Math.max(1, end - maxVisible + 1);
+            }
+
+            if (start > 1) {
+                html += `<button class="pagination-btn" data-page="1">1</button>`;
+                if (start > 2) html += `<span class="pagination-ellipsis">...</span>`;
+            }
+
+            for (let i = start; i <= end; i++) {
+                html += `<button class="pagination-btn ${i === current ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+
+            if (end < total) {
+                if (end < total - 1) html += `<span class="pagination-ellipsis">...</span>`;
+                html += `<button class="pagination-btn" data-page="${total}">${total}</button>`;
+            }
+
+            // Next button
+            html += `<button class="pagination-btn" ${current === total ? 'disabled' : ''} data-page="${current + 1}">
+                <i class="fas fa-chevron-right"></i>
+            </button>`;
+
+            pagination.innerHTML = html;
+
+            // Add click handlers
+            pagination.querySelectorAll('.pagination-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = parseInt(btn.dataset.page);
+                    if (page && page !== current) {
+                        searchLaptops(page);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+
+        // Show game filter banner
+        function showGameFilterBanner(gameName) {
+            const banner = document.getElementById('gameFilterBanner');
+            document.getElementById('gameFilterName').textContent = gameName;
+            banner.classList.remove('hidden');
+        }
+
+        // Event Listeners
+        document.getElementById('applyFilters').addEventListener('click', () => {
+            collectFilters();
+            searchLaptops(1);
+        });
+
+        document.getElementById('clearFilters').addEventListener('click', () => {
+            // Reset all form fields
+            searchInput.value = '';
+            document.getElementById('rankBy').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('brand').value = '';
+            document.getElementById('minRam').value = '';
+            document.getElementById('minStorage').value = '';
+            document.getElementById('minRefreshRate').value = '';
+            document.querySelectorAll('input[name="gpuBrand"]').forEach(cb => cb.checked = false);
+
+            filters = {};
+            setUrlParams({});
+            searchLaptops(1);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                collectFilters();
+                searchLaptops(1);
+            }
+        });
+
+        document.getElementById('rankBy').addEventListener('change', () => {
+            collectFilters();
+            searchLaptops(1);
+        });
+
+        document.getElementById('clearGameFilter')?.addEventListener('click', () => {
+            delete filters.gameId;
+            document.getElementById('gameFilterBanner').classList.add('hidden');
+            searchLaptops(1);
+        });
+
+        // Load auth state
+        function loadAuthState() {
+            const user = JSON.parse(localStorage.getItem('specmatch_user'));
+            const authSection = document.getElementById('authSection');
+
+            if (user) {
+                authSection.innerHTML = `
+                    <a href="profile.html" class="navbar-user">
+                        <div class="navbar-user-avatar">${user.name?.[0]?.toUpperCase() || 'U'}</div>
+                        <span>${user.name || 'User'}</span>
+                    </a>
+                `;
+            } else {
+                authSection.innerHTML = `
+                    <a href="login.html" class="btn btn-ghost">Sign In</a>
+                    <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+                `;
+            }
+        }
+
+        // Initialize
+        loadAuthState();
+        initFromUrl();
+        loadFilterOptions();
+        searchLaptops(currentPage);
+    </script>
+</body>
+
+</html>

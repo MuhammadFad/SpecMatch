@@ -28,7 +28,7 @@ import * as laptopService from '../services/laptopService.js';
  * @route GET /api/laptops/search
  * 
  * INPUT (req.query):
- *   - q: String (search text)
+ *   - q: String (search text - uses MongoDB Atlas Search with fuzzy matching)
  *   - minPrice, maxPrice: Number
  *   - brand: String
  *   - minRam, minStorage: Number
@@ -38,9 +38,13 @@ import * as laptopService from '../services/laptopService.js';
  *   - hasTouch: Boolean
  *   - page, limit: Number
  *   - sortBy, sortOrder: String
+ *   - rankBy: String ('gaming' | 'performance' | 'value' | 'portable' | 'budget')
  * 
  * OUTPUT:
- *   { success: true, data: { laptops: [], total, page, totalPages } }
+ *   { success: true, data: { laptops: [], total, page, totalPages, rankBy? } }
+ * 
+ * NOTE: This endpoint now handles both search AND ranking.
+ * The old /rank endpoint has been merged into /search via the rankBy parameter.
  */
 export const searchLaptops = async (req, res) => {
     try {
@@ -54,44 +58,6 @@ export const searchLaptops = async (req, res) => {
         });
     } catch (error) {
         console.error('❌ [LaptopController.searchLaptops] Error:', error.message);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-};
-
-
-// =============================================================================
-// GET RANKED LAPTOPS
-// =============================================================================
-/**
- * @controller getRankedLaptops
- * @route GET /api/laptops/rank
- * 
- * INPUT (req.query):
- *   - sortBy: 'gaming' | 'performance' | 'value' | 'portable' | 'budget'
- *   - limit: Number (default 10)
- * 
- * OUTPUT:
- *   { success: true, data: [...laptops] }
- */
-export const getRankedLaptops = async (req, res) => {
-    try {
-        const criteria = req.query.sortBy || 'performance';
-        const limit = parseInt(req.query.limit) || 10;
-
-        console.log(`🎮 [LaptopController.getRankedLaptops] Criteria: ${criteria}, Limit: ${limit}`);
-
-        const results = await laptopService.getTopRanked(criteria, limit);
-
-        res.json({
-            success: true,
-            count: results.length,
-            data: results
-        });
-    } catch (error) {
-        console.error('❌ [LaptopController.getRankedLaptops] Error:', error.message);
         res.status(500).json({
             success: false,
             message: error.message
@@ -250,6 +216,88 @@ export const getLaptopVariants = async (req, res) => {
         });
     } catch (error) {
         console.error('❌ [LaptopController.getLaptopVariants] Error:', error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+// =============================================================================
+// ONBOARDING DATA ENDPOINTS
+// =============================================================================
+/**
+ * @controller getOnboardingOptions
+ * @route GET /api/laptops/onboarding/options
+ * 
+ * INPUT: None
+ * 
+ * OUTPUT:
+ *   { success: true, data: { cpus: [...], gpus: [...], ramSizes: [...], storageSizes: [...] } }
+ * 
+ * PURPOSE: Get all component options for user laptop onboarding form
+ */
+export const getOnboardingOptions = async (req, res) => {
+    try {
+        console.log('🎮 [LaptopController.getOnboardingOptions] Fetching onboarding data');
+
+        const options = await laptopService.getOnboardingOptions();
+
+        res.json({
+            success: true,
+            data: options
+        });
+    } catch (error) {
+        console.error('❌ [LaptopController.getOnboardingOptions] Error:', error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+// =============================================================================
+// GET TOP LAPTOPS (For Home Page)
+// =============================================================================
+/**
+ * @controller getTopLaptops
+ * @route GET /api/laptops/top/:category
+ * 
+ * INPUT (req.params):
+ *   - category: 'overall' | 'gaming' | 'value' | 'portable' | 'performance'
+ * 
+ * INPUT (req.query):
+ *   - limit: Number (default: 6)
+ * 
+ * OUTPUT:
+ *   { success: true, data: [...laptops] }
+ */
+export const getTopLaptops = async (req, res) => {
+    try {
+        const { category = 'overall' } = req.params;
+        const { limit = 6 } = req.query;
+
+        console.log(`🎮 [LaptopController.getTopLaptops] Category: ${category}, Limit: ${limit}`);
+
+        const validCategories = ['overall', 'gaming', 'value', 'portable', 'performance'];
+        if (!validCategories.includes(category)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid category. Must be one of: ${validCategories.join(', ')}`
+            });
+        }
+
+        const laptops = await laptopService.getTopLaptops(category, parseInt(limit));
+
+        res.json({
+            success: true,
+            category,
+            data: laptops
+        });
+    } catch (error) {
+        console.error('❌ [LaptopController.getTopLaptops] Error:', error.message);
         res.status(500).json({
             success: false,
             message: error.message

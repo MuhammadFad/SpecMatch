@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Details - SpecMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/styles/main.css">
+    <link rel="stylesheet" href="public/styles/details.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="navbar-brand">
+                    <i class="fas fa-laptop"></i>
+                    <span>SpecMatch</span>
+                </a>
+                <div class="navbar-menu">
+                    <a href="index.html" class="navbar-link">Home</a>
+                    <a href="laptops.html" class="navbar-link">Laptops</a>
+                    <a href="games.html" class="navbar-link">Games</a>
+                </div>
+                <div class="navbar-actions" id="authSection"></div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="details-container" id="gameDetails">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading game details...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { api } from './public/scripts/api.js';
+        import { getSteamHeaderImage, getVerdictClass, getUrlParams } from './public/scripts/utils.js';
+
+        // State
+        let game = null;
+        let user = null;
+
+        const container = document.getElementById('gameDetails');
+
+        // Get appId from URL
+        function getAppId() {
+            const params = getUrlParams();
+            return params.appId;
+        }
+
+        // Load game data
+        async function loadGame() {
+            const appId = getAppId();
+            if (!appId) {
+                container.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>No game specified</p>
+                        <a href="games.html" class="btn btn-primary">Browse Games</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await api.getGameByAppId(appId);
+
+                if (response.success && response.data) {
+                    game = response.data;
+                    document.title = `${game.name} - SpecMatch`;
+                    renderGame();
+
+                    // Check user's laptops compatibility if logged in
+                    if (user) {
+                        checkUserLaptopsCompatibility();
+                    }
+                } else {
+                    throw new Error('Game not found');
+                }
+            } catch (error) {
+                console.error('Error loading game:', error);
+                container.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Game not found</p>
+                        <a href="games.html" class="btn btn-primary">Browse Games</a>
+                    </div>
+                `;
+            }
+        }
+
+        // Render game
+        function renderGame() {
+            const g = game;
+
+            container.innerHTML = `
+                <!-- Breadcrumb -->
+                <nav class="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="games.html">Games</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>${g.name}</span>
+                </nav>
+
+                <!-- Game Header -->
+                <div class="game-header-section">
+                    <div class="game-header-bg" style="background-image: url('${getSteamHeaderImage(g.steam_appid)}')"></div>
+                    <div class="game-header-overlay"></div>
+                    <div class="game-header-content-box">
+                        <img src="${getSteamHeaderImage(g.steam_appid)}" 
+                             alt="${g.name}" 
+                             class="game-poster-large"
+                             onerror="this.src='https://via.placeholder.com/460x215?text=No+Image'">
+                        <div class="game-header-details">
+                            <h1 class="game-title-large">${g.name}</h1>
+                            <div class="game-meta-row">
+                                ${g.release_date?.date ? `
+                                    <span><i class="fas fa-calendar-alt"></i> ${g.release_date.date}</span>
+                                ` : ''}
+                                ${g.developers?.length > 0 ? `
+                                    <span><i class="fas fa-code"></i> ${g.developers.join(', ')}</span>
+                                ` : ''}
+                                ${g.publishers?.length > 0 ? `
+                                    <span><i class="fas fa-building"></i> ${g.publishers.join(', ')}</span>
+                                ` : ''}
+                            </div>
+                            ${g.genres?.length > 0 ? `
+                                <div class="game-genres">
+                                    ${g.genres.map(genre => `
+                                        <span class="genre-tag">${genre.description || genre}</span>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Laptops Compatibility Section (if logged in) -->
+                <div class="user-compat-section" id="userCompatSection">
+                    ${user ? `
+                        <div class="section-loading">
+                            <div class="spinner-sm"></div>
+                            <span>Checking your laptops...</span>
+                        </div>
+                    ` : `
+                        <div class="login-prompt">
+                            <i class="fas fa-user-lock"></i>
+                            <div>
+                                <h4>Check Your Laptop's Compatibility</h4>
+                                <p>Sign in to see if your registered laptops can run this game</p>
+                            </div>
+                            <a href="login.html" class="btn btn-primary btn-sm">Sign In</a>
+                        </div>
+                    `}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="laptops.html?gameId=${g.steam_appid}&gameName=${encodeURIComponent(g.name)}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-laptop"></i>
+                        Find Laptops That Can Run This Game
+                    </a>
+                    ${g.steam_appid ? `
+                        <a href="https://store.steampowered.com/app/${g.steam_appid}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="btn btn-secondary btn-lg">
+                            <i class="fab fa-steam"></i>
+                            View on Steam
+                        </a>
+                    ` : ''}
+                </div>
+
+                <!-- Game Description -->
+                ${g.short_description || g.detailed_description ? `
+                    <div class="game-description-section">
+                        <h3>About This Game</h3>
+                        <div class="game-description">
+                            ${g.short_description || ''}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- System Requirements -->
+                <div class="requirements-section">
+                    <h3>System Requirements</h3>
+                    <div class="requirements-grid">
+                        ${renderRequirements('minimum', g.pc_requirements?.minimum)}
+                        ${renderRequirements('recommended', g.pc_requirements?.recommended)}
+                    </div>
+                </div>
+
+                <!-- Categories & Tags -->
+                ${g.categories?.length > 0 || g.tags?.length > 0 ? `
+                    <div class="game-tags-section">
+                        ${g.categories?.length > 0 ? `
+                            <div class="tags-group">
+                                <h4>Features</h4>
+                                <div class="tags-list">
+                                    ${g.categories.map(cat => `
+                                        <span class="feature-tag">
+                                            <i class="fas fa-check"></i> ${cat.description || cat}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${g.tags?.length > 0 ? `
+                            <div class="tags-group">
+                                <h4>Tags</h4>
+                                <div class="tags-list">
+                                    ${g.tags.slice(0, 15).map(tag => `
+                                        <span class="game-tag">${tag}</span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        // Render requirements
+        function renderRequirements(type, requirements) {
+            if (!requirements) {
+                return `
+                    <div class="requirements-card ${type}">
+                        <h4>
+                            <i class="fas fa-${type === 'minimum' ? 'exclamation-circle' : 'check-circle'}"></i>
+                            ${type === 'minimum' ? 'Minimum' : 'Recommended'}
+                        </h4>
+                        <p class="no-requirements">Requirements not available</p>
+                    </div>
+                `;
+            }
+
+            // Parse HTML requirements from Steam
+            const parsed = parseRequirements(requirements);
+
+            return `
+                <div class="requirements-card ${type}">
+                    <h4>
+                        <i class="fas fa-${type === 'minimum' ? 'exclamation-circle' : 'check-circle'}"></i>
+                        ${type === 'minimum' ? 'Minimum' : 'Recommended'}
+                    </h4>
+                    <div class="requirements-list">
+                        ${parsed.os ? `
+                            <div class="requirement-item">
+                                <span class="req-label"><i class="fab fa-windows"></i> OS</span>
+                                <span class="req-value">${parsed.os}</span>
+                            </div>
+                        ` : ''}
+                        ${parsed.processor ? `
+                            <div class="requirement-item">
+                                <span class="req-label"><i class="fas fa-microchip"></i> Processor</span>
+                                <span class="req-value">${parsed.processor}</span>
+                            </div>
+                        ` : ''}
+                        ${parsed.memory ? `
+                            <div class="requirement-item">
+                                <span class="req-label"><i class="fas fa-memory"></i> Memory</span>
+                                <span class="req-value">${parsed.memory}</span>
+                            </div>
+                        ` : ''}
+                        ${parsed.graphics ? `
+                            <div class="requirement-item">
+                                <span class="req-label"><i class="fas fa-tv"></i> Graphics</span>
+                                <span class="req-value">${parsed.graphics}</span>
+                            </div>
+                        ` : ''}
+                        ${parsed.storage ? `
+                            <div class="requirement-item">
+                                <span class="req-label"><i class="fas fa-hdd"></i> Storage</span>
+                                <span class="req-value">${parsed.storage}</span>
+                            </div>
+                        ` : ''}
+                        ${parsed.directx ? `
+                            <div class="requirement-item">
+                                <span class="req-label"><i class="fas fa-cube"></i> DirectX</span>
+                                <span class="req-value">${parsed.directx}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Parse Steam HTML requirements
+        function parseRequirements(html) {
+            const result = {};
+
+            // Create a temporary element to parse HTML
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+
+            // Extract text content
+            const text = temp.textContent || temp.innerText;
+
+            // Pattern matching for common requirement fields
+            const patterns = {
+                os: /OS[:\s*]+([^\n]+)/i,
+                processor: /Processor[:\s*]+([^\n]+)/i,
+                memory: /Memory[:\s*]+([^\n]+)/i,
+                graphics: /Graphics[:\s*]+([^\n]+)/i,
+                storage: /Storage[:\s*]+([^\n]+)/i,
+                directx: /DirectX[:\s*]+([^\n]+)/i
+            };
+
+            for (const [key, pattern] of Object.entries(patterns)) {
+                const match = text.match(pattern);
+                if (match) {
+                    result[key] = match[1].trim();
+                }
+            }
+
+            return result;
+        }
+
+        // Check user laptops compatibility
+        async function checkUserLaptopsCompatibility() {
+            const section = document.getElementById('userCompatSection');
+
+            try {
+                const response = await api.checkMyLaptopCompatibility(game.steam_appid);
+
+                if (response.success && response.data?.results?.length > 0) {
+                    const results = response.data.results;
+
+                    section.innerHTML = `
+                        <div class="user-compat-header">
+                            <h3><i class="fas fa-laptop"></i> Your Laptops</h3>
+                            <span class="laptop-count">${results.length} laptop${results.length > 1 ? 's' : ''} checked</span>
+                        </div>
+                        <div class="user-compat-grid">
+                            ${results.map(result => `
+                                <div class="user-laptop-compat-card">
+                                    <div class="laptop-card-header">
+                                        <div class="verdict-badge ${getVerdictClass(result.verdict)}">
+                                            ${getVerdictIcon(result.verdict)}
+                                            ${result.verdict}
+                                        </div>
+                                    </div>
+                                    <div class="laptop-card-body">
+                                        <h4 class="laptop-card-name">${result.laptop?.name || 'Your Laptop'}</h4>
+                                        <div class="laptop-card-specs">
+                                            ${result.laptop?.cpu?.name ? `<span>${truncateSpec(result.laptop.cpu.name)}</span>` : ''}
+                                            ${result.laptop?.gpu?.name ? `<span>${truncateSpec(result.laptop.gpu.name)}</span>` : ''}
+                                            ${result.laptop?.ram?.size_gb ? `<span>${result.laptop.ram.size_gb}GB RAM</span>` : ''}
+                                        </div>
+                                    </div>
+                                    ${result.laptop?.slug ? `
+                                        <a href="laptop.html?slug=${result.laptop.slug}" class="laptop-card-link">
+                                            View Details <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    section.innerHTML = `
+                        <div class="no-laptops-prompt">
+                            <i class="fas fa-laptop-medical"></i>
+                            <div>
+                                <h4>No Laptops Registered</h4>
+                                <p>Add your laptop specs to check compatibility with this game</p>
+                            </div>
+                            <a href="profile.html" class="btn btn-secondary btn-sm">Add Laptop</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error checking compatibility:', error);
+                section.innerHTML = `
+                    <div class="compat-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Unable to check compatibility</span>
+                    </div>
+                `;
+            }
+        }
+
+        function getVerdictIcon(verdict) {
+            const icons = {
+                'Excellent': '<i class="fas fa-star"></i>',
+                'Recommended': '<i class="fas fa-check-circle"></i>',
+                'Playable': '<i class="fas fa-check"></i>',
+                'Minimum': '<i class="fas fa-minus-circle"></i>',
+                'Insufficient': '<i class="fas fa-times-circle"></i>'
+            };
+            return icons[verdict] || '<i class="fas fa-question-circle"></i>';
+        }
+
+        function truncateSpec(name) {
+            return name.replace(/Intel Core |AMD Ryzen |NVIDIA GeForce |AMD Radeon /gi, '')
+                .split(' ')
+                .slice(0, 3)
+                .join(' ');
+        }
+
+        // Load auth state
+        function loadAuthState() {
+            user = JSON.parse(localStorage.getItem('specmatch_user'));
+            const authSection = document.getElementById('authSection');
+
+            if (user) {
+                authSection.innerHTML = `
+                    <a href="profile.html" class="navbar-user">
+                        <div class="navbar-user-avatar">${user.name?.[0]?.toUpperCase() || 'U'}</div>
+                        <span>${user.name || 'User'}</span>
+                    </a>
+                `;
+            } else {
+                authSection.innerHTML = `
+                    <a href="login.html" class="btn btn-ghost">Sign In</a>
+                    <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+                `;
+            }
+        }
+
+        // Initialize
+        loadAuthState();
+        loadGame();
+    </script>
+
+    <style>
+        /* Game Details Specific Styles */
+        .game-header-section {
+            position: relative;
+            margin: -2rem -2rem 2rem -2rem;
+            padding: 3rem 2rem;
+            overflow: hidden;
+        }
+
+        .game-header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(20px);
+            transform: scale(1.1);
+        }
+
+        .game-header-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95));
+        }
+
+        .game-header-content-box {
+            position: relative;
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .game-poster-large {
+            width: 300px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .game-header-details {
+            flex: 1;
+            color: white;
+        }
+
+        .game-title-large {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .game-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .game-meta-row span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .game-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .genre-tag {
+            padding: 0.375rem 0.875rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+        }
+
+        /* User Compatibility Section */
+        .user-compat-section {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            color: var(--text-muted);
+        }
+
+        .spinner-sm {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .login-prompt,
+        .no-laptops-prompt {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .login-prompt i,
+        .no-laptops-prompt i {
+            font-size: 2rem;
+            color: var(--primary);
+            opacity: 0.7;
+        }
+
+        .login-prompt h4,
+        .no-laptops-prompt h4 {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .login-prompt p,
+        .no-laptops-prompt p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .login-prompt .btn,
+        .no-laptops-prompt .btn {
+            margin-left: auto;
+        }
+
+        .user-compat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .user-compat-header h3 {
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-compat-header h3 i {
+            color: var(--primary);
+        }
+
+        .laptop-count {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .user-compat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .user-laptop-compat-card {
+            background: var(--bg-alt);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .laptop-card-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .laptop-card-body {
+            padding: 1rem;
+        }
+
+        .laptop-card-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .laptop-card-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .laptop-card-specs span {
+            padding: 0.125rem 0.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+        }
+
+        .laptop-card-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--surface);
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .laptop-card-link:hover {
+            background: var(--primary-light);
+        }
+
+        .compat-error {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            color: var(--text-muted);
+        }
+
+        .compat-error i {
+            color: var(--warning);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-buttons .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-lg {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* Description */
+        .game-description-section {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-description-section h3 {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .game-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Requirements Section */
+        .requirements-section {
+            margin-bottom: 2rem;
+        }
+
+        .requirements-section h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .requirements-card .requirement-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .requirements-card .requirement-item:last-child {
+            border-bottom: none;
+        }
+
+        .requirements-card .req-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .requirements-card .req-label i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .requirements-card .req-value {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .no-requirements {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        /* Tags Section */
+        .game-tags-section {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .tags-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .tags-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .tags-group h4 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .feature-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+        }
+
+        .feature-tag i {
+            font-size: 0.65rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-header-section {
+                margin: -1rem -1rem 1.5rem -1rem;
+                padding: 2rem 1rem;
+            }
+
+            .game-header-content-box {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .game-poster-large {
+                width: 200px;
+            }
+
+            .game-title-large {
+                font-size: 1.5rem;
+            }
+
+            .game-meta-row {
+                justify-content: center;
+            }
+
+            .game-genres {
+                justify-content: center;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .login-prompt,
+            .no-laptops-prompt {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .login-prompt .btn,
+            .no-laptops-prompt .btn {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</body>
+
+</html>

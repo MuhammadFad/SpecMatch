@@ -31,14 +31,14 @@
 import Laptop from '../models/Laptop.js';
 
 // =============================================================================
-// FIND LAPTOPS (With Filters)
+// FIND LAPTOPS (With Filters + MongoDB Atlas Search + Ranking)
 // =============================================================================
 /**
  * @function findLaptops
- * @description Search laptops with multiple filter criteria
+ * @description Search laptops using MongoDB Atlas Search (fuzzy) with filters and optional ranking
  * 
  * @param {Object} filters - Query parameters from URL
- * @param {String} [filters.q] - Text search query (searches name, brand, cpu.name, gpu.name)
+ * @param {String} [filters.q] - Text search query (uses Atlas Search fuzzy matching)
  * @param {Number} [filters.minPrice] - Minimum price in USD
  * @param {Number} [filters.maxPrice] - Maximum price in USD
  * @param {String} [filters.brand] - Filter by brand (e.g., "Asus", "Dell")
@@ -51,117 +51,201 @@ import Laptop from '../models/Laptop.js';
  * @param {Boolean} [filters.hasTouch] - Filter for touchscreen laptops
  * @param {Number} [filters.page=1] - Page number for pagination
  * @param {Number} [filters.limit=20] - Results per page
- * @param {String} [filters.sortBy] - Sort field (price, cpuScore, gpuScore, weight)
+ * @param {String} [filters.sortBy] - Sort field (price, cpuScore, gpuScore, weight, ram)
  * @param {String} [filters.sortOrder=asc] - Sort direction (asc/desc)
+ * @param {String} [filters.rankBy] - Ranking criteria (gaming, performance, value, portable, budget)
  * 
- * @returns {Object} { laptops: Laptop[], total: Number, page: Number, totalPages: Number }
+ * @returns {Object} { laptops: Laptop[], total: Number, page: Number, totalPages: Number, rankBy?: String }
  * 
  * @example
- * // Request: GET /api/laptops/search?q=gaming&minRam=16&maxPrice=1500
- * findLaptops({ q: 'gaming', minRam: 16, maxPrice: 1500 })
+ * // Request: GET /api/laptops/search?q=gaming&minRam=16&maxPrice=1500&rankBy=gaming
+ * findLaptops({ q: 'gaming', minRam: 16, maxPrice: 1500, rankBy: 'gaming' })
  */
 export const findLaptops = async (filters) => {
     console.log('📡 [LaptopService.findLaptops] Filters received:', filters);
-
-    // Build the MongoDB query object
-    const query = {};
-
-    // --- TEXT SEARCH ---
-    // Uses MongoDB text index on: name, brand, cpu.name, gpu.name, keywords
-    if (filters.q) {
-        query.$or = [
-            { name: { $regex: filters.q, $options: 'i' } },
-            { brand: { $regex: filters.q, $options: 'i' } },
-            { 'cpu.name': { $regex: filters.q, $options: 'i' } },
-            { 'gpu.name': { $regex: filters.q, $options: 'i' } }
-        ];
-    }
-
-    // --- PRICE RANGE ---
-    if (filters.minPrice || filters.maxPrice) {
-        query['pricing.estimated_price_usd'] = {};
-        if (filters.minPrice) query['pricing.estimated_price_usd'].$gte = Number(filters.minPrice);
-        if (filters.maxPrice) query['pricing.estimated_price_usd'].$lte = Number(filters.maxPrice);
-    }
-
-    // --- BRAND FILTER ---
-    if (filters.brand) {
-        query.brand = { $regex: filters.brand, $options: 'i' };
-    }
-
-    // --- RAM FILTER ---
-    if (filters.minRam) {
-        query['ram.size_gb'] = { $gte: Number(filters.minRam) };
-    }
-
-    // --- STORAGE FILTER ---
-    if (filters.minStorage) {
-        query['storage.capacity_gb'] = { $gte: Number(filters.minStorage) };
-    }
-
-    // --- GPU SCORE FILTER ---
-    if (filters.minGpuScore) {
-        query['gpu.score'] = { $gte: Number(filters.minGpuScore) };
-    }
-
-    // --- CPU SCORE FILTER ---
-    if (filters.minCpuScore) {
-        query['cpu.score'] = { $gte: Number(filters.minCpuScore) };
-    }
-
-    // --- DISPLAY REFRESH RATE ---
-    if (filters.minRefreshRate) {
-        query['displays.refresh_rate_hz'] = { $gte: Number(filters.minRefreshRate) };
-    }
-
-    // --- WEIGHT FILTER ---
-    if (filters.maxWeight) {
-        query['chassis.weight_kg'] = { $lte: Number(filters.maxWeight) };
-    }
-
-    // --- TOUCHSCREEN FILTER ---
-    if (filters.hasTouch === 'true' || filters.hasTouch === true) {
-        query['displays.touch'] = true;
-    }
 
     // --- PAGINATION ---
     const page = parseInt(filters.page) || 1;
     const limit = parseInt(filters.limit) || 20;
     const skip = (page - 1) * limit;
-
-    // --- SORTING ---
-    let sortOption = {};
     const sortOrder = filters.sortOrder === 'desc' ? -1 : 1;
 
-    switch (filters.sortBy) {
-        case 'price':
-            sortOption = { 'pricing.estimated_price_usd': sortOrder };
-            break;
-        case 'cpuScore':
-            sortOption = { 'cpu.score': sortOrder };
-            break;
-        case 'gpuScore':
-            sortOption = { 'gpu.score': sortOrder };
-            break;
-        case 'weight':
-            sortOption = { 'chassis.weight_kg': sortOrder };
-            break;
-        case 'ram':
-            sortOption = { 'ram.size_gb': sortOrder };
-            break;
-        default:
-            sortOption = { 'pricing.estimated_price_usd': 1 };
+    // Build aggregation pipeline
+    const pipeline = [];
+
+    // --- ATLAS SEARCH (Fuzzy Text Search) ---
+    // If q is provided, use MongoDB Atlas Search for fuzzy matching
+    if (filters.q && filters.q.trim()) {
+        pipeline.push({
+            $search: {
+                index: 'laptop_search', // Atlas Search index name
+                compound: {
+                    should: [
+                        {
+                            text: {
+                                query: filters.q,
+                                path: ['name', 'brand', 'cpu.name', 'gpu.name', 'keywords'],
+                                fuzzy: {
+                                    maxEdits: 2,
+                                    prefixLength: 1
+                                },
+                                score: { boost: { value: 3 } }
+                            }
+                        },
+                        {
+                            autocomplete: {
+                                query: filters.q,
+                                path: 'name',
+                                fuzzy: {
+                                    maxEdits: 1,
+                                    prefixLength: 2
+                                }
+                            }
+                        }
+                    ],
+                    minimumShouldMatch: 1
+                }
+            }
+        });
+
+        // Add search score for potential sorting
+        pipeline.push({
+            $addFields: {
+                searchScore: { $meta: 'searchScore' }
+            }
+        });
     }
 
-    // --- EXECUTE QUERY ---
-    const [laptops, total] = await Promise.all([
-        Laptop.find(query)
-            .sort(sortOption)
+    // --- BUILD MATCH FILTERS ---
+    const matchFilters = {};
+
+    // Price range
+    if (filters.minPrice || filters.maxPrice) {
+        matchFilters['pricing.estimated_price_usd'] = {};
+        if (filters.minPrice) matchFilters['pricing.estimated_price_usd'].$gte = Number(filters.minPrice);
+        if (filters.maxPrice) matchFilters['pricing.estimated_price_usd'].$lte = Number(filters.maxPrice);
+    }
+
+    // Brand filter
+    if (filters.brand) {
+        matchFilters.brand = { $regex: filters.brand, $options: 'i' };
+    }
+
+    // RAM filter
+    if (filters.minRam) {
+        matchFilters['ram.size_gb'] = { $gte: Number(filters.minRam) };
+    }
+
+    // Storage filter
+    if (filters.minStorage) {
+        matchFilters['storage.capacity_gb'] = { $gte: Number(filters.minStorage) };
+    }
+
+    // GPU score filter
+    if (filters.minGpuScore) {
+        matchFilters['gpu.score'] = { $gte: Number(filters.minGpuScore) };
+    }
+
+    // CPU score filter
+    if (filters.minCpuScore) {
+        matchFilters['cpu.score'] = { $gte: Number(filters.minCpuScore) };
+    }
+
+    // Display refresh rate filter
+    if (filters.minRefreshRate) {
+        matchFilters['displays.refresh_rate_hz'] = { $gte: Number(filters.minRefreshRate) };
+    }
+
+    // Weight filter
+    if (filters.maxWeight) {
+        matchFilters['chassis.weight_kg'] = { $lte: Number(filters.maxWeight) };
+    }
+
+    // Touchscreen filter
+    if (filters.hasTouch === 'true' || filters.hasTouch === true) {
+        matchFilters['displays.touch'] = true;
+    }
+
+    // Add match stage if we have any filters
+    if (Object.keys(matchFilters).length > 0) {
+        pipeline.push({ $match: matchFilters });
+    }
+
+    // --- RANKING CRITERIA ---
+    // If rankBy is specified, add computed ranking fields and sort by them
+    if (filters.rankBy) {
+        const rankingStage = buildRankingStage(filters.rankBy);
+        if (rankingStage.addFields) pipeline.push({ $addFields: rankingStage.addFields });
+        if (rankingStage.sort) pipeline.push({ $sort: rankingStage.sort });
+    } else {
+        // --- DEFAULT SORTING ---
+        let sortOption = {};
+        switch (filters.sortBy) {
+            case 'price':
+                sortOption = { 'pricing.estimated_price_usd': sortOrder };
+                break;
+            case 'cpuScore':
+                sortOption = { 'cpu.score': sortOrder };
+                break;
+            case 'gpuScore':
+                sortOption = { 'gpu.score': sortOrder };
+                break;
+            case 'weight':
+                sortOption = { 'chassis.weight_kg': sortOrder };
+                break;
+            case 'ram':
+                sortOption = { 'ram.size_gb': sortOrder };
+                break;
+            case 'relevance':
+                // Only valid if we have a text search
+                if (filters.q) {
+                    sortOption = { searchScore: -1 };
+                } else {
+                    sortOption = { 'pricing.estimated_price_usd': 1 };
+                }
+                break;
+            default:
+                // If text search, sort by relevance; otherwise by price
+                if (filters.q) {
+                    sortOption = { searchScore: -1 };
+                } else {
+                    sortOption = { 'pricing.estimated_price_usd': 1 };
+                }
+        }
+        pipeline.push({ $sort: sortOption });
+    }
+
+    // --- COUNT TOTAL (using $facet for efficiency) ---
+    pipeline.push({
+        $facet: {
+            metadata: [{ $count: 'total' }],
+            data: [{ $skip: skip }, { $limit: limit }]
+        }
+    });
+
+    // --- EXECUTE AGGREGATION ---
+    const result = await Laptop.aggregate(pipeline);
+
+    const total = result[0]?.metadata[0]?.total || 0;
+    let laptops = result[0]?.data || [];
+
+    // If no search query was provided and no results, fall back to regular find
+    if (laptops.length === 0 && !filters.q && Object.keys(matchFilters).length === 0) {
+        // Fallback for empty search - return all with pagination
+        const fallbackResult = await Laptop.find({})
+            .sort({ 'pricing.estimated_price_usd': 1 })
             .skip(skip)
             .limit(limit)
-            .lean(),
-        Laptop.countDocuments(query)
-    ]);
+            .lean();
+        const fallbackTotal = await Laptop.countDocuments({});
+        return {
+            laptops: fallbackResult,
+            total: fallbackTotal,
+            page,
+            totalPages: Math.ceil(fallbackTotal / limit),
+            ...(filters.rankBy && { rankBy: filters.rankBy })
+        };
+    }
 
     console.log(`📡 [LaptopService.findLaptops] Found ${laptops.length} of ${total} total matches`);
 
@@ -169,9 +253,120 @@ export const findLaptops = async (filters) => {
         laptops,
         total,
         page,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
+        ...(filters.rankBy && { rankBy: filters.rankBy })
     };
 };
+
+/**
+ * Build ranking aggregation stage based on criteria
+ * @private
+ */
+function buildRankingStage(criteria) {
+    switch (criteria) {
+        case 'gaming':
+            return {
+                addFields: {
+                    _gpu: { $ifNull: ['$gpu.score', 0] },
+                    _cpu: { $ifNull: ['$cpu.score', 0] },
+                    _ram: { $ifNull: ['$ram.score', 0] },
+                    _display_refresh: { $ifNull: [{ $arrayElemAt: ['$displays.refresh_rate_hz', 0] }, 60] },
+                    _vram_gb: { $ifNull: ['$gpu.vram_gb', 0] },
+                    rankingScore: {
+                        $round: [{
+                            $add: [
+                                { $multiply: [{ $ifNull: ['$gpu.score', 0] }, 0.60] },
+                                { $multiply: [{ $ifNull: ['$cpu.score', 0] }, 0.25] },
+                                { $multiply: [{ $ifNull: ['$ram.score', 0] }, 0.10] },
+                                { $multiply: [{ $min: [120, { $ifNull: [{ $arrayElemAt: ['$displays.refresh_rate_hz', 0] }, 60] }] }, 0.05] },
+                                { $multiply: [{ $log10: { $add: [{ $ifNull: ['$gpu.vram_gb', 0] }, 1] } }, 4] }
+                            ]
+                        }, 2]
+                    }
+                },
+                sort: { rankingScore: -1 }
+            };
+
+        case 'performance':
+            return {
+                addFields: {
+                    rankingScore: {
+                        $round: [{
+                            $add: [
+                                { $multiply: [{ $ifNull: ['$cpu.score', 0] }, 0.65] },
+                                { $multiply: [{ $ifNull: ['$gpu.score', 0] }, 0.20] },
+                                { $multiply: [{ $ifNull: ['$ram.score', 0] }, 0.10] },
+                                { $multiply: [{ $max: [0, { $subtract: [{ $ifNull: ['$cpu.cores', 4] }, 4] }] }, 0.5] }
+                            ]
+                        }, 2]
+                    }
+                },
+                sort: { rankingScore: -1 }
+            };
+
+        case 'value':
+            return {
+                addFields: {
+                    _perf: { $add: [{ $ifNull: ['$cpu.score', 0] }, { $ifNull: ['$gpu.score', 0] }] },
+                    _price: { $ifNull: ['$pricing.estimated_price_usd', 9999] },
+                    rankingScore: {
+                        $round: [{
+                            $multiply: [
+                                {
+                                    $divide: [
+                                        { $add: [{ $ifNull: ['$cpu.score', 0] }, { $ifNull: ['$gpu.score', 0] }] },
+                                        { $add: [{ $ln: { $add: [{ $ifNull: ['$pricing.estimated_price_usd', 9999] }, 10] } }, 1] }
+                                    ]
+                                },
+                                10
+                            ]
+                        }, 4]
+                    }
+                },
+                sort: { rankingScore: -1 }
+            };
+
+        case 'portable':
+            return {
+                addFields: {
+                    rankingScore: {
+                        $round: [{
+                            $add: [
+                                { $multiply: [{ $subtract: [100, { $multiply: [{ $ifNull: ['$chassis.weight_kg', 3] }, 10] }] }, 0.45] },
+                                { $multiply: [{ $ifNull: ['$battery.score', 50] }, 0.35] },
+                                { $multiply: [{ $ifNull: ['$cpu.score', 50] }, 0.20] }
+                            ]
+                        }, 2]
+                    }
+                },
+                sort: { rankingScore: -1 }
+            };
+
+        case 'budget':
+            return {
+                addFields: {
+                    rankingScore: {
+                        $round: [{
+                            $add: [
+                                { $multiply: [{ $add: [{ $ifNull: ['$cpu.score', 0] }, { $ifNull: ['$gpu.score', 0] }] }, 0.5] },
+                                { $multiply: [{ $ifNull: ['$ram.score', 0] }, 0.3] },
+                                {
+                                    $multiply: [
+                                        { $cond: [{ $regexMatch: { input: { $ifNull: ['$storage.type', 'ssd'] }, regex: /ssd/i } }, 1, 0] },
+                                        10
+                                    ]
+                                }
+                            ]
+                        }, 2]
+                    }
+                },
+                sort: { rankingScore: -1 }
+            };
+
+        default:
+            return { addFields: null, sort: null };
+    }
+}
 
 
 // =============================================================================
@@ -241,10 +436,12 @@ export const getLaptopVariants = async (groupId) => {
 
 
 // =============================================================================
-// GET TOP RANKED LAPTOPS
+// GET TOP RANKED LAPTOPS (DEPRECATED - Use findLaptops with rankBy instead)
 // =============================================================================
 /**
  * @function getTopRanked
+ * @deprecated Use findLaptops({ rankBy: 'gaming' }) instead. This function is kept
+ *             for backward compatibility but the /rank route has been removed.
  * @description Get top laptops sorted by various criteria
  * Used for "Best Gaming Laptops", "Best Value", etc.
  * 
@@ -508,4 +705,171 @@ export const getFilterOptions = async () => {
 export const getLaptopsByIds = async (ids) => {
     console.log(`📡 [LaptopService.getLaptopsByIds] Fetching ${ids.length} laptops`);
     return await Laptop.find({ _id: { $in: ids } }).lean();
+};
+
+
+// =============================================================================
+// ONBOARDING DATA - Unique Component Lists
+// =============================================================================
+/**
+ * @function getUniqueCPUs
+ * @description Get list of unique CPU names with their scores for onboarding
+ * Returns deduplicated CPU data for type-ahead selection
+ * 
+ * @returns {Array} Array of { name, manufacturer, score } objects
+ * 
+ * @example
+ * // Request: GET /api/laptops/onboarding/cpus
+ * getUniqueCPUs()
+ * // Returns: [{ name: "Intel Core i7-12700H", manufacturer: "Intel", score: 28500 }, ...]
+ */
+export const getUniqueCPUs = async () => {
+    console.log('📡 [LaptopService.getUniqueCPUs] Fetching unique CPU list');
+
+    const cpus = await Laptop.aggregate([
+        {
+            $group: {
+                _id: '$cpu.name',
+                name: { $first: '$cpu.name' },
+                manufacturer: { $first: '$cpu.manufacturer' },
+                score: { $first: '$cpu.score' }
+            }
+        },
+        {
+            $match: {
+                name: { $ne: null, $ne: '' }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                name: 1,
+                manufacturer: 1,
+                score: 1
+            }
+        },
+        { $sort: { score: -1 } }
+    ]);
+
+    return cpus;
+};
+
+/**
+ * @function getUniqueGPUs
+ * @description Get list of unique GPU names with their scores for onboarding
+ * Returns deduplicated GPU data for type-ahead selection
+ * 
+ * @returns {Array} Array of { name, manufacturer, score, vram_gb } objects
+ * 
+ * @example
+ * // Request: GET /api/laptops/onboarding/gpus
+ * getUniqueGPUs()
+ * // Returns: [{ name: "NVIDIA RTX 4090", manufacturer: "NVIDIA", score: 24500, vram_gb: 16 }, ...]
+ */
+export const getUniqueGPUs = async () => {
+    console.log('📡 [LaptopService.getUniqueGPUs] Fetching unique GPU list');
+
+    const gpus = await Laptop.aggregate([
+        {
+            $group: {
+                _id: '$gpu.name',
+                name: { $first: '$gpu.name' },
+                manufacturer: { $first: '$gpu.manufacturer' },
+                score: { $first: '$gpu.score' },
+                vram_gb: { $first: '$gpu.vram_gb' }
+            }
+        },
+        {
+            $match: {
+                name: { $ne: null, $ne: '' }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                name: 1,
+                manufacturer: 1,
+                score: 1,
+                vram_gb: 1
+            }
+        },
+        { $sort: { score: -1 } }
+    ]);
+
+    return gpus;
+};
+
+/**
+ * @function getOnboardingOptions
+ * @description Get all component options for user laptop onboarding
+ * Returns CPUs, GPUs, and standard RAM sizes
+ * 
+ * @returns {Object} { cpus, gpus, ramSizes }
+ */
+export const getOnboardingOptions = async () => {
+    console.log('📡 [LaptopService.getOnboardingOptions] Fetching all onboarding options');
+
+    const [cpus, gpus] = await Promise.all([
+        getUniqueCPUs(),
+        getUniqueGPUs()
+    ]);
+
+    // Standard RAM sizes (powers of 2 and common configurations)
+    const ramSizes = [4, 8, 12, 16, 24, 32, 48, 64, 128];
+
+    // Standard storage sizes
+    const storageSizes = [128, 256, 512, 1024, 2048, 4096];
+
+    return {
+        cpus,
+        gpus,
+        ramSizes,
+        storageSizes
+    };
+};
+
+
+// =============================================================================
+// GET TOP LAPTOPS (For Home Page)
+// =============================================================================
+/**
+ * @function getTopLaptops
+ * @description Get top laptops for homepage display
+ * Returns highest scored laptops by various criteria
+ * 
+ * @param {String} category - Ranking category: 'overall', 'gaming', 'value', 'portable'
+ * @param {Number} limit - Number of laptops to return (default: 6)
+ * 
+ * @returns {Array} Array of top laptop documents
+ */
+export const getTopLaptops = async (category = 'overall', limit = 6) => {
+    console.log(`📡 [LaptopService.getTopLaptops] Fetching top ${limit} ${category} laptops`);
+
+    let sortStage;
+
+    switch (category) {
+        case 'gaming':
+            sortStage = { 'gpu.score': -1, 'cpu.score': -1 };
+            break;
+        case 'value':
+            // Value = high specs / low price (approximate with inverse price * specs)
+            sortStage = { 'pricing.estimated_price_usd': 1, 'gpu.score': -1 };
+            break;
+        case 'portable':
+            sortStage = { 'chassis.weight_kg': 1, 'battery.capacity_wh': -1 };
+            break;
+        case 'performance':
+            sortStage = { 'cpu.score': -1, 'gpu.score': -1 };
+            break;
+        default: // overall
+            sortStage = { 'gpu.score': -1, 'cpu.score': -1, 'ram.size_gb': -1 };
+    }
+
+    const laptops = await Laptop.find({})
+        .sort(sortStage)
+        .limit(limit)
+        .select('slug name brand model_family images pricing cpu.name cpu.score gpu.name gpu.score ram.size_gb storage.capacity_gb chassis.weight_kg')
+        .lean();
+
+    return laptops;
 };

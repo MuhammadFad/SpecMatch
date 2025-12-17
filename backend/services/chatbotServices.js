@@ -126,7 +126,7 @@ export function buildMongoFilter(filters = {}) {
  */
 export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
   console.log('🔍 hybridSearch called with:', { semanticQuery, filters, topK });
-  
+
   let collection;
   try {
     collection = getLaptopCollection();
@@ -138,7 +138,7 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
 
   // Build the MongoDB filter
   const mongoFilter = buildMongoFilter(filters);
-  
+
   // Ensure we only get documents with embeddings
   mongoFilter.embedding = { $exists: true, $not: { $size: 0 } };
 
@@ -184,14 +184,14 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
   // Calculate similarity scores
   const scoredLaptops = laptops.map(laptop => {
     const similarity = cosineSimilarity(queryEmbedding, laptop.embedding);
-    
+
     // Remove embedding from result (too large to send)
     const { embedding, ...laptopWithoutEmbedding } = laptop;
-    
+
     // Clean up the display name (remove duplicate brand from name)
     let displayName = laptop.name || '';
     const brand = laptop.brand || '';
-    
+
     // Remove brand repetition from name (handles "HP HP 15" -> "HP 15")
     if (brand && displayName.toLowerCase().startsWith(brand.toLowerCase())) {
       displayName = displayName.substring(brand.length).trim();
@@ -200,7 +200,7 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
         displayName = displayName.substring(brand.length).trim();
       }
     }
-    
+
     return {
       ...laptopWithoutEmbedding,
       displayName, // Cleaned name without brand duplication
@@ -210,27 +210,27 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
 
   // Sort by similarity (descending)
   scoredLaptops.sort((a, b) => b.similarity - a.similarity);
-  
+
   // Deduplicate by group_id or slug prefix (keep only highest scoring variant per model)
   const seen = new Set();
   const deduplicated = [];
-  
+
   for (const laptop of scoredLaptops) {
     // Use group_id if available, otherwise use slug prefix (before last hyphen)
     const dedupeKey = laptop.group_id || laptop.slug?.replace(/-\d+$/, '') || laptop._id.toString();
-    
+
     if (!seen.has(dedupeKey)) {
       seen.add(dedupeKey);
       deduplicated.push(laptop);
     }
-    
+
     if (deduplicated.length >= topK) {
       break;
     }
   }
-  
+
   console.log(`Found ${deduplicated.length} unique matching laptops`);
-  
+
   return deduplicated;
 }
 
@@ -268,8 +268,8 @@ export async function handleMessage(message, history = []) {
     if (routeResult.classification === 'NEED_MORE_INFO') {
       console.log('❓ Need more information');
       const reply = await generateNeedMoreInfoResponse(
-        message, 
-        history, 
+        message,
+        history,
         routeResult.followUpQuestion
       );
       return {
@@ -301,7 +301,7 @@ export async function handleMessage(message, history = []) {
     // Step 4: Generate response
     console.log('\n📍 Step 4: Generating response...');
     let reply;
-    
+
     if (laptops.length === 0) {
       // No results - suggest broadening search
       reply = await generateNoResultsResponse(message, history, searchParams.filters);
