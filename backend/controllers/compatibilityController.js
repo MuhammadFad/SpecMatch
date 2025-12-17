@@ -84,10 +84,10 @@ export const checkCompatibility = async (req, res) => {
                 message: 'Invalid laptopId format. Must be a 24-character hex string.'
             });
         }
-        
+
         // Resolve gameId - can be MongoDB ObjectId OR Steam App ID
         let resolvedGameId = gameId;
-        
+
         if (!objectIdRegex.test(gameId)) {
             // Not a MongoDB ObjectId - treat as Steam App ID
             const steamAppId = parseInt(gameId);
@@ -97,9 +97,9 @@ export const checkCompatibility = async (req, res) => {
                     message: 'Invalid gameId format. Must be a 24-character MongoDB ID or a numeric Steam App ID.'
                 });
             }
-            
+
             console.log(`🎮 [CompatibilityController.check] Steam App ID detected: ${steamAppId}, resolving game...`);
-            
+
             // Get or fetch the game using compatibilityService helper
             try {
                 const game = await compatibilityService.getOrFetchGameBySteamId(steamAppId);
