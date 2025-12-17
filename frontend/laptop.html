@@ -477,15 +477,19 @@
                 try {
                     const response = await api.lookupGames(query);
                     if (response.success && response.data?.length > 0) {
-                        dropdown.innerHTML = response.data.slice(0, 8).map(game => `
-                            <div class="autocomplete-item" data-appid="${game.steam_appid}">
-                                <img src="${getSteamHeaderImage(game.steam_appid)}" 
+                        dropdown.innerHTML = response.data.slice(0, 8).map(game => {
+                            // Handle both 'appid' (from SteamApps) and 'steam_appid' (from Games)
+                            const gameAppId = game.appid || game.steam_appid;
+                            return `
+                            <div class="autocomplete-item" data-appid="${gameAppId}">
+                                <img src="${getSteamHeaderImage(gameAppId)}" 
                                      alt="${game.name}" 
                                      class="game-thumb"
                                      onerror="this.style.display='none'">
                                 <span>${game.name}</span>
                             </div>
-                        `).join('');
+                        `;
+                        }).join('');
                         dropdown.classList.add('active');
 
                         // Click handlers

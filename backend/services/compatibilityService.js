@@ -36,6 +36,26 @@ import Game from '../models/Game.js';
 import UserLaptop from '../models/UserLaptop.js';
 import User from '../models/User.js';
 import * as laptopService from './laptopService.js';
+import * as gameService from './gameService.js';
+
+
+// =============================================================================
+// HELPER: GET OR FETCH GAME BY STEAM APP ID
+// =============================================================================
+/**
+ * @function getOrFetchGameBySteamId
+ * @description Helper function to get a game by Steam App ID, auto-fetching from Steam if needed.
+ * This allows compatibility endpoints to accept Steam App IDs directly.
+ * 
+ * @param {Number} steamAppId - Steam App ID
+ * @returns {Object} Game document (from DB or freshly fetched from Steam)
+ */
+export const getOrFetchGameBySteamId = async (steamAppId) => {
+    console.log(`📡 [CompatibilityService.getOrFetchGameBySteamId] Looking up Steam App ID: ${steamAppId}`);
+
+    // Use the gameService's getOrFetchGame function with type 'steam'
+    return await gameService.getOrFetchGame(steamAppId.toString(), 'steam');
+};
 
 
 // =============================================================================

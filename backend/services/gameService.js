@@ -154,8 +154,22 @@ export const searchSteamApps = async (queryText, limit = 10) => {
 
     try {
         const results = await SteamApp.aggregate(pipeline);
-        console.log(`📡 [GameService.searchSteamApps] Found ${results.length} matches in SteamApps`);
-        return results;
+        console.log(`📡 [GameService.searchSteamApps] Atlas Search found ${results.length} matches`);
+
+        // If Atlas Search returns results, use them
+        if (results.length > 0) {
+            return results;
+        }
+
+        // If Atlas Search returns 0 results, try regex fallback
+        console.log(`📡 [GameService.searchSteamApps] Atlas Search returned 0, trying regex fallback`);
+        const regexResults = await SteamApp.find({
+            name: { $regex: queryText, $options: 'i' }
+        })
+            .limit(limit)
+            .lean();
+        console.log(`📡 [GameService.searchSteamApps] Regex fallback found ${regexResults.length} matches`);
+        return regexResults;
     } catch (error) {
         // Fallback to regex search if Atlas Search fails
         console.warn(`📡 [GameService.searchSteamApps] Atlas Search failed, falling back to regex: ${error.message}`);
@@ -198,24 +212,32 @@ export const searchSteamApps = async (queryText, limit = 10) => {
  * 
  * @example
  * // Request: GET /api/games/search-results?q=cyberpunk
- * getGameSearchResults('cyberpunk', 20)
+ * getGameSearchResults('cyberpunk', 1, 20)
  */
-export const getGameSearchResults = async (queryText, limit = 20) => {
-    console.log(`📡 [GameService.getGameSearchResults] Getting search results for: "${queryText}"`);
+export const getGameSearchResults = async (queryText, page = 1, limit = 20) => {
+    console.log(`📡 [GameService.getGameSearchResults] Getting search results for: "${queryText}" (page ${page}, limit ${limit})`);
 
     if (!queryText || queryText.length < 2) {
-        return [];
+        return { games: [], total: 0, page: 1, totalPages: 0 };
     }
 
-    // First get matching Steam apps
-    const steamApps = await searchSteamApps(queryText, limit);
+    // Get a larger set for pagination calculation
+    const maxResults = 100;
+    const steamApps = await searchSteamApps(queryText, maxResults);
 
     if (steamApps.length === 0) {
-        return [];
+        return { games: [], total: 0, page: 1, totalPages: 0 };
     }
 
+    const total = steamApps.length;
+    const totalPages = Math.ceil(total / limit);
+    const skip = (page - 1) * limit;
+
+    // Get paginated slice
+    const paginatedApps = steamApps.slice(skip, skip + limit);
+
     // Get list of appids
-    const appIds = steamApps.map(app => app.appid);
+    const appIds = paginatedApps.map(app => app.appid);
 
     // Check which ones we already have in our Games collection
     const existingGames = await Game.find({
@@ -227,15 +249,16 @@ export const getGameSearchResults = async (queryText, limit = 20) => {
     // Build results with Steam image URLs
     const STEAM_IMAGE_BASE = 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps';
 
-    const results = steamApps.map(app => ({
+    const games = paginatedApps.map(app => ({
+        steam_appid: app.appid,  // Frontend expects steam_appid
         appid: app.appid,
         name: app.name,
         image: `${STEAM_IMAGE_BASE}/${app.appid}/header.jpg`,
         hasFullData: existingAppIds.has(app.appid)
     }));
 
-    console.log(`📡 [GameService.getGameSearchResults] Returning ${results.length} results (${existingAppIds.size} with full data)`);
-    return results;
+    console.log(`📡 [GameService.getGameSearchResults] Returning ${games.length} results (page ${page}/${totalPages}, total ${total})`);
+    return { games, total, page, totalPages };
 };
 
 
@@ -333,15 +356,32 @@ export const fetchAndCreateGame = async (steamAppId) => {
 
         const gameData = steamData.data;
 
-        // Step 3: Parse requirements using our parser
+        // Step 3: Parse requirements using our parser (for compatibility scores)
         const requirements = await parseSteamRequirements(gameData);
 
-        // Step 4: Create the Game document
+        // Step 4: Create the Game document with ALL Steam data
         const newGame = new Game({
             steam_app_id: gameData.steam_appid,
             name: gameData.name,
+            short_description: gameData.short_description || '',
             image: gameData.header_image || '',
+
+            // Store raw HTML requirements for display
+            pc_requirements: {
+                minimum: gameData.pc_requirements?.minimum || '',
+                recommended: gameData.pc_requirements?.recommended || ''
+            },
+
+            // Store parsed requirements for compatibility calculations
             requirements: requirements,
+
+            // Store additional metadata for display
+            genres: gameData.genres || [],
+            categories: gameData.categories || [],
+            developers: gameData.developers || [],
+            publishers: gameData.publishers || [],
+            release_date: gameData.release_date || {},
+
             keywords: gameData.genres?.map(g => g.description.toLowerCase()) || []
         });
 
@@ -396,4 +436,22 @@ export const getOrFetchGame = async (identifier, type = 'id') => {
     }
 
     throw new Error(`Invalid identifier type: ${type}`);
+};
+
+
+// =============================================================================
+// DEBUG: GET COLLECTION COUNTS
+// =============================================================================
+export const getCollectionCounts = async () => {
+    const steamAppsCount = await SteamApp.countDocuments();
+    const gamesCount = await Game.countDocuments();
+
+    // Get a sample from SteamApps if any exist
+    const sampleSteamApps = await SteamApp.find().limit(3).lean();
+
+    return {
+        steamAppsCount,
+        gamesCount,
+        sampleSteamApps
+    };
 };

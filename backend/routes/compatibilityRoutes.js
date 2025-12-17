@@ -217,7 +217,8 @@ router.post('/batch', compatibilityController.checkBatchCompatibility);
  * @desc    Find all laptops that can run a specific game, with tier classification
  * @access  Public
  * 
- * @param {String} gameId - MongoDB ObjectId of the game
+ * @param {String} gameId - MongoDB ObjectId OR Steam App ID of the game
+ *                          (If Steam App ID is provided and game is not in DB, it will be auto-fetched from Steam)
  * 
  * @query {String} [rankBy='gaming'] - How to rank: 'gaming', 'performance', 'value', 'portable', 'budget'
  * @query {Number} [page=1] - Page number
@@ -239,8 +240,11 @@ router.post('/batch', compatibilityController.checkBatchCompatibility);
  * NOTE: Laptops that don't meet minimum requirements are NOT included in results
  * 
  * @example
- * // Get all laptops that can run a game, ranked by gaming performance
+ * // Get all laptops that can run a game (by MongoDB ID), ranked by gaming performance
  * GET /api/compatibility/laptops-for-game/507f1f77bcf86cd799439022
+ * 
+ * // Get laptops for a game (by Steam App ID) - auto-fetches if not in DB
+ * GET /api/compatibility/laptops-for-game/1091500
  * 
  * // Get laptops under $1500 that can run the game, ranked by value
  * GET /api/compatibility/laptops-for-game/507f1f77bcf86cd799439022?rankBy=value&maxPrice=1500
@@ -370,7 +374,8 @@ router.post('/check-my-laptop', compatibilityController.checkUserLaptopCompatibi
  * @desc    Check all of a user's registered laptops against a single game
  * @access  Public (requires Firebase UID)
  * 
- * @param {String} gameId - MongoDB ObjectId of the game
+ * @param {String} gameId - MongoDB ObjectId OR Steam App ID of the game
+ *                          (If Steam App ID is provided and game is not in DB, it will be auto-fetched from Steam)
  * @query {String} uid - Firebase UID of the user
  * 
  * USE CASE:
@@ -378,7 +383,11 @@ router.post('/check-my-laptop', compatibilityController.checkUserLaptopCompatibi
  * "Which of my laptops can run Elden Ring?"
  * 
  * @example
+ * // Using MongoDB ObjectId
  * GET /api/compatibility/my-laptops/507f1f77bcf86cd799439022?uid=firebaseUID123
+ * 
+ * // Using Steam App ID (auto-fetches from Steam if not in DB)
+ * GET /api/compatibility/my-laptops/1091500?uid=firebaseUID123
  * 
  * @returns {Object} 200 - Success
  * {

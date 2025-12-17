@@ -70,12 +70,16 @@ export const findLaptops = async (filters) => {
     const skip = (page - 1) * limit;
     const sortOrder = filters.sortOrder === 'desc' ? -1 : 1;
 
+    // Try Atlas Search first, fallback to regex if it fails
+    let useAtlasSearch = filters.q && filters.q.trim();
+    let atlasSearchFailed = false;
+
     // Build aggregation pipeline
     const pipeline = [];
 
     // --- ATLAS SEARCH (Fuzzy Text Search) ---
     // If q is provided, use MongoDB Atlas Search for fuzzy matching
-    if (filters.q && filters.q.trim()) {
+    if (useAtlasSearch) {
         pipeline.push({
             $search: {
                 index: 'laptop_search', // Atlas Search index name
@@ -206,7 +210,7 @@ export const findLaptops = async (filters) => {
                 break;
             default:
                 // If text search, sort by relevance; otherwise by price
-                if (filters.q) {
+                if (useAtlasSearch && !atlasSearchFailed) {
                     sortOption = { searchScore: -1 };
                 } else {
                     sortOption = { 'pricing.estimated_price_usd': 1 };
@@ -224,13 +228,48 @@ export const findLaptops = async (filters) => {
     });
 
     // --- EXECUTE AGGREGATION ---
-    const result = await Laptop.aggregate(pipeline);
+    let result;
+    let total;
+    let laptops;
 
-    const total = result[0]?.metadata[0]?.total || 0;
-    let laptops = result[0]?.data || [];
+    try {
+        result = await Laptop.aggregate(pipeline);
+        total = result[0]?.metadata[0]?.total || 0;
+        laptops = result[0]?.data || [];
+    } catch (error) {
+        // Atlas Search might fail if index doesn't exist
+        console.warn(`📡 [LaptopService.findLaptops] Atlas Search failed, using regex fallback: ${error.message}`);
+        atlasSearchFailed = true;
+    }
+
+    // --- FALLBACK TO REGEX SEARCH ---
+    if (atlasSearchFailed || (laptops?.length === 0 && filters.q)) {
+        console.log(`📡 [LaptopService.findLaptops] Using regex fallback for query: "${filters.q}"`);
+
+        const regexFilter = {
+            $or: [
+                { name: { $regex: filters.q, $options: 'i' } },
+                { brand: { $regex: filters.q, $options: 'i' } },
+                { 'cpu.name': { $regex: filters.q, $options: 'i' } },
+                { 'gpu.name': { $regex: filters.q, $options: 'i' } }
+            ]
+        };
+
+        // Combine with other filters if they exist
+        const combinedFilter = Object.keys(matchFilters).length > 0
+            ? { $and: [regexFilter, matchFilters] }
+            : regexFilter;
+
+        laptops = await Laptop.find(combinedFilter)
+            .sort({ 'pricing.estimated_price_usd': 1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+        total = await Laptop.countDocuments(combinedFilter);
+    }
 
     // If no search query was provided and no results, fall back to regular find
-    if (laptops.length === 0 && !filters.q && Object.keys(matchFilters).length === 0) {
+    if ((!laptops || laptops.length === 0) && !filters.q && Object.keys(matchFilters).length === 0) {
         // Fallback for empty search - return all with pagination
         const fallbackResult = await Laptop.find({})
             .sort({ 'pricing.estimated_price_usd': 1 })
@@ -247,13 +286,13 @@ export const findLaptops = async (filters) => {
         };
     }
 
-    console.log(`📡 [LaptopService.findLaptops] Found ${laptops.length} of ${total} total matches`);
+    console.log(`📡 [LaptopService.findLaptops] Found ${laptops?.length || 0} of ${total || 0} total matches`);
 
     return {
-        laptops,
-        total,
+        laptops: laptops || [],
+        total: total || 0,
         page,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil((total || 0) / limit),
         ...(filters.rankBy && { rankBy: filters.rankBy })
     };
 };

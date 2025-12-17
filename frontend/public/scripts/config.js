@@ -8,10 +8,10 @@
 export const CONFIG = {
     // API Base URL
     API_BASE_URL: 'http://localhost:3000/api',
-    
+
     // Auth Server (if separate)
     AUTH_BASE_URL: 'http://localhost:5000',
-    
+
     // Firebase Configuration
     FIREBASE: {
         apiKey: "AIzaSyCywnIfR3dhZAWLT-1Nn6iz_6BCBgipLqE",
@@ -22,13 +22,13 @@ export const CONFIG = {
         appId: "1:170230638392:web:b321a6925f740afd16c3cd",
         measurementId: "G-EJN8RJ4CPH"
     },
-    
+
     // Pagination defaults
     DEFAULT_PAGE_SIZE: 20,
-    
+
     // Debounce delay for search (ms)
     SEARCH_DEBOUNCE: 300,
-    
+
     // Steam header image base URL
     STEAM_IMAGE_BASE: 'https://cdn.akamai.steamstatic.com/steam/apps'
 };
@@ -45,14 +45,15 @@ export const ENDPOINTS = {
         BY_SLUG: '/laptops/slug',
         VARIANTS: '/laptops/variants'
     },
-    
+
     // Games
     GAMES: {
         LOOKUP: '/games/lookup',
         SEARCH_RESULTS: '/games/search-results',
-        BY_ID: '/games'
+        BY_STEAM_ID: '/games/steam',  // Auto-fetches from Steam if not in DB
+        BY_ID: '/games'               // For MongoDB ObjectId lookup
     },
-    
+
     // Compatibility
     COMPATIBILITY: {
         CHECK: '/compatibility/check',
@@ -60,12 +61,12 @@ export const ENDPOINTS = {
         MY_LAPTOPS: '/compatibility/my-laptops',
         LAPTOPS_FOR_GAME: '/compatibility/laptops-for-game'
     },
-    
+
     // Chatbot
     CHAT: {
         MESSAGE: '/chat/message'
     },
-    
+
     // Users
     USERS: {
         SAVE: '/users/save',

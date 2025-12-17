@@ -193,8 +193,8 @@
                 <div class="requirements-section">
                     <h3>System Requirements</h3>
                     <div class="requirements-grid">
-                        ${renderRequirements('minimum', g.pc_requirements?.minimum)}
-                        ${renderRequirements('recommended', g.pc_requirements?.recommended)}
+                        ${renderRequirements('minimum', g.pc_requirements?.minimum, g.requirements?.minimum)}
+                        ${renderRequirements('recommended', g.pc_requirements?.recommended, g.requirements?.recommended)}
                     </div>
                 </div>
 
@@ -228,9 +228,13 @@
             `;
         }
 
-        // Render requirements
-        function renderRequirements(type, requirements) {
-            if (!requirements) {
+        // Render requirements - handles both raw HTML (pc_requirements) and parsed object (requirements)
+        function renderRequirements(type, htmlRequirements, parsedRequirements) {
+            // Check if we have any requirements data
+            const hasHtml = htmlRequirements && typeof htmlRequirements === 'string' && htmlRequirements.trim().length > 0;
+            const hasParsed = parsedRequirements && (parsedRequirements.cpu_text || parsedRequirements.gpu_text || parsedRequirements.ram_gb);
+
+            if (!hasHtml && !hasParsed) {
                 return `
                     <div class="requirements-card ${type}">
                         <h4>
@@ -242,8 +246,25 @@
                 `;
             }
 
-            // Parse HTML requirements from Steam
-            const parsed = parseRequirements(requirements);
+            // If we have raw HTML, parse it for display
+            let parsed = {};
+            if (hasHtml) {
+                parsed = parseRequirements(htmlRequirements);
+            }
+
+            // If HTML parsing didn't get results, use the parsed object from DB
+            if (!parsed.processor && parsedRequirements?.cpu_text) {
+                parsed.processor = parsedRequirements.cpu_text;
+            }
+            if (!parsed.graphics && parsedRequirements?.gpu_text) {
+                parsed.graphics = parsedRequirements.gpu_text;
+            }
+            if (!parsed.memory && parsedRequirements?.ram_gb) {
+                parsed.memory = `${parsedRequirements.ram_gb} GB RAM`;
+            }
+            if (!parsed.storage && parsedRequirements?.storage_gb) {
+                parsed.storage = `${parsedRequirements.storage_gb} GB available space`;
+            }
 
             return `
                 <div class="requirements-card ${type}">

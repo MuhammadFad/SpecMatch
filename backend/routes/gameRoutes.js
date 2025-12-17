@@ -172,7 +172,43 @@ router.get('/search-results', gameController.getSearchResults);
 
 
 // =============================================================================
-// GET GAME BY ID
+// GET GAME BY STEAM APP ID (Auto-fetches from Steam if not in DB)
+// =============================================================================
+/**
+ * @route   GET /api/games/steam/:steamId
+ * @desc    Get a game by its Steam App ID. Auto-fetches from Steam if not in database.
+ * @access  Public
+ * 
+ * @param {Number} steamId - Steam's appid (e.g., 730 for CS2)
+ * @query {Boolean} [autoFetch=true] - Whether to auto-fetch from Steam if not in DB
+ * 
+ * @note    NEW BEHAVIOR: This endpoint now automatically fetches from Steam
+ *          if the game is not in our database. No need to call /fetch-details separately.
+ * 
+ * FLOW:
+ * 1. Check if game exists in our Games collection
+ * 2. If found → return with source: 'database'
+ * 3. If not found AND autoFetch=true → fetch from Steam API
+ * 4. Save to database and return with source: 'steam'
+ * 
+ * @example
+ * GET /api/games/steam/730
+ * GET /api/games/steam/730?autoFetch=false  // Only check DB, don't fetch
+ * 
+ * @returns {Object} 200 - Success
+ * {
+ *   success: true,
+ *   source: 'database' | 'steam',
+ *   isNew: true,  // Only present when fetched from Steam
+ *   data: { steam_app_id, name, image, requirements, ... }
+ * }
+ * @returns {Object} 404 - Game not found (only if autoFetch=false or Steam fetch fails)
+ */
+router.get('/steam/:steamId', gameController.getGameBySteamId);
+
+
+// =============================================================================
+// GET GAME BY ID (MongoDB ObjectId) - Must come AFTER /steam/:steamId
 // =============================================================================
 /**
  * @route   GET /api/games/:id
@@ -181,7 +217,8 @@ router.get('/search-results', gameController.getSearchResults);
  * 
  * @param {String} id - MongoDB ObjectId (24 hex characters)
  * 
- * @note    Only works for games already in our Games collection
+ * @note    Only works for games already in our Games collection.
+ *          This route must be defined AFTER /steam/:steamId to avoid route conflicts.
  * 
  * @example
  * GET /api/games/507f1f77bcf86cd799439011
@@ -209,34 +246,14 @@ router.get('/:id', gameController.getGameById);
 
 
 // =============================================================================
-// GET GAME BY STEAM APP ID
-// =============================================================================
-/**
- * @route   GET /api/games/steam/:steamId
- * @desc    Get a game by its Steam App ID
- * @access  Public
- * 
- * @param {Number} steamId - Steam's appid (e.g., 730 for CS2)
- * 
- * @note    Only returns if game exists in our database
- *          Use POST /fetch-details to fetch & create if missing
- * 
- * @example
- * GET /api/games/steam/730
- * 
- * @returns {Object} 200 - Success
- * @returns {Object} 404 - Game not in our database yet
- */
-router.get('/steam/:steamId', gameController.getGameBySteamId);
-
-
-// =============================================================================
-// FETCH GAME DETAILS FROM STEAM
+// FETCH GAME DETAILS FROM STEAM (Legacy endpoint - use GET /steam/:steamId instead)
 // =============================================================================
 /**
  * @route   POST /api/games/fetch-details
  * @desc    Fetch full game data from Steam API and save to our database
  * @access  Public
+ * 
+ * @deprecated Use GET /api/games/steam/:steamId instead - it now auto-fetches.
  * 
  * @body {Number} steamAppId - Steam's appid
  * 
@@ -284,6 +301,9 @@ router.get('/steam/:steamId', gameController.getGameBySteamId);
  * @returns {Object} 500 - Steam API error
  */
 router.post('/fetch-details', gameController.fetchGameDetails);
+
+// Debug endpoint to check collection counts
+router.get('/debug/counts', gameController.getCollectionCounts);
 
 
 export default router;

@@ -132,17 +132,27 @@ class ApiService {
     }
 
     /**
-     * Get game by Steam App ID
+     * Get game by Steam App ID (auto-fetches from Steam if not in database)
+     * This is the main method for getting game details - it handles everything:
+     * - If game is in DB, returns it immediately
+     * - If not in DB, fetches from Steam API, saves it, then returns it
      */
-    async getGameById(steamAppId) {
-        return this.get(`${ENDPOINTS.GAMES.BY_ID}/${steamAppId}`);
+    async getGameBySteamId(steamAppId) {
+        return this.get(`${ENDPOINTS.GAMES.BY_STEAM_ID}/${steamAppId}`);
     }
 
     /**
-     * Alias for getGameById
+     * Alias for getGameBySteamId (backwards compatible)
+     */
+    async getGameById(steamAppId) {
+        return this.getGameBySteamId(steamAppId);
+    }
+
+    /**
+     * Alias for getGameBySteamId (backwards compatible)
      */
     async getGameByAppId(steamAppId) {
-        return this.getGameById(steamAppId);
+        return this.getGameBySteamId(steamAppId);
     }
 
     // =========================================================================

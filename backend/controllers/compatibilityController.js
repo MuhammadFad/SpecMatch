@@ -71,12 +71,12 @@ export const checkCompatibility = async (req, res) => {
                 message: 'Please provide both laptopId and gameId in the request body',
                 example: {
                     laptopId: '507f1f77bcf86cd799439011',
-                    gameId: '507f1f77bcf86cd799439022'
+                    gameId: '507f1f77bcf86cd799439022 (MongoDB ID) or 1091500 (Steam App ID)'
                 }
             });
         }
 
-        // Validate MongoDB ObjectId format
+        // Validate MongoDB ObjectId format for laptopId
         const objectIdRegex = /^[0-9a-fA-F]{24}$/;
         if (!objectIdRegex.test(laptopId)) {
             return res.status(400).json({
@@ -84,14 +84,43 @@ export const checkCompatibility = async (req, res) => {
                 message: 'Invalid laptopId format. Must be a 24-character hex string.'
             });
         }
+        
+        // Resolve gameId - can be MongoDB ObjectId OR Steam App ID
+        let resolvedGameId = gameId;
+        
         if (!objectIdRegex.test(gameId)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid gameId format. Must be a 24-character hex string.'
-            });
+            // Not a MongoDB ObjectId - treat as Steam App ID
+            const steamAppId = parseInt(gameId);
+            if (isNaN(steamAppId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid gameId format. Must be a 24-character MongoDB ID or a numeric Steam App ID.'
+                });
+            }
+            
+            console.log(`🎮 [CompatibilityController.check] Steam App ID detected: ${steamAppId}, resolving game...`);
+            
+            // Get or fetch the game using compatibilityService helper
+            try {
+                const game = await compatibilityService.getOrFetchGameBySteamId(steamAppId);
+                if (!game) {
+                    return res.status(404).json({
+                        success: false,
+                        message: `Game not found for Steam App ID: ${steamAppId}`
+                    });
+                }
+                resolvedGameId = game._id.toString();
+                console.log(`🎮 [CompatibilityController.check] Resolved to MongoDB ID: ${resolvedGameId}`);
+            } catch (fetchError) {
+                console.error(`❌ [CompatibilityController.check] Failed to fetch game:`, fetchError.message);
+                return res.status(404).json({
+                    success: false,
+                    message: `Failed to fetch game from Steam: ${fetchError.message}`
+                });
+            }
         }
 
-        const result = await compatibilityService.calculateCompatibility(laptopId, gameId);
+        const result = await compatibilityService.calculateCompatibility(laptopId, resolvedGameId);
 
         res.json({
             success: true,
@@ -282,6 +311,9 @@ export const checkBatchCompatibility = async (req, res) => {
  *   - meets_minimum: Meets minimum requirements but not recommended
  *   
  *   Note: Laptops below minimum requirements are NOT returned (trimmed out)
+ * 
+ * NOTE: This endpoint now accepts BOTH MongoDB ObjectId and Steam App ID.
+ *       If Steam App ID is provided and game is not in DB, it will be auto-fetched from Steam.
  */
 export const getLaptopsForGame = async (req, res) => {
     try {
@@ -294,15 +326,35 @@ export const getLaptopsForGame = async (req, res) => {
             ...additionalFilters
         } = req.query;
 
-        console.log(`🎮 [CompatibilityController.laptopsForGame] Game: ${gameId}, RankBy: ${rankBy}`);
+        console.log(`🎮 [CompatibilityController.laptopsForGame] Game ID: ${gameId}, RankBy: ${rankBy}`);
 
-        // Validate gameId
+        // Determine if gameId is MongoDB ObjectId or Steam App ID
         const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+        let resolvedGameId = gameId;
+
         if (!objectIdRegex.test(gameId)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid gameId format. Must be a 24-character hex string.'
-            });
+            // Not a MongoDB ObjectId - treat as Steam App ID
+            const steamAppId = parseInt(gameId);
+            if (isNaN(steamAppId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid gameId format. Must be a 24-character MongoDB ID or a numeric Steam App ID.'
+                });
+            }
+
+            console.log(`🎮 [CompatibilityController.laptopsForGame] Steam App ID detected: ${steamAppId}, resolving game...`);
+
+            // Get or fetch the game using gameService
+            const game = await compatibilityService.getOrFetchGameBySteamId(steamAppId);
+            if (!game) {
+                return res.status(404).json({
+                    success: false,
+                    message: `Game not found for Steam App ID: ${steamAppId}`
+                });
+            }
+
+            resolvedGameId = game._id.toString();
+            console.log(`🎮 [CompatibilityController.laptopsForGame] Resolved to MongoDB ID: ${resolvedGameId}`);
         }
 
         // Validate rankBy
@@ -315,7 +367,7 @@ export const getLaptopsForGame = async (req, res) => {
         }
 
         const result = await compatibilityService.findLaptopsForGame(
-            gameId,
+            resolvedGameId,
             additionalFilters,
             rankBy,
             parseInt(page),
@@ -436,7 +488,7 @@ export const checkUserLaptopCompatibility = async (req, res) => {
  * @route GET /api/compatibility/my-laptops/:gameId
  * 
  * INPUT (req.params):
- *   - gameId: String (MongoDB ObjectId of the game)
+ *   - gameId: String (MongoDB ObjectId OR Steam App ID)
  * 
  * INPUT (req.query):
  *   - uid: String (Firebase UID of the user)
@@ -451,6 +503,9 @@ export const checkUserLaptopCompatibility = async (req, res) => {
  *     }
  *   }
  * 
+ * NOTE: This endpoint now accepts BOTH MongoDB ObjectId and Steam App ID.
+ *       If Steam App ID is provided and game is not in DB, it will be auto-fetched from Steam.
+ * 
  * USE CASE:
  *   User has multiple laptops registered and wants to see:
  *   "Which of my laptops can run Elden Ring?"
@@ -460,7 +515,7 @@ export const checkAllUserLaptopsForGame = async (req, res) => {
         const { gameId } = req.params;
         const { uid } = req.query;
 
-        console.log(`🎮 [CompatibilityController.checkAllUserLaptops] User: ${uid}, Game: ${gameId}`);
+        console.log(`🎮 [CompatibilityController.checkAllUserLaptops] User: ${uid}, Game ID: ${gameId}`);
 
         // Validate required fields
         if (!uid) {
@@ -471,16 +526,36 @@ export const checkAllUserLaptopsForGame = async (req, res) => {
             });
         }
 
-        // Validate gameId format
+        // Determine if gameId is MongoDB ObjectId or Steam App ID
         const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+        let resolvedGameId = gameId;
+
         if (!objectIdRegex.test(gameId)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid gameId format. Must be a 24-character hex string.'
-            });
+            // Not a MongoDB ObjectId - treat as Steam App ID
+            const steamAppId = parseInt(gameId);
+            if (isNaN(steamAppId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid gameId format. Must be a 24-character MongoDB ID or a numeric Steam App ID.'
+                });
+            }
+
+            console.log(`🎮 [CompatibilityController.checkAllUserLaptops] Steam App ID detected: ${steamAppId}, resolving game...`);
+
+            // Get or fetch the game using gameService
+            const game = await compatibilityService.getOrFetchGameBySteamId(steamAppId);
+            if (!game) {
+                return res.status(404).json({
+                    success: false,
+                    message: `Game not found for Steam App ID: ${steamAppId}`
+                });
+            }
+
+            resolvedGameId = game._id.toString();
+            console.log(`🎮 [CompatibilityController.checkAllUserLaptops] Resolved to MongoDB ID: ${resolvedGameId}`);
         }
 
-        const result = await compatibilityService.checkAllUserLaptopsForGame(uid, gameId);
+        const result = await compatibilityService.checkAllUserLaptopsForGame(uid, resolvedGameId);
 
         res.json({
             success: true,

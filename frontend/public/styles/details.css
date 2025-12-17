@@ -412,6 +412,7 @@
 /* Compatibility Checker */
 .compatibility-checker {
     max-width: 600px;
+    overflow: visible;
 }
 
 .compatibility-checker h3 {
@@ -428,10 +429,13 @@
 
 .game-search-wrapper {
     margin-bottom: 1.5rem;
+    position: relative;
+    overflow: visible;
 }
 
 .game-search-wrapper .search-input-wrapper {
     position: relative;
+    overflow: visible;
 }
 
 .game-search-wrapper .search-input {
@@ -449,8 +453,8 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
-    z-index: 50;
-    max-height: 300px;
+    z-index: 1000;
+    max-height: 350px;
     overflow-y: auto;
     display: none;
 }

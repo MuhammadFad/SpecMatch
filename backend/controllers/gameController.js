@@ -146,25 +146,29 @@ export const lookupSteamApps = async (req, res) => {
 export const getSearchResults = async (req, res) => {
     try {
         const query = req.query.q || '';
+        const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
 
-        console.log(`🎮 [GameController.getSearchResults] Query: "${query}", Limit: ${limit}`);
+        console.log(`🎮 [GameController.getSearchResults] Query: "${query}", Page: ${page}, Limit: ${limit}`);
 
         // Require minimum 2 characters
         if (query.length < 2) {
             return res.json({
                 success: true,
-                count: 0,
-                data: [],
+                data: {
+                    games: [],
+                    total: 0,
+                    page: 1,
+                    totalPages: 0
+                },
                 message: 'Please enter at least 2 characters'
             });
         }
 
-        const results = await gameService.getGameSearchResults(query, limit);
+        const results = await gameService.getGameSearchResults(query, page, limit);
 
         res.json({
             success: true,
-            count: results.length,
             data: results
         });
     } catch (error) {
@@ -228,7 +232,7 @@ export const getGameById = async (req, res) => {
 
 
 // =============================================================================
-// GET GAME BY STEAM APP ID
+// GET GAME BY STEAM APP ID (Auto-fetch from Steam if not in DB)
 // =============================================================================
 /**
  * @controller getGameBySteamId
@@ -237,16 +241,25 @@ export const getGameById = async (req, res) => {
  * INPUT (req.params):
  *   - steamId: Steam's appid (number)
  * 
- * OUTPUT:
- *   { success: true, data: {...game} }
- *   OR { success: false, message: "Game not in database" } with 404
+ * INPUT (req.query):
+ *   - autoFetch: Boolean (default: true) - Whether to auto-fetch from Steam if not in DB
  * 
- * NOTE: Only returns if we have it. Use /fetch-details to get from Steam.
+ * OUTPUT:
+ *   { success: true, source: 'database'|'steam', data: {...game} }
+ *   OR { success: false, message: "..." } with appropriate error code
+ * 
+ * BEHAVIOR:
+ *   1. First checks if game exists in our database
+ *   2. If not found AND autoFetch is enabled, fetches from Steam API
+ *   3. Saves the fetched game to database for future requests
+ *   4. Returns the game with source indicator
  */
 export const getGameBySteamId = async (req, res) => {
     try {
         const { steamId } = req.params;
-        console.log(`🎮 [GameController.getGameBySteamId] Steam ID: ${steamId}`);
+        const autoFetch = req.query.autoFetch !== 'false'; // Default to true
+
+        console.log(`🎮 [GameController.getGameBySteamId] Steam ID: ${steamId}, AutoFetch: ${autoFetch}`);
 
         const steamAppId = parseInt(steamId);
         if (isNaN(steamAppId)) {
@@ -256,20 +269,48 @@ export const getGameBySteamId = async (req, res) => {
             });
         }
 
-        const game = await gameService.getGameBySteamId(steamAppId);
+        // Step 1: Check if game exists in our database
+        let game = await gameService.getGameBySteamId(steamAppId);
 
-        if (!game) {
+        if (game) {
+            console.log(`🎮 [GameController.getGameBySteamId] Found in database: ${game.name}`);
+            return res.json({
+                success: true,
+                source: 'database',
+                data: game
+            });
+        }
+
+        // Step 2: Game not in database
+        if (!autoFetch) {
             return res.status(404).json({
                 success: false,
-                message: 'Game not in database. Use POST /api/games/fetch-details to fetch from Steam.',
+                message: 'Game not in database',
                 steamAppId: steamAppId
             });
         }
 
-        res.json({
-            success: true,
-            data: game
-        });
+        // Step 3: Auto-fetch from Steam
+        console.log(`🎮 [GameController.getGameBySteamId] Not in DB, fetching from Steam...`);
+
+        try {
+            game = await gameService.fetchAndCreateGame(steamAppId);
+
+            console.log(`🎮 [GameController.getGameBySteamId] Successfully fetched from Steam: ${game.name}`);
+            return res.json({
+                success: true,
+                source: 'steam',
+                isNew: true,
+                data: game
+            });
+        } catch (steamError) {
+            console.error(`❌ [GameController.getGameBySteamId] Steam fetch failed:`, steamError.message);
+            return res.status(404).json({
+                success: false,
+                message: `Game not found on Steam: ${steamError.message}`,
+                steamAppId: steamAppId
+            });
+        }
     } catch (error) {
         console.error('❌ [GameController.getGameBySteamId] Error:', error.message);
         res.status(500).json({
@@ -336,6 +377,26 @@ export const fetchGameDetails = async (req, res) => {
         });
     } catch (error) {
         console.error('❌ [GameController.fetchGameDetails] Error:', error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+// =============================================================================
+// DEBUG: GET COLLECTION COUNTS
+// =============================================================================
+export const getCollectionCounts = async (req, res) => {
+    try {
+        const counts = await gameService.getCollectionCounts();
+        res.json({
+            success: true,
+            data: counts
+        });
+    } catch (error) {
+        console.error('❌ [GameController.getCollectionCounts] Error:', error.message);
         res.status(500).json({
             success: false,
             message: error.message
