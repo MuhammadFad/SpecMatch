@@ -241,3 +241,265 @@ export const checkBatchCompatibility = async (req, res) => {
         });
     }
 };
+
+
+// =============================================================================
+// FIND LAPTOPS THAT CAN RUN A GAME
+// =============================================================================
+/**
+ * @controller getLaptopsForGame
+ * @route GET /api/compatibility/laptops-for-game/:gameId
+ * 
+ * INPUT (req.params):
+ *   - gameId: String (MongoDB ObjectId of the game)
+ * 
+ * INPUT (req.query):
+ *   - rankBy: String ('gaming' | 'performance' | 'value') - default 'gaming'
+ *   - page: Number (default 1)
+ *   - limit: Number (default 20)
+ *   - Plus all laptop filters: minPrice, maxPrice, brand, maxWeight, etc.
+ * 
+ * OUTPUT:
+ *   {
+ *     success: true,
+ *     data: {
+ *       game: { id, name, image, requirements },
+ *       appliedFilters: { gameRequirements, userFilters, rankBy },
+ *       results: [
+ *         { laptop, tier, compatibilityScore, estimatedPerformance },
+ *         ...
+ *       ],
+ *       summary: { total, exceedsRecommended, meetsMinimum, page, totalPages }
+ *     }
+ *   }
+ * 
+ * USE CASE:
+ *   "Show me all laptops that can run Cyberpunk 2077, ranked by gaming performance"
+ *   Can further filter by price, brand, weight, etc.
+ * 
+ * TIERS:
+ *   - exceeds_recommended: Exceeds the game's recommended specs
+ *   - meets_minimum: Meets minimum requirements but not recommended
+ *   
+ *   Note: Laptops below minimum requirements are NOT returned (trimmed out)
+ */
+export const getLaptopsForGame = async (req, res) => {
+    try {
+        const { gameId } = req.params;
+        const {
+            rankBy = 'gaming',
+            page = 1,
+            limit = 20,
+            // Pass through any additional filters
+            ...additionalFilters
+        } = req.query;
+
+        console.log(`🎮 [CompatibilityController.laptopsForGame] Game: ${gameId}, RankBy: ${rankBy}`);
+
+        // Validate gameId
+        const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+        if (!objectIdRegex.test(gameId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid gameId format. Must be a 24-character hex string.'
+            });
+        }
+
+        // Validate rankBy
+        const validRankOptions = ['gaming', 'performance', 'value', 'portable', 'budget'];
+        if (!validRankOptions.includes(rankBy)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid rankBy value. Must be one of: ${validRankOptions.join(', ')}`
+            });
+        }
+
+        const result = await compatibilityService.findLaptopsForGame(
+            gameId,
+            additionalFilters,
+            rankBy,
+            parseInt(page),
+            parseInt(limit)
+        );
+
+        res.json({
+            success: true,
+            data: result
+        });
+
+    } catch (error) {
+        console.error('❌ [CompatibilityController.laptopsForGame] Error:', error.message);
+
+        if (error.message.includes('not found')) {
+            return res.status(404).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+// =============================================================================
+// CHECK USER'S LAPTOP COMPATIBILITY
+// =============================================================================
+/**
+ * @controller checkUserLaptopCompatibility
+ * @route POST /api/compatibility/check-my-laptop
+ * 
+ * INPUT (req.body):
+ *   - userLaptopId: String (MongoDB ObjectId of the user's laptop)
+ *   - gameId: String (MongoDB ObjectId of the game)
+ * 
+ * OUTPUT:
+ *   {
+ *     success: true,
+ *     data: {
+ *       userLaptop: { id, name, specs },
+ *       game: { id, name, image, requirements },
+ *       compatibility: { canRun, verdict, score, bottleneck, details, estimatedPerformance }
+ *     }
+ *   }
+ * 
+ * USE CASE:
+ *   User has registered their laptop specs and wants to check:
+ *   "Can MY laptop run Cyberpunk 2077?"
+ */
+export const checkUserLaptopCompatibility = async (req, res) => {
+    try {
+        const { userLaptopId, gameId } = req.body;
+
+        console.log(`🎮 [CompatibilityController.checkUserLaptop] UserLaptop: ${userLaptopId}, Game: ${gameId}`);
+
+        // Validate required fields
+        if (!userLaptopId || !gameId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide both userLaptopId and gameId in the request body',
+                example: {
+                    userLaptopId: '507f1f77bcf86cd799439011',
+                    gameId: '507f1f77bcf86cd799439022'
+                }
+            });
+        }
+
+        // Validate MongoDB ObjectId format
+        const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+        if (!objectIdRegex.test(userLaptopId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid userLaptopId format. Must be a 24-character hex string.'
+            });
+        }
+        if (!objectIdRegex.test(gameId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid gameId format. Must be a 24-character hex string.'
+            });
+        }
+
+        const result = await compatibilityService.checkUserLaptopCompatibility(userLaptopId, gameId);
+
+        res.json({
+            success: true,
+            data: result
+        });
+
+    } catch (error) {
+        console.error('❌ [CompatibilityController.checkUserLaptop] Error:', error.message);
+
+        if (error.message.includes('not found')) {
+            return res.status(404).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+// =============================================================================
+// CHECK ALL USER'S LAPTOPS AGAINST A GAME
+// =============================================================================
+/**
+ * @controller checkAllUserLaptopsForGame
+ * @route GET /api/compatibility/my-laptops/:gameId
+ * 
+ * INPUT (req.params):
+ *   - gameId: String (MongoDB ObjectId of the game)
+ * 
+ * INPUT (req.query):
+ *   - uid: String (Firebase UID of the user)
+ * 
+ * OUTPUT:
+ *   {
+ *     success: true,
+ *     data: {
+ *       game: { id, name, image },
+ *       results: [{ userLaptop, compatibility, rank }, ...],
+ *       summary: { total, canRun, cannotRun, bestMatch }
+ *     }
+ *   }
+ * 
+ * USE CASE:
+ *   User has multiple laptops registered and wants to see:
+ *   "Which of my laptops can run Elden Ring?"
+ */
+export const checkAllUserLaptopsForGame = async (req, res) => {
+    try {
+        const { gameId } = req.params;
+        const { uid } = req.query;
+
+        console.log(`🎮 [CompatibilityController.checkAllUserLaptops] User: ${uid}, Game: ${gameId}`);
+
+        // Validate required fields
+        if (!uid) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide uid (Firebase UID) as a query parameter',
+                example: '/api/compatibility/my-laptops/507f1f77bcf86cd799439022?uid=firebaseUID123'
+            });
+        }
+
+        // Validate gameId format
+        const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+        if (!objectIdRegex.test(gameId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid gameId format. Must be a 24-character hex string.'
+            });
+        }
+
+        const result = await compatibilityService.checkAllUserLaptopsForGame(uid, gameId);
+
+        res.json({
+            success: true,
+            data: result
+        });
+
+    } catch (error) {
+        console.error('❌ [CompatibilityController.checkAllUserLaptops] Error:', error.message);
+
+        if (error.message.includes('not found') || error.message.includes('no laptops')) {
+            return res.status(404).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

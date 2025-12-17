@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Details - SpecMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/styles/main.css">
+    <link rel="stylesheet" href="public/styles/details.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="navbar-brand">
+                    <i class="fas fa-laptop"></i>
+                    <span>SpecMatch</span>
+                </a>
+                <div class="navbar-menu">
+                    <a href="index.html" class="navbar-link">Home</a>
+                    <a href="laptops.html" class="navbar-link">Laptops</a>
+                    <a href="games.html" class="navbar-link">Games</a>
+                </div>
+                <div class="navbar-actions" id="authSection"></div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="details-container" id="laptopDetails">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading laptop details...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { api } from './public/scripts/api.js';
+        import { formatPrice, formatStorage, getSteamHeaderImage, getVerdictClass, debounce, getUrlParams } from './public/scripts/utils.js';
+
+        // State
+        let laptop = null;
+        let variants = [];
+        let currentVariant = null;
+
+        const container = document.getElementById('laptopDetails');
+
+        // Get slug from URL
+        function getSlug() {
+            const params = getUrlParams();
+            return params.slug;
+        }
+
+        // Load laptop data
+        async function loadLaptop() {
+            const slug = getSlug();
+            if (!slug) {
+                container.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>No laptop specified</p>
+                        <a href="laptops.html" class="btn btn-primary">Browse Laptops</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await api.getLaptopBySlug(slug);
+
+                if (response.success && response.data) {
+                    laptop = response.data;
+                    currentVariant = laptop;
+                    document.title = `${laptop.name} - SpecMatch`;
+
+                    // Load variants if grouped
+                    if (laptop.group_id) {
+                        loadVariants(laptop.group_id);
+                    }
+
+                    renderLaptop();
+                } else {
+                    throw new Error('Laptop not found');
+                }
+            } catch (error) {
+                console.error('Error loading laptop:', error);
+                container.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Laptop not found</p>
+                        <a href="laptops.html" class="btn btn-primary">Browse Laptops</a>
+                    </div>
+                `;
+            }
+        }
+
+        // Load variants
+        async function loadVariants(groupId) {
+            try {
+                const response = await api.getLaptopVariants(groupId);
+                if (response.success) {
+                    variants = response.data || [];
+                    if (variants.length > 1) {
+                        renderVariantSelector();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading variants:', error);
+            }
+        }
+
+        // Render main laptop view
+        function renderLaptop() {
+            const l = currentVariant || laptop;
+
+            container.innerHTML = `
+                <!-- Breadcrumb -->
+                <nav class="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="laptops.html">Laptops</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>${l.brand}</span>
+                </nav>
+
+                <div class="details-grid">
+                    <!-- Left: Image Gallery -->
+                    <div class="gallery">
+                        <div class="gallery-main">
+                            <img src="${l.images?.[0] || 'https://via.placeholder.com/600x400?text=No+Image'}" 
+                                 alt="${l.name}" 
+                                 id="mainImage"
+                                 onerror="this.src='https://via.placeholder.com/600x400?text=No+Image'">
+                        </div>
+                        ${l.images?.length > 1 ? `
+                            <div class="gallery-thumbs">
+                                ${l.images.map((img, i) => `
+                                    <img src="${img}" 
+                                         alt="Image ${i + 1}" 
+                                         class="thumb ${i === 0 ? 'active' : ''}"
+                                         onclick="selectImage(this, '${img}')"
+                                         onerror="this.remove()">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Right: Info -->
+                    <div class="info">
+                        <div class="info-header">
+                            <span class="brand-badge">${l.brand}</span>
+                            <h1 class="laptop-title">${l.name}</h1>
+                            ${l.pricing?.estimated_price_usd ? `
+                                <div class="price-display">
+                                    <span class="price-value">${formatPrice(l.pricing.estimated_price_usd)}</span>
+                                    <span class="price-note">Estimated</span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Variant Selector -->
+                        <div id="variantSelector"></div>
+
+                        <!-- Quick Specs -->
+                        <div class="quick-specs">
+                            ${l.cpu?.name ? `
+                                <div class="quick-spec">
+                                    <i class="fas fa-microchip"></i>
+                                    <div>
+                                        <span class="spec-label">Processor</span>
+                                        <span class="spec-value">${l.cpu.name}</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${l.gpu?.name ? `
+                                <div class="quick-spec">
+                                    <i class="fas fa-tv"></i>
+                                    <div>
+                                        <span class="spec-label">Graphics</span>
+                                        <span class="spec-value">${l.gpu.name}</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${l.ram?.size_gb ? `
+                                <div class="quick-spec">
+                                    <i class="fas fa-memory"></i>
+                                    <div>
+                                        <span class="spec-label">Memory</span>
+                                        <span class="spec-value">${l.ram.size_gb} GB ${l.ram.type || ''}</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${l.storage?.capacity_gb ? `
+                                <div class="quick-spec">
+                                    <i class="fas fa-hdd"></i>
+                                    <div>
+                                        <span class="spec-label">Storage</span>
+                                        <span class="spec-value">${formatStorage(l.storage.capacity_gb)} ${l.storage.type || ''}</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${l.display?.size_inches ? `
+                                <div class="quick-spec">
+                                    <i class="fas fa-desktop"></i>
+                                    <div>
+                                        <span class="spec-label">Display</span>
+                                        <span class="spec-value">${l.display.size_inches}" ${l.display.resolution || ''} ${l.display.refresh_rate_hz ? `@ ${l.display.refresh_rate_hz}Hz` : ''}</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${l.chassis?.weight_kg ? `
+                                <div class="quick-spec">
+                                    <i class="fas fa-weight-hanging"></i>
+                                    <div>
+                                        <span class="spec-label">Weight</span>
+                                        <span class="spec-value">${l.chassis.weight_kg.toFixed(2)} kg</span>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Score Badges -->
+                        ${l.scores ? `
+                            <div class="score-badges">
+                                ${l.scores.gaming_score ? `
+                                    <div class="score-badge gaming">
+                                        <i class="fas fa-gamepad"></i>
+                                        <span>${Math.round(l.scores.gaming_score)}</span>
+                                        <small>Gaming</small>
+                                    </div>
+                                ` : ''}
+                                ${l.scores.performance_score ? `
+                                    <div class="score-badge performance">
+                                        <i class="fas fa-bolt"></i>
+                                        <span>${Math.round(l.scores.performance_score)}</span>
+                                        <small>Performance</small>
+                                    </div>
+                                ` : ''}
+                                ${l.scores.value_score ? `
+                                    <div class="score-badge value">
+                                        <i class="fas fa-coins"></i>
+                                        <span>${Math.round(l.scores.value_score)}</span>
+                                        <small>Value</small>
+                                    </div>
+                                ` : ''}
+                                ${l.scores.portability_score ? `
+                                    <div class="score-badge portable">
+                                        <i class="fas fa-feather-alt"></i>
+                                        <span>${Math.round(l.scores.portability_score)}</span>
+                                        <small>Portability</small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Tabs Section -->
+                <div class="tabs-section">
+                    <div class="tabs-nav">
+                        <button class="tab-btn active" data-tab="specs">Full Specifications</button>
+                        <button class="tab-btn" data-tab="compatibility">Game Compatibility</button>
+                    </div>
+
+                    <div class="tab-content active" id="tab-specs">
+                        ${renderFullSpecs(l)}
+                    </div>
+
+                    <div class="tab-content" id="tab-compatibility">
+                        ${renderCompatibilityChecker()}
+                    </div>
+                </div>
+            `;
+
+            // Setup tab switching
+            setupTabs();
+
+            // Setup image gallery
+            window.selectImage = (thumb, src) => {
+                document.getElementById('mainImage').src = src;
+                document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+            };
+
+            // Setup compatibility checker
+            setupCompatibilityChecker();
+        }
+
+        // Render variant selector
+        function renderVariantSelector() {
+            const selector = document.getElementById('variantSelector');
+            if (!selector || variants.length <= 1) return;
+
+            selector.innerHTML = `
+                <div class="variant-selector">
+                    <label class="variant-label">Configuration:</label>
+                    <div class="variant-options">
+                        ${variants.map(v => `
+                            <button class="variant-btn ${v._id === currentVariant._id ? 'active' : ''}" 
+                                    data-id="${v._id}"
+                                    data-slug="${v.slug}">
+                                <span class="variant-specs">
+                                    ${v.ram?.size_gb ? `${v.ram.size_gb}GB` : ''} 
+                                    ${v.storage?.capacity_gb ? `/ ${formatStorage(v.storage.capacity_gb)}` : ''}
+                                </span>
+                                ${v.pricing?.estimated_price_usd ? `
+                                    <span class="variant-price">${formatPrice(v.pricing.estimated_price_usd)}</span>
+                                ` : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Add click handlers
+            selector.querySelectorAll('.variant-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const slug = btn.dataset.slug;
+                    history.pushState({}, '', `?slug=${slug}`);
+
+                    const variant = variants.find(v => v.slug === slug);
+                    if (variant) {
+                        currentVariant = variant;
+                        renderLaptop();
+                    }
+                });
+            });
+        }
+
+        // Render full specs
+        function renderFullSpecs(l) {
+            return `
+                <div class="specs-grid">
+                    <!-- Processor -->
+                    <div class="spec-card">
+                        <h4><i class="fas fa-microchip"></i> Processor</h4>
+                        <dl class="spec-list">
+                            ${specRow('Name', l.cpu?.name)}
+                            ${specRow('Cores', l.cpu?.cores)}
+                            ${specRow('Threads', l.cpu?.threads)}
+                            ${specRow('Base Clock', l.cpu?.base_clock_ghz ? `${l.cpu.base_clock_ghz} GHz` : null)}
+                            ${specRow('Boost Clock', l.cpu?.boost_clock_ghz ? `${l.cpu.boost_clock_ghz} GHz` : null)}
+                            ${specRow('Benchmark Score', l.cpu?.benchmark_score)}
+                        </dl>
+                    </div>
+
+                    <!-- Graphics -->
+                    <div class="spec-card">
+                        <h4><i class="fas fa-tv"></i> Graphics</h4>
+                        <dl class="spec-list">
+                            ${specRow('Name', l.gpu?.name)}
+                            ${specRow('VRAM', l.gpu?.vram_gb ? `${l.gpu.vram_gb} GB` : null)}
+                            ${specRow('Type', l.gpu?.type)}
+                            ${specRow('Benchmark Score', l.gpu?.benchmark_score)}
+                        </dl>
+                    </div>
+
+                    <!-- Memory -->
+                    <div class="spec-card">
+                        <h4><i class="fas fa-memory"></i> Memory</h4>
+                        <dl class="spec-list">
+                            ${specRow('Capacity', l.ram?.size_gb ? `${l.ram.size_gb} GB` : null)}
+                            ${specRow('Type', l.ram?.type)}
+                            ${specRow('Speed', l.ram?.speed_mhz ? `${l.ram.speed_mhz} MHz` : null)}
+                        </dl>
+                    </div>
+
+                    <!-- Storage -->
+                    <div class="spec-card">
+                        <h4><i class="fas fa-hdd"></i> Storage</h4>
+                        <dl class="spec-list">
+                            ${specRow('Capacity', l.storage?.capacity_gb ? formatStorage(l.storage.capacity_gb) : null)}
+                            ${specRow('Type', l.storage?.type)}
+                        </dl>
+                    </div>
+
+                    <!-- Display -->
+                    <div class="spec-card">
+                        <h4><i class="fas fa-desktop"></i> Display</h4>
+                        <dl class="spec-list">
+                            ${specRow('Size', l.display?.size_inches ? `${l.display.size_inches}"` : null)}
+                            ${specRow('Resolution', l.display?.resolution)}
+                            ${specRow('Panel Type', l.display?.panel_type)}
+                            ${specRow('Refresh Rate', l.display?.refresh_rate_hz ? `${l.display.refresh_rate_hz} Hz` : null)}
+                            ${specRow('Brightness', l.display?.brightness_nits ? `${l.display.brightness_nits} nits` : null)}
+                            ${specRow('Color Gamut', l.display?.color_gamut)}
+                            ${specRow('Touch', l.display?.touch ? 'Yes' : null)}
+                        </dl>
+                    </div>
+
+                    <!-- Chassis -->
+                    <div class="spec-card">
+                        <h4><i class="fas fa-cube"></i> Chassis</h4>
+                        <dl class="spec-list">
+                            ${specRow('Weight', l.chassis?.weight_kg ? `${l.chassis.weight_kg.toFixed(2)} kg` : null)}
+                            ${specRow('Dimensions', l.chassis?.dimensions)}
+                            ${specRow('Material', l.chassis?.material)}
+                            ${specRow('Color', l.chassis?.color)}
+                        </dl>
+                    </div>
+
+                    <!-- Battery -->
+                    <div class="spec-card">
+                        <h4><i class="fas fa-battery-full"></i> Battery</h4>
+                        <dl class="spec-list">
+                            ${specRow('Capacity', l.battery?.capacity_wh ? `${l.battery.capacity_wh} Wh` : null)}
+                            ${specRow('Battery Life', l.battery?.battery_life_hours ? `Up to ${l.battery.battery_life_hours} hours` : null)}
+                        </dl>
+                    </div>
+
+                    <!-- Connectivity -->
+                    <div class="spec-card">
+                        <h4><i class="fas fa-wifi"></i> Connectivity</h4>
+                        <dl class="spec-list">
+                            ${specRow('WiFi', l.connectivity?.wifi)}
+                            ${specRow('Bluetooth', l.connectivity?.bluetooth)}
+                            ${specRow('Ports', l.connectivity?.ports?.join(', '))}
+                        </dl>
+                    </div>
+                </div>
+            `;
+        }
+
+        function specRow(label, value) {
+            if (!value) return '';
+            return `
+                <div class="spec-row">
+                    <dt>${label}</dt>
+                    <dd>${value}</dd>
+                </div>
+            `;
+        }
+
+        // Render compatibility checker
+        function renderCompatibilityChecker() {
+            return `
+                <div class="compatibility-checker">
+                    <h3>Check Game Compatibility</h3>
+                    <p class="checker-description">Search for a game to see how well this laptop can run it.</p>
+                    
+                    <div class="game-search-wrapper">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-gamepad search-icon"></i>
+                            <input type="text" 
+                                   class="search-input" 
+                                   id="gameSearchInput" 
+                                   placeholder="Search for a game...">
+                            <div class="autocomplete-dropdown" id="gameDropdown"></div>
+                        </div>
+                    </div>
+
+                    <div id="compatibilityResult"></div>
+                </div>
+            `;
+        }
+
+        // Setup compatibility checker
+        function setupCompatibilityChecker() {
+            const input = document.getElementById('gameSearchInput');
+            const dropdown = document.getElementById('gameDropdown');
+            const resultDiv = document.getElementById('compatibilityResult');
+
+            if (!input) return;
+
+            const searchGames = debounce(async (query) => {
+                if (query.length < 2) {
+                    dropdown.innerHTML = '';
+                    dropdown.classList.remove('active');
+                    return;
+                }
+
+                try {
+                    const response = await api.lookupGames(query);
+                    if (response.success && response.data?.length > 0) {
+                        dropdown.innerHTML = response.data.slice(0, 8).map(game => `
+                            <div class="autocomplete-item" data-appid="${game.steam_appid}">
+                                <img src="${getSteamHeaderImage(game.steam_appid)}" 
+                                     alt="${game.name}" 
+                                     class="game-thumb"
+                                     onerror="this.style.display='none'">
+                                <span>${game.name}</span>
+                            </div>
+                        `).join('');
+                        dropdown.classList.add('active');
+
+                        // Click handlers
+                        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                            item.addEventListener('click', () => {
+                                const appId = item.dataset.appid;
+                                const name = item.querySelector('span').textContent;
+                                input.value = name;
+                                dropdown.classList.remove('active');
+                                checkCompatibility(appId);
+                            });
+                        });
+                    } else {
+                        dropdown.innerHTML = `<div class="autocomplete-empty">No games found</div>`;
+                        dropdown.classList.add('active');
+                    }
+                } catch (error) {
+                    console.error('Game search error:', error);
+                }
+            }, 300);
+
+            input.addEventListener('input', (e) => searchGames(e.target.value.trim()));
+
+            // Close dropdown on outside click
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        }
+
+        // Check compatibility
+        async function checkCompatibility(steamAppId) {
+            const resultDiv = document.getElementById('compatibilityResult');
+            const l = currentVariant || laptop;
+
+            resultDiv.innerHTML = `
+                <div class="checking-state">
+                    <div class="spinner"></div>
+                    <p>Analyzing compatibility...</p>
+                </div>
+            `;
+
+            try {
+                const response = await api.checkCompatibility(l._id, steamAppId);
+
+                if (response.success && response.data) {
+                    const result = response.data;
+                    resultDiv.innerHTML = `
+                        <div class="compatibility-result">
+                            <div class="result-header">
+                                <div class="verdict-badge ${getVerdictClass(result.verdict)}">
+                                    ${getVerdictIcon(result.verdict)}
+                                    <span>${result.verdict}</span>
+                                </div>
+                                <h4>${result.gameName || 'Game'}</h4>
+                            </div>
+                            
+                            ${result.details ? `
+                                <div class="result-details">
+                                    ${result.details.cpu ? `
+                                        <div class="detail-row">
+                                            <span class="detail-label">CPU</span>
+                                            <span class="detail-status ${result.details.cpu.meets ? 'pass' : 'fail'}">
+                                                ${result.details.cpu.meets ? '✓ Meets' : '✗ Below'} ${result.details.cpu.level} requirements
+                                            </span>
+                                        </div>
+                                    ` : ''}
+                                    ${result.details.gpu ? `
+                                        <div class="detail-row">
+                                            <span class="detail-label">GPU</span>
+                                            <span class="detail-status ${result.details.gpu.meets ? 'pass' : 'fail'}">
+                                                ${result.details.gpu.meets ? '✓ Meets' : '✗ Below'} ${result.details.gpu.level} requirements
+                                            </span>
+                                        </div>
+                                    ` : ''}
+                                    ${result.details.ram ? `
+                                        <div class="detail-row">
+                                            <span class="detail-label">RAM</span>
+                                            <span class="detail-status ${result.details.ram.meets ? 'pass' : 'fail'}">
+                                                ${result.details.ram.meets ? '✓ Meets' : '✗ Below'} ${result.details.ram.level} requirements
+                                            </span>
+                                        </div>
+                                    ` : ''}
+                                    ${result.details.storage ? `
+                                        <div class="detail-row">
+                                            <span class="detail-label">Storage</span>
+                                            <span class="detail-status ${result.details.storage.meets ? 'pass' : 'fail'}">
+                                                ${result.details.storage.meets ? '✓ Sufficient' : '✗ May need more space'}
+                                            </span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+
+                            <a href="game.html?appId=${steamAppId}" class="btn btn-secondary btn-sm" style="margin-top: 1rem;">
+                                View Game Details <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('No compatibility data');
+                }
+            } catch (error) {
+                console.error('Compatibility check error:', error);
+                resultDiv.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Unable to check compatibility. Game requirements may not be available.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function getVerdictIcon(verdict) {
+            const icons = {
+                'Excellent': '<i class="fas fa-star"></i>',
+                'Recommended': '<i class="fas fa-check-circle"></i>',
+                'Playable': '<i class="fas fa-check"></i>',
+                'Minimum': '<i class="fas fa-minus-circle"></i>',
+                'Insufficient': '<i class="fas fa-times-circle"></i>'
+            };
+            return icons[verdict] || '<i class="fas fa-question-circle"></i>';
+        }
+
+        // Setup tabs
+        function setupTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update buttons
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Update content
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+                });
+            });
+        }
+
+        // Load auth state
+        function loadAuthState() {
+            const user = JSON.parse(localStorage.getItem('specmatch_user'));
+            const authSection = document.getElementById('authSection');
+
+            if (user) {
+                authSection.innerHTML = `
+                    <a href="profile.html" class="navbar-user">
+                        <div class="navbar-user-avatar">${user.name?.[0]?.toUpperCase() || 'U'}</div>
+                        <span>${user.name || 'User'}</span>
+                    </a>
+                `;
+            } else {
+                authSection.innerHTML = `
+                    <a href="login.html" class="btn btn-ghost">Sign In</a>
+                    <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+                `;
+            }
+        }
+
+        // Initialize
+        loadAuthState();
+        loadLaptop();
+    </script>
+</body>
+
+</html>

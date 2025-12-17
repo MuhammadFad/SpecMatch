@@ -81,6 +81,7 @@ export const searchGames = async (req, res) => {
  * USE CASE:
  *   Autocomplete dropdown as user types game name.
  *   Returns lightweight results from 200k+ SteamApps index.
+ *   Uses MongoDB Atlas Search for fuzzy matching.
  */
 export const lookupSteamApps = async (req, res) => {
     try {
@@ -108,6 +109,66 @@ export const lookupSteamApps = async (req, res) => {
         });
     } catch (error) {
         console.error('❌ [GameController.lookupSteamApps] Error:', error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+// =============================================================================
+// GET SEARCH RESULTS PAGE (Enter without selecting)
+// =============================================================================
+/**
+ * @controller getSearchResults
+ * @route GET /api/games/search-results
+ * 
+ * INPUT (req.query):
+ *   - q: String (minimum 2 characters)
+ *   - limit: Number (default 20)
+ * 
+ * OUTPUT:
+ *   {
+ *     success: true,
+ *     count: N,
+ *     data: [
+ *       { appid, name, image, hasFullData },
+ *       ...
+ *     ]
+ *   }
+ * 
+ * USE CASE:
+ *   When user presses Enter in the search box without selecting an autocomplete result.
+ *   Displays a grid of game tiles with Steam header images.
+ *   Clicking a tile triggers the same flow as selecting from autocomplete.
+ */
+export const getSearchResults = async (req, res) => {
+    try {
+        const query = req.query.q || '';
+        const limit = parseInt(req.query.limit) || 20;
+
+        console.log(`🎮 [GameController.getSearchResults] Query: "${query}", Limit: ${limit}`);
+
+        // Require minimum 2 characters
+        if (query.length < 2) {
+            return res.json({
+                success: true,
+                count: 0,
+                data: [],
+                message: 'Please enter at least 2 characters'
+            });
+        }
+
+        const results = await gameService.getGameSearchResults(query, limit);
+
+        res.json({
+            success: true,
+            count: results.length,
+            data: results
+        });
+    } catch (error) {
+        console.error('❌ [GameController.getSearchResults] Error:', error.message);
         res.status(500).json({
             success: false,
             message: error.message

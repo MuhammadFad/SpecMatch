@@ -39,10 +39,13 @@
  * 
  * AVAILABLE ENDPOINTS:
  * 
- * | Method | Endpoint | Description                                    |
- * |--------|----------|------------------------------------------------|
- * | POST   | /check   | Check ONE laptop vs ONE game                   |
- * | POST   | /batch   | Check MULTIPLE laptops vs ONE game (rankings)  |
+ * | Method | Endpoint              | Description                                    |
+ * |--------|-----------------------|------------------------------------------------|
+ * | POST   | /check                | Check ONE catalog laptop vs ONE game           |
+ * | POST   | /batch                | Check MULTIPLE catalog laptops vs ONE game     |
+ * | GET    | /laptops-for-game/:id | Find all catalog laptops that can run a game   |
+ * | POST   | /check-my-laptop      | Check USER'S laptop vs ONE game                |
+ * | GET    | /my-laptops/:gameId   | Check ALL user's laptops vs ONE game           |
  */
 
 import express from 'express';
@@ -204,6 +207,206 @@ router.post('/check', compatibilityController.checkCompatibility);
  * @returns {Object} 400 - Missing or invalid parameters
  */
 router.post('/batch', compatibilityController.checkBatchCompatibility);
+
+
+// =============================================================================
+// FIND LAPTOPS THAT CAN RUN A GAME
+// =============================================================================
+/**
+ * @route   GET /api/compatibility/laptops-for-game/:gameId
+ * @desc    Find all laptops that can run a specific game, with tier classification
+ * @access  Public
+ * 
+ * @param {String} gameId - MongoDB ObjectId of the game
+ * 
+ * @query {String} [rankBy='gaming'] - How to rank: 'gaming', 'performance', 'value', 'portable', 'budget'
+ * @query {Number} [page=1] - Page number
+ * @query {Number} [limit=20] - Results per page
+ * @query {Number} [minPrice] - Additional filter: minimum price
+ * @query {Number} [maxPrice] - Additional filter: maximum price
+ * @query {String} [brand] - Additional filter: brand name
+ * @query {Number} [maxWeight] - Additional filter: maximum weight
+ * 
+ * USE CASES:
+ * 1. "What laptops can run Cyberpunk 2077?" → Shows all compatible laptops
+ * 2. "Gaming laptops under $2000 that can run Elden Ring" → Filtered results
+ * 3. Catalog page for a game showing compatible hardware
+ * 
+ * TIERS:
+ * - exceeds_recommended: Laptop exceeds all recommended specs (can play on High/Ultra)
+ * - meets_minimum: Laptop meets minimum specs but not all recommended (can play on Low/Medium)
+ * 
+ * NOTE: Laptops that don't meet minimum requirements are NOT included in results
+ * 
+ * @example
+ * // Get all laptops that can run a game, ranked by gaming performance
+ * GET /api/compatibility/laptops-for-game/507f1f77bcf86cd799439022
+ * 
+ * // Get laptops under $1500 that can run the game, ranked by value
+ * GET /api/compatibility/laptops-for-game/507f1f77bcf86cd799439022?rankBy=value&maxPrice=1500
+ * 
+ * @returns {Object} 200 - Success
+ * {
+ *   success: true,
+ *   data: {
+ *     game: {
+ *       id: "507f1f77bcf86cd799439022",
+ *       name: "Cyberpunk 2077",
+ *       image: "https://...",
+ *       requirements: {
+ *         minimum: { cpu: "i5-3570K", cpu_score: 45, gpu: "GTX 780", gpu_score: 55, ram_gb: 8, storage_gb: 70 },
+ *         recommended: { cpu: "i7-6700", cpu_score: 60, gpu: "GTX 1060", gpu_score: 70, ram_gb: 16, storage_gb: 70 }
+ *       }
+ *     },
+ *     appliedFilters: {
+ *       gameRequirements: { minCpuScore: 45, minGpuScore: 55, minRam: 8, minStorage: 70 },
+ *       userFilters: { maxPrice: 1500 },
+ *       rankBy: "value"
+ *     },
+ *     results: [
+ *       {
+ *         laptop: {
+ *           _id: "...",
+ *           slug: "lenovo-legion-5-...",
+ *           name: "Lenovo Legion 5 Pro",
+ *           brand: "Lenovo",
+ *           image: "https://...",
+ *           price: 1299,
+ *           specs: { cpu, gpu, ram, storage },
+ *           rankingScore: 82.5
+ *         },
+ *         tier: "exceeds_recommended",
+ *         compatibilityScore: 92,
+ *         estimatedPerformance: "Ultra"
+ *       },
+ *       {
+ *         laptop: { ... },
+ *         tier: "meets_minimum",
+ *         compatibilityScore: 65,
+ *         estimatedPerformance: "Medium"
+ *       },
+ *       ...
+ *     ],
+ *     summary: {
+ *       total: 150,
+ *       exceedsRecommended: 45,
+ *       meetsMinimum: 105,
+ *       page: 1,
+ *       totalPages: 8
+ *     }
+ *   }
+ * }
+ * 
+ * @returns {Object} 400 - Invalid gameId format
+ * @returns {Object} 404 - Game not found
+ */
+router.get('/laptops-for-game/:gameId', compatibilityController.getLaptopsForGame);
+
+
+// =============================================================================
+// CHECK USER'S LAPTOP COMPATIBILITY
+// =============================================================================
+/**
+ * @route   POST /api/compatibility/check-my-laptop
+ * @desc    Check if a user's registered laptop can run a specific game
+ * @access  Public (requires userLaptopId from user's collection)
+ * 
+ * @body {String} userLaptopId - MongoDB ObjectId of the user's laptop (from User_laptops)
+ * @body {String} gameId - MongoDB ObjectId of the game
+ * 
+ * USE CASE:
+ * Logged-in user has registered their laptop specs and wants to check:
+ * "Can MY laptop run Cyberpunk 2077?"
+ * 
+ * NOTE: This is different from /check which uses catalog laptops.
+ * This endpoint uses the UserLaptop collection (user-entered specs).
+ * 
+ * @example
+ * POST /api/compatibility/check-my-laptop
+ * Body: {
+ *   "userLaptopId": "507f1f77bcf86cd799439011",
+ *   "gameId": "507f1f77bcf86cd799439022"
+ * }
+ * 
+ * @returns {Object} 200 - Success
+ * {
+ *   success: true,
+ *   data: {
+ *     userLaptop: {
+ *       id: "507f1f77bcf86cd799439011",
+ *       name: "My Gaming Laptop",
+ *       specs: {
+ *         cpu: { text: "Intel Core i7-12700H", score: 75 },
+ *         gpu: { text: "RTX 3060", score: 80 },
+ *         ram_gb: 16,
+ *         storage_gb: 512
+ *       }
+ *     },
+ *     game: {
+ *       id: "507f1f77bcf86cd799439022",
+ *       name: "Cyberpunk 2077",
+ *       image: "https://...",
+ *       requirements: { minimum: {...}, recommended: {...} }
+ *     },
+ *     compatibility: {
+ *       canRun: true,
+ *       verdict: "Good",
+ *       score: 78,
+ *       bottleneck: "Storage",
+ *       details: { cpu, gpu, ram, storage },
+ *       estimatedPerformance: "High"
+ *     }
+ *   }
+ * }
+ */
+router.post('/check-my-laptop', compatibilityController.checkUserLaptopCompatibility);
+
+
+// =============================================================================
+// CHECK ALL USER'S LAPTOPS AGAINST A GAME
+// =============================================================================
+/**
+ * @route   GET /api/compatibility/my-laptops/:gameId
+ * @desc    Check all of a user's registered laptops against a single game
+ * @access  Public (requires Firebase UID)
+ * 
+ * @param {String} gameId - MongoDB ObjectId of the game
+ * @query {String} uid - Firebase UID of the user
+ * 
+ * USE CASE:
+ * User has multiple laptops registered and wants to see:
+ * "Which of my laptops can run Elden Ring?"
+ * 
+ * @example
+ * GET /api/compatibility/my-laptops/507f1f77bcf86cd799439022?uid=firebaseUID123
+ * 
+ * @returns {Object} 200 - Success
+ * {
+ *   success: true,
+ *   data: {
+ *     game: { id, name, image },
+ *     results: [
+ *       {
+ *         rank: 1,
+ *         userLaptop: { id, name, specs },
+ *         compatibility: { canRun: true, verdict: "Good", score: 78, ... }
+ *       },
+ *       {
+ *         rank: 2,
+ *         userLaptop: { id, name, specs },
+ *         compatibility: { canRun: true, verdict: "Playable", score: 55, ... }
+ *       }
+ *     ],
+ *     summary: {
+ *       total: 2,
+ *       canRun: 2,
+ *       cannotRun: 0,
+ *       bestMatch: { laptopId: "...", laptopName: "My Gaming Laptop", score: 78 }
+ *     }
+ *   }
+ * }
+ */
+router.get('/my-laptops/:gameId', compatibilityController.checkAllUserLaptopsForGame);
 
 
 export default router;

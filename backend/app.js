@@ -2,11 +2,17 @@ import "dotenv/config"
 import express from "express"
 import cors from 'cors';
 import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import laptopRoutes from './routes/laptopRoutes.js';
 import gameRoutes from './routes/gameRoutes.js';
 import compatibilityRoutes from './routes/compatibilityRoutes.js';
 import chatbotRoutes from './routes/chatbotRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+
+// ES Module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express()
 const port = process.env.PORT || 3000;
@@ -16,6 +22,10 @@ const port = process.env.PORT || 3000;
 // =============================================================================
 app.use(cors());
 app.use(express.json()); // Parse JSON request bodies
+
+// Serve static files from frontend
+app.use(express.static(path.join(__dirname, '../frontend')));
+app.use('/public', express.static(path.join(__dirname, '../frontend/public')));
 
 // =============================================================================
 // DATABASE CONNECTION
@@ -82,6 +92,17 @@ app.use('/api/users', userRoutes);
 // =============================================================================
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// =============================================================================
+// SERVE FRONTEND (catch-all for SPA routing)
+// =============================================================================
+app.get('/', (req, res) => {
+    // Don't serve index.html for API routes
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ success: false, message: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 // =============================================================================

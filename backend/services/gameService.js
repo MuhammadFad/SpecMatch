@@ -75,11 +75,11 @@ export const findGames = async (queryText, limit = 20) => {
 
 
 // =============================================================================
-// SEARCH STEAM APPS (Lightweight lookup)
+// SEARCH STEAM APPS (Lightweight lookup with Atlas Search)
 // =============================================================================
 /**
  * @function searchSteamApps
- * @description Search the SteamApps index for game names
+ * @description Search the SteamApps index for game names using MongoDB Atlas Search
  * This is the FIRST step - returns lightweight results for autocomplete/search
  * 
  * WHY TWO COLLECTIONS?
@@ -103,13 +103,138 @@ export const searchSteamApps = async (queryText, limit = 10) => {
         return [];
     }
 
-    const results = await SteamApp.find({
-        name: { $regex: queryText, $options: 'i' }
-    })
-        .limit(limit)
-        .lean();
+    // Use MongoDB Atlas Search for fuzzy matching
+    const pipeline = [
+        {
+            $search: {
+                index: 'steam_apps_search', // Atlas Search index name
+                compound: {
+                    should: [
+                        {
+                            text: {
+                                query: queryText,
+                                path: 'name',
+                                fuzzy: {
+                                    maxEdits: 2,
+                                    prefixLength: 1
+                                },
+                                score: { boost: { value: 3 } }
+                            }
+                        },
+                        {
+                            autocomplete: {
+                                query: queryText,
+                                path: 'name',
+                                fuzzy: {
+                                    maxEdits: 1,
+                                    prefixLength: 2
+                                }
+                            }
+                        }
+                    ],
+                    minimumShouldMatch: 1
+                }
+            }
+        },
+        {
+            $addFields: {
+                searchScore: { $meta: 'searchScore' }
+            }
+        },
+        { $sort: { searchScore: -1 } },
+        { $limit: limit },
+        {
+            $project: {
+                appid: 1,
+                name: 1,
+                _id: 0
+            }
+        }
+    ];
 
-    console.log(`📡 [GameService.searchSteamApps] Found ${results.length} matches in SteamApps`);
+    try {
+        const results = await SteamApp.aggregate(pipeline);
+        console.log(`📡 [GameService.searchSteamApps] Found ${results.length} matches in SteamApps`);
+        return results;
+    } catch (error) {
+        // Fallback to regex search if Atlas Search fails
+        console.warn(`📡 [GameService.searchSteamApps] Atlas Search failed, falling back to regex: ${error.message}`);
+        const results = await SteamApp.find({
+            name: { $regex: queryText, $options: 'i' }
+        })
+            .limit(limit)
+            .lean();
+        return results;
+    }
+};
+
+
+// =============================================================================
+// GET SEARCH RESULTS PAGE (When user presses Enter without selecting)
+// =============================================================================
+/**
+ * @function getGameSearchResults
+ * @description Returns search results formatted for display as a grid of game tiles
+ * Used when user presses Enter in the search box without selecting an autocomplete result
+ * 
+ * Returns results with:
+ * - Steam image URLs (header images)
+ * - Basic info (appid, name)
+ * - Indication if we already have full game data
+ * 
+ * @param {String} queryText - The user's search input
+ * @param {Number} [limit=20] - Maximum results to return
+ * 
+ * @returns {Array} Array of game tiles for display:
+ * [
+ *   {
+ *     appid: 1091500,
+ *     name: "Cyberpunk 2077",
+ *     image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg",
+ *     hasFullData: true/false
+ *   },
+ *   ...
+ * ]
+ * 
+ * @example
+ * // Request: GET /api/games/search-results?q=cyberpunk
+ * getGameSearchResults('cyberpunk', 20)
+ */
+export const getGameSearchResults = async (queryText, limit = 20) => {
+    console.log(`📡 [GameService.getGameSearchResults] Getting search results for: "${queryText}"`);
+
+    if (!queryText || queryText.length < 2) {
+        return [];
+    }
+
+    // First get matching Steam apps
+    const steamApps = await searchSteamApps(queryText, limit);
+
+    if (steamApps.length === 0) {
+        return [];
+    }
+
+    // Get list of appids
+    const appIds = steamApps.map(app => app.appid);
+
+    // Check which ones we already have in our Games collection
+    const existingGames = await Game.find({
+        steam_app_id: { $in: appIds }
+    }).select('steam_app_id').lean();
+
+    const existingAppIds = new Set(existingGames.map(g => g.steam_app_id));
+
+    // Build results with Steam image URLs
+    const STEAM_IMAGE_BASE = 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps';
+
+    const results = steamApps.map(app => ({
+        appid: app.appid,
+        name: app.name,
+        image: `${STEAM_IMAGE_BASE}/${app.appid}/header.jpg`,
+        hasFullData: existingAppIds.has(app.appid)
+    }));
+
+    console.log(`📡 [GameService.getGameSearchResults] Returning ${results.length} results (${existingAppIds.size} with full data)`);
     return results;
 };
 

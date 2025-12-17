@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpecMatch - Find Your Perfect Laptop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/styles/main.css">
+    <link rel="stylesheet" href="public/styles/home.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="navbar-brand">
+                    <i class="fas fa-laptop"></i>
+                    <span>SpecMatch</span>
+                </a>
+
+                <div class="navbar-menu">
+                    <a href="index.html" class="navbar-link active">Home</a>
+                    <a href="laptops.html" class="navbar-link">Laptops</a>
+                    <a href="games.html" class="navbar-link">Games</a>
+                </div>
+
+                <div class="navbar-actions">
+                    <div id="authSection">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Find Your Perfect <span class="gradient-text">Laptop Match</span></h1>
+                <p>Search laptops, check game compatibility, and get AI-powered recommendations tailored to your needs.
+                </p>
+
+                <!-- Dual Search Bars -->
+                <div class="search-container">
+                    <!-- Laptop Search -->
+                    <div class="search-box">
+                        <div class="search-label">
+                            <i class="fas fa-laptop"></i>
+                            <span>Search Laptops</span>
+                        </div>
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="laptopSearch" class="search-input"
+                                placeholder="Search by brand, model, or specs...">
+                        </div>
+                    </div>
+
+                    <!-- Game Search -->
+                    <div class="search-box">
+                        <div class="search-label">
+                            <i class="fas fa-gamepad"></i>
+                            <span>Search Games</span>
+                        </div>
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="gameSearch" class="search-input" placeholder="Search for a game...">
+                            <div class="autocomplete-dropdown" id="gameDropdown"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-bg">
+                <div class="hero-shape shape-1"></div>
+                <div class="hero-shape shape-2"></div>
+                <div class="hero-shape shape-3"></div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Top Gaming Laptops -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-gamepad"></i> Top Gaming Laptops</h2>
+                        <a href="laptops.html?rankBy=gaming" class="view-all">View All <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="laptop-grid" id="gamingLaptops">
+                        <!-- Populated by JS -->
+                        <div class="skeleton-grid">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Best Value Laptops -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tags"></i> Best Value Picks</h2>
+                        <a href="laptops.html?rankBy=value" class="view-all">View All <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="laptop-grid" id="valueLaptops">
+                        <div class="skeleton-grid">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Most Portable -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-feather-alt"></i> Ultraportable Picks</h2>
+                        <a href="laptops.html?rankBy=portable" class="view-all">View All <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="laptop-grid" id="portableLaptops">
+                        <div class="skeleton-grid">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Top Performance -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-bolt"></i> High Performance</h2>
+                        <a href="laptops.html?rankBy=performance" class="view-all">View All <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="laptop-grid" id="performanceLaptops">
+                        <div class="skeleton-grid">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Chatbot FAB -->
+        <button class="chatbot-fab" id="chatbotBtn" title="AI Laptop Assistant">
+            <i class="fas fa-robot"></i>
+        </button>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <div class="logo">
+                            <i class="fas fa-laptop"></i>
+                            <span>SpecMatch</span>
+                        </div>
+                        <p>Find your perfect laptop match with AI-powered recommendations and game compatibility
+                            checking.</p>
+                    </div>
+                    <div class="footer-links">
+                        <div class="footer-column">
+                            <h4>Quick Links</h4>
+                            <a href="laptops.html">Browse Laptops</a>
+                            <a href="games.html">Game Compatibility</a>
+                            <a href="#" id="openChatbot">AI Assistant</a>
+                        </div>
+                        <div class="footer-column">
+                            <h4>Categories</h4>
+                            <a href="laptops.html?rankBy=gaming">Gaming Laptops</a>
+                            <a href="laptops.html?rankBy=value">Best Value</a>
+                            <a href="laptops.html?rankBy=portable">Ultraportable</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 SpecMatch. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Chatbot Modal -->
+    <div class="modal-backdrop" id="chatbotBackdrop">
+        <div class="chatbot-modal" id="chatbotModal">
+            <div class="chatbot-header">
+                <div class="chatbot-title">
+                    <i class="fas fa-robot"></i>
+                    <span>SpecMatch AI Assistant</span>
+                </div>
+                <button class="modal-close" id="closeChatbot">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chatbot-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        Hi! I'm your SpecMatch AI assistant. I can help you find the perfect laptop based on your needs.
+                        What are you looking for?
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="chatInput" placeholder="Ask me about laptops...">
+                <button id="sendChatBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api } from './public/scripts/api.js';
+        import { debounce, formatPrice, getSteamHeaderImage } from './public/scripts/utils.js';
+
+        // DOM Elements
+        const laptopSearch = document.getElementById('laptopSearch');
+        const gameSearch = document.getElementById('gameSearch');
+        const gameDropdown = document.getElementById('gameDropdown');
+        const authSection = document.getElementById('authSection');
+
+        // Load user auth state
+        function loadAuthState() {
+            const user = JSON.parse(localStorage.getItem('specmatch_user'));
+            if (user) {
+                authSection.innerHTML = `
+                    <div class="navbar-user" id="userMenu">
+                        <div class="navbar-user-avatar">${user.name ? user.name[0].toUpperCase() : 'U'}</div>
+                        <span>${user.name || 'User'}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                        <a href="my-laptops.html"><i class="fas fa-laptop"></i> My Laptops</a>
+                        <hr>
+                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                `;
+
+                // Toggle dropdown
+                document.getElementById('userMenu').addEventListener('click', () => {
+                    document.getElementById('userDropdown').classList.toggle('show');
+                });
+
+                // Logout
+                document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('specmatch_user');
+                    window.location.reload();
+                });
+            } else {
+                authSection.innerHTML = `
+                    <a href="login.html" class="btn btn-ghost">Sign In</a>
+                    <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+                `;
+            }
+        }
+
+        // Load top laptops for each category
+        async function loadTopLaptops() {
+            const categories = ['gaming', 'value', 'portable', 'performance'];
+            const containerIds = ['gamingLaptops', 'valueLaptops', 'portableLaptops', 'performanceLaptops'];
+
+            categories.forEach(async (category, index) => {
+                try {
+                    const response = await api.getTopLaptops(category, 4);
+                    if (response.success) {
+                        renderLaptopGrid(containerIds[index], response.data);
+                    }
+                } catch (error) {
+                    console.error(`Error loading ${category} laptops:`, error);
+                }
+            });
+        }
+
+        // Render laptop grid
+        function renderLaptopGrid(containerId, laptops) {
+            const container = document.getElementById(containerId);
+            if (!laptops || laptops.length === 0) {
+                container.innerHTML = '<p class="text-muted">No laptops found</p>';
+                return;
+            }
+
+            container.innerHTML = laptops.map(laptop => `
+                <div class="laptop-card card" onclick="window.location.href='laptop.html?slug=${laptop.slug}'">
+                    <img src="${laptop.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                         alt="${laptop.name}" 
+                         class="card-image"
+                         onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                    <div class="card-body">
+                        <div class="card-subtitle">${laptop.brand}</div>
+                        <div class="card-title">${laptop.name}</div>
+                        <div class="specs">
+                            ${laptop.cpu?.name ? `<span class="spec-tag"><i class="fas fa-microchip"></i> ${laptop.cpu.name.split(' ').slice(0, 3).join(' ')}</span>` : ''}
+                            ${laptop.gpu?.name ? `<span class="spec-tag"><i class="fas fa-tv"></i> ${laptop.gpu.name.split(' ').slice(0, 2).join(' ')}</span>` : ''}
+                            ${laptop.ram?.size_gb ? `<span class="spec-tag"><i class="fas fa-memory"></i> ${laptop.ram.size_gb}GB</span>` : ''}
+                        </div>
+                        <div class="price">${formatPrice(laptop.pricing?.estimated_price_usd)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Laptop search - redirect to catalog
+        laptopSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && laptopSearch.value.trim()) {
+                window.location.href = `laptops.html?q=${encodeURIComponent(laptopSearch.value.trim())}`;
+            }
+        });
+
+        // Game search with autocomplete
+        const searchGames = debounce(async (query) => {
+            if (query.length < 2) {
+                gameDropdown.classList.remove('show');
+                return;
+            }
+
+            try {
+                const response = await api.lookupGames(query, 8);
+                if (response.success && response.data?.length > 0) {
+                    renderGameDropdown(response.data);
+                } else {
+                    gameDropdown.classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Game search error:', error);
+            }
+        }, 300);
+
+        gameSearch.addEventListener('input', (e) => searchGames(e.target.value));
+
+        // Handle Enter key for game search
+        gameSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && gameSearch.value.trim()) {
+                window.location.href = `games.html?q=${encodeURIComponent(gameSearch.value.trim())}`;
+            }
+        });
+
+        // Render game dropdown
+        function renderGameDropdown(games) {
+            gameDropdown.innerHTML = games.map(game => `
+                <div class="autocomplete-item" data-appid="${game.appid}">
+                    <img src="${getSteamHeaderImage(game.appid)}" alt="${game.name}" onerror="this.style.display='none'">
+                    <div class="autocomplete-item-text">
+                        <div class="autocomplete-item-title">${game.name}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            gameDropdown.classList.add('show');
+
+            // Click handlers
+            gameDropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    window.location.href = `game.html?id=${item.dataset.appid}`;
+                });
+            });
+        }
+
+        // Close dropdown on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-input-wrapper')) {
+                gameDropdown.classList.remove('show');
+            }
+        });
+
+        // Chatbot
+        const chatbotBtn = document.getElementById('chatbotBtn');
+        const chatbotBackdrop = document.getElementById('chatbotBackdrop');
+        const chatbotModal = document.getElementById('chatbotModal');
+        const closeChatbot = document.getElementById('closeChatbot');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const openChatbotFooter = document.getElementById('openChatbot');
+
+        let chatHistory = [];
+
+        function openChatbotModal() {
+            chatbotBackdrop.classList.add('show');
+            chatbotModal.classList.add('show');
+            chatInput.focus();
+        }
+
+        function closeChatbotModal() {
+            chatbotBackdrop.classList.remove('show');
+            chatbotModal.classList.remove('show');
+        }
+
+        chatbotBtn.addEventListener('click', openChatbotModal);
+        openChatbotFooter?.addEventListener('click', (e) => {
+            e.preventDefault();
+            openChatbotModal();
+        });
+        closeChatbot.addEventListener('click', closeChatbotModal);
+        chatbotBackdrop.addEventListener('click', (e) => {
+            if (e.target === chatbotBackdrop) closeChatbotModal();
+        });
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatHistory.push({ role: 'user', content: message });
+            chatInput.value = '';
+
+            // Show typing indicator
+            const typingId = addTypingIndicator();
+
+            try {
+                const response = await api.sendChatMessage(message, chatHistory);
+                removeTypingIndicator(typingId);
+
+                if (response.success) {
+                    const botReply = response.data?.reply || response.reply || 'I apologize, but I could not generate a response.';
+                    addMessage(botReply, 'bot');
+                    chatHistory.push({ role: 'assistant', content: botReply });
+
+                    // If laptops were retrieved, show them
+                    if (response.data?.retrieved?.length > 0) {
+                        addLaptopCards(response.data.retrieved);
+                    }
+                }
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            }
+        }
+
+        function addMessage(content, type) {
+            const messageEl = document.createElement('div');
+            messageEl.className = `chat-message ${type}`;
+            messageEl.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-${type === 'user' ? 'user' : 'robot'}"></i>
+                </div>
+                <div class="message-content">${content}</div>
+            `;
+            chatMessages.appendChild(messageEl);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const id = 'typing-' + Date.now();
+            const el = document.createElement('div');
+            el.id = id;
+            el.className = 'chat-message bot typing';
+            el.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(el);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return id;
+        }
+
+        function removeTypingIndicator(id) {
+            document.getElementById(id)?.remove();
+        }
+
+        function addLaptopCards(laptops) {
+            const cardsEl = document.createElement('div');
+            cardsEl.className = 'chat-laptop-cards';
+            cardsEl.innerHTML = laptops.slice(0, 3).map(laptop => `
+                <a href="laptop.html?slug=${laptop.slug}" class="chat-laptop-card">
+                    <div class="chat-laptop-name">${laptop.name}</div>
+                    <div class="chat-laptop-price">${formatPrice(laptop.pricing?.estimated_price_usd)}</div>
+                </a>
+            `).join('');
+            chatMessages.appendChild(cardsEl);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendChatBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Initialize
+        loadAuthState();
+        loadTopLaptops();
+    </script>
+</body>
+
+</html>

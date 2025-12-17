@@ -129,7 +129,7 @@ export function buildMongoFilter(filters = {}) {
  */
 export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
   console.log('🔍 hybridSearch called with:', { semanticQuery, filters, topK });
-  
+
   let collection;
   try {
     collection = getLaptopCollection();
@@ -222,7 +222,7 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
     // Clean up the display name (remove duplicate brand from name)
     let displayName = laptop.name || '';
     const brand = laptop.brand || '';
-    
+
     // Remove brand repetition from name (handles "HP HP 15" -> "HP 15")
     if (brand && displayName.toLowerCase().startsWith(brand.toLowerCase())) {
       displayName = displayName.substring(brand.length).trim();
@@ -231,7 +231,7 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
         displayName = displayName.substring(brand.length).trim();
       }
     }
-    
+
     return {
       ...laptop,
       displayName,
@@ -245,12 +245,12 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
   
   for (const laptop of processedLaptops) {
     const dedupeKey = laptop.group_id || laptop.slug?.replace(/-\d+$/, '') || laptop._id.toString();
-    
+
     if (!seen.has(dedupeKey)) {
       seen.add(dedupeKey);
       deduplicated.push(laptop);
     }
-    
+
     if (deduplicated.length >= topK) {
       break;
     }
@@ -295,8 +295,8 @@ export async function handleMessage(message, history = []) {
     if (routeResult.classification === 'NEED_MORE_INFO') {
       console.log('Need more information');
       const reply = await generateNeedMoreInfoResponse(
-        message, 
-        history, 
+        message,
+        history,
         routeResult.followUpQuestion
       );
       return {
@@ -328,7 +328,7 @@ export async function handleMessage(message, history = []) {
     // Step 4: Generate response
     console.log('\n📍 Step 4: Generating response...');
     let reply;
-    
+
     if (laptops.length === 0) {
       // No results - suggest broadening search
       reply = await generateNoResultsResponse(message, history, searchParams.filters);

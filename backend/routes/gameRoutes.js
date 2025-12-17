@@ -8,7 +8,8 @@
  * PURPOSE:
  * Handle all game-related HTTP requests. This includes:
  * - Searching games in our database
- * - Looking up games from Steam (autocomplete)
+ * - Looking up games from Steam (autocomplete with Atlas Search)
+ * - Getting search results page (when user presses Enter)
  * - Fetching full game details from Steam API
  * - Getting game details by ID
  * 
@@ -17,8 +18,8 @@
  * │                                                                 │
  * │  SteamApps Collection (200k+ entries)                          │
  * │  ├─ Lightweight: { appid, name }                               │
- * │  ├─ Used for: Fast autocomplete/search                         │
- * │  └─ Endpoint: GET /lookup                                      │
+ * │  ├─ Used for: Fast autocomplete/search with Atlas Search       │
+ * │  └─ Endpoints: GET /lookup, GET /search-results                │
  * │                                                                 │
  * │                       ↓ User clicks a result                   │
  * │                                                                 │
@@ -35,6 +36,7 @@
  * |--------|-------------------|------------------------------------------|
  * | GET    | /search           | Search games in our Games collection     |
  * | GET    | /lookup           | Search SteamApps for autocomplete        |
+ * | GET    | /search-results   | Get game tiles when user presses Enter   |
  * | GET    | /:id              | Get game by MongoDB ID                   |
  * | GET    | /steam/:steamId   | Get game by Steam App ID                 |
  * | POST   | /fetch-details    | Fetch game from Steam & save to DB       |
@@ -85,11 +87,12 @@ router.get('/search', gameController.searchGames);
 
 
 // =============================================================================
-// LOOKUP STEAM APPS (Autocomplete)
+// LOOKUP STEAM APPS (Autocomplete with Atlas Search)
 // =============================================================================
 /**
  * @route   GET /api/games/lookup
  * @desc    Search the SteamApps index for game names (autocomplete)
+ *          Uses MongoDB Atlas Search for fuzzy matching
  * @access  Public
  * 
  * @query {String} q - Search term (minimum 2 characters)
@@ -121,6 +124,51 @@ router.get('/search', gameController.searchGames);
  * }
  */
 router.get('/lookup', gameController.lookupSteamApps);
+
+
+// =============================================================================
+// GET SEARCH RESULTS PAGE (Enter without selecting)
+// =============================================================================
+/**
+ * @route   GET /api/games/search-results
+ * @desc    Get game tiles with images when user presses Enter without selecting
+ * @access  Public
+ * 
+ * @query {String} q - Search term (minimum 2 characters)
+ * @query {Number} [limit=20] - Maximum results
+ * 
+ * @note    This endpoint is used when the user presses Enter in the search box
+ *          without clicking an autocomplete suggestion. It returns a grid of
+ *          game tiles with Steam header images for visual browsing.
+ * 
+ *          Clicking a tile should trigger the same flow as selecting from
+ *          autocomplete (POST /fetch-details with the appid).
+ * 
+ * FLOW:
+ * 1. User types "cyberpunk" → presses Enter (without selecting)
+ * 2. GET /search-results?q=cyberpunk
+ * 3. Display grid of game tiles with header images
+ * 4. User clicks "Cyberpunk 2077" tile → POST /fetch-details { steamAppId: 1091500 }
+ * 
+ * @example
+ * GET /api/games/search-results?q=dark+souls&limit=20
+ * 
+ * @returns {Object} 200 - Success
+ * {
+ *   success: true,
+ *   count: 15,
+ *   data: [
+ *     {
+ *       appid: 1091500,
+ *       name: "Cyberpunk 2077",
+ *       image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg",
+ *       hasFullData: true  // true if we already have this game in our Games collection
+ *     },
+ *     ...
+ *   ]
+ * }
+ */
+router.get('/search-results', gameController.getSearchResults);
 
 
 // =============================================================================

@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpecMatch - Sign Up</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="public/styles/auth.css">
 </head>
+
 <body>
-    <div class="container">
+    <div class="auth-container">
         <!-- Left Side - Branding -->
         <div class="brand-side">
             <div class="brand-content">
-                <div class="logo">
+                <a href="index.html" class="logo">
                     <i class="fas fa-laptop"></i>
                     <span>SpecMatch</span>
-                </div>
+                </a>
                 <h1>Join SpecMatch Today</h1>
                 <p>Create your account and discover laptops that perfectly match your needs and gaming requirements.</p>
                 <div class="features">
@@ -26,240 +28,195 @@
                     </div>
                     <div class="feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Save Your Preferences</span>
+                        <span>Save Your Laptop Specs</span>
                     </div>
                     <div class="feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Track Compatibility History</span>
+                        <span>Game Compatibility Tracking</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right Side - Signup Form -->
+        <!-- Right Side - Multi-step Form -->
         <div class="form-side">
-            <div class="form-container signup">
-                <div class="form-header">
-                    <h2>Create Account</h2>
-                    <p>Fill in your details to get started</p>
+            <div class="form-container">
+                <!-- Progress Indicator -->
+                <div class="progress-indicator">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <span>Account</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <span>Your Laptop</span>
+                    </div>
                 </div>
 
-                <form id="signupForm">
-                    <!-- Name -->
-                    <div class="input-group">
-                        <label for="name">Full Name</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-user"></i>
-                            <input type="text" id="name" placeholder="Enter your full name" required>
-                        </div>
+                <!-- Step 1: Account Info -->
+                <div class="form-step active" id="step1">
+                    <div class="form-header">
+                        <h2>Create Account</h2>
+                        <p>Fill in your details to get started</p>
                     </div>
 
-                    <!-- Email -->
-                    <div class="input-group">
-                        <label for="email">Email Address</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" placeholder="Enter your email" required>
+                    <form id="accountForm">
+                        <div class="input-group">
+                            <label for="name">Full Name</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="name" placeholder="Enter your full name" required>
+                            </div>
                         </div>
+
+                        <div class="input-group">
+                            <label for="email">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="email" placeholder="Enter your email" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="password">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="password" placeholder="Create a password" required
+                                    minlength="6">
+                                <button type="button" class="toggle-password" data-target="password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="confirmPassword" placeholder="Confirm your password"
+                                    required>
+                                <button type="button" class="toggle-password" data-target="confirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">
+                            <span>Continue</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+
+                        <div id="accountMsg" class="message"></div>
+
+                        <div class="divider">
+                            <span>or continue with</span>
+                        </div>
+
+                        <button type="button" class="btn-google" id="googleSignupBtn">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                            <span>Sign up with Google</span>
+                        </button>
+                    </form>
+
+                    <div class="form-footer">
+                        <p>Already have an account? <a href="login.html">Sign In</a></p>
+                    </div>
+                </div>
+
+                <!-- Step 2: Laptop Info (Onboarding) -->
+                <div class="form-step" id="step2">
+                    <div class="form-header">
+                        <h2><i class="fas fa-laptop-code"></i> Your Laptop</h2>
+                        <p>Tell us about your current laptop for personalized recommendations</p>
                     </div>
 
-                    <!-- Password -->
-                    <div class="input-group">
-                        <label for="password">Password</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" id="password" placeholder="Create a password" required minlength="6">
-                            <button type="button" class="toggle-password" onclick="togglePassword('password', 'eyeIcon1')">
-                                <i class="fas fa-eye" id="eyeIcon1"></i>
+                    <form id="laptopForm">
+                        <!-- Laptop Name (Optional) -->
+                        <div class="input-group">
+                            <label for="laptopName">Laptop Name <span class="optional">(Optional)</span></label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-tag"></i>
+                                <input type="text" id="laptopName" placeholder="e.g., My Gaming Laptop">
+                            </div>
+                        </div>
+
+                        <!-- CPU Selection with Autocomplete -->
+                        <div class="input-group">
+                            <label for="cpuSearch">Processor (CPU)</label>
+                            <div class="input-wrapper autocomplete-wrapper">
+                                <i class="fas fa-microchip"></i>
+                                <input type="text" id="cpuSearch" placeholder="Start typing to search CPU..."
+                                    autocomplete="off" required>
+                                <div class="autocomplete-dropdown" id="cpuDropdown"></div>
+                            </div>
+                            <input type="hidden" id="cpuName">
+                            <input type="hidden" id="cpuScore">
+                            <div class="selected-item" id="selectedCpu"></div>
+                        </div>
+
+                        <!-- GPU Selection with Autocomplete -->
+                        <div class="input-group">
+                            <label for="gpuSearch">Graphics Card (GPU)</label>
+                            <div class="input-wrapper autocomplete-wrapper">
+                                <i class="fas fa-tv"></i>
+                                <input type="text" id="gpuSearch" placeholder="Start typing to search GPU..."
+                                    autocomplete="off" required>
+                                <div class="autocomplete-dropdown" id="gpuDropdown"></div>
+                            </div>
+                            <input type="hidden" id="gpuName">
+                            <input type="hidden" id="gpuScore">
+                            <div class="selected-item" id="selectedGpu"></div>
+                        </div>
+
+                        <!-- RAM Selection -->
+                        <div class="input-group">
+                            <label for="ram">RAM</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-memory"></i>
+                                <select id="ram" required>
+                                    <option value="">Select RAM size</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Storage Selection -->
+                        <div class="input-group">
+                            <label for="storage">Storage</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-hdd"></i>
+                                <select id="storage" required>
+                                    <option value="">Select storage size</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" id="backBtn">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Back</span>
+                            </button>
+                            <button type="submit" class="btn-primary">
+                                <span>Complete Setup</span>
+                                <i class="fas fa-check"></i>
                             </button>
                         </div>
-                    </div>
 
-                    <!-- Confirm Password -->
-                    <div class="input-group">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
-                            <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', 'eyeIcon2')">
-                                <i class="fas fa-eye" id="eyeIcon2"></i>
-                            </button>
-                        </div>
-                    </div>
+                        <div id="laptopMsg" class="message"></div>
 
-                    <!-- Laptop Specifications Section -->
-                    <div class="laptop-specs-section">
-                        <h3><i class="fas fa-laptop-code"></i> Your Current Laptop</h3>
-                        <p>Help us understand your current setup for better recommendations</p>
-
-                        <div class="specs-grid">
-                            <!-- Company -->
-                            <div class="input-group">
-                                <label for="company">Brand/Company</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-building"></i>
-                                    <select id="company" required>
-                                        <option value="">Select Brand</option>
-                                        <option value="Dell">Dell</option>
-                                        <option value="HP">HP</option>
-                                        <option value="Lenovo">Lenovo</option>
-                                        <option value="ASUS">ASUS</option>
-                                        <option value="Acer">Acer</option>
-                                        <option value="MSI">MSI</option>
-                                        <option value="Apple">Apple</option>
-                                        <option value="Razer">Razer</option>
-                                        <option value="Samsung">Samsung</option>
-                                        <option value="Microsoft">Microsoft</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                    <i class="fas fa-chevron-down select-arrow"></i>
-                                </div>
-                            </div>
-
-                            <!-- Generation -->
-                            <div class="input-group">
-                                <label for="generation">Processor Generation</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-microchip"></i>
-                                    <select id="generation" required>
-                                        <option value="">Select Generation</option>
-                                        <option value="14th Gen">14th Gen (Intel)</option>
-                                        <option value="13th Gen">13th Gen (Intel)</option>
-                                        <option value="12th Gen">12th Gen (Intel)</option>
-                                        <option value="11th Gen">11th Gen (Intel)</option>
-                                        <option value="10th Gen">10th Gen (Intel)</option>
-                                        <option value="Ryzen 7000">Ryzen 7000 Series</option>
-                                        <option value="Ryzen 6000">Ryzen 6000 Series</option>
-                                        <option value="Ryzen 5000">Ryzen 5000 Series</option>
-                                        <option value="Ryzen 4000">Ryzen 4000 Series</option>
-                                        <option value="Apple M3">Apple M3</option>
-                                        <option value="Apple M2">Apple M2</option>
-                                        <option value="Apple M1">Apple M1</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                    <i class="fas fa-chevron-down select-arrow"></i>
-                                </div>
-                            </div>
-
-                            <!-- Core -->
-                            <div class="input-group">
-                                <label for="core">Processor Type</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-cpu"></i>
-                                    <select id="core" required>
-                                        <option value="">Select Processor</option>
-                                        <option value="Intel Core i9">Intel Core i9</option>
-                                        <option value="Intel Core i7">Intel Core i7</option>
-                                        <option value="Intel Core i5">Intel Core i5</option>
-                                        <option value="Intel Core i3">Intel Core i3</option>
-                                        <option value="AMD Ryzen 9">AMD Ryzen 9</option>
-                                        <option value="AMD Ryzen 7">AMD Ryzen 7</option>
-                                        <option value="AMD Ryzen 5">AMD Ryzen 5</option>
-                                        <option value="AMD Ryzen 3">AMD Ryzen 3</option>
-                                        <option value="Apple M3 Pro">Apple M3 Pro</option>
-                                        <option value="Apple M3">Apple M3</option>
-                                        <option value="Apple M2">Apple M2</option>
-                                        <option value="Apple M1">Apple M1</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                    <i class="fas fa-chevron-down select-arrow"></i>
-                                </div>
-                            </div>
-
-                            <!-- RAM -->
-                            <div class="input-group">
-                                <label for="ram">RAM</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-memory"></i>
-                                    <select id="ram" required>
-                                        <option value="">Select RAM</option>
-                                        <option value="4GB">4 GB</option>
-                                        <option value="8GB">8 GB</option>
-                                        <option value="16GB">16 GB</option>
-                                        <option value="32GB">32 GB</option>
-                                        <option value="64GB">64 GB</option>
-                                        <option value="128GB">128 GB</option>
-                                    </select>
-                                    <i class="fas fa-chevron-down select-arrow"></i>
-                                </div>
-                            </div>
-
-                            <!-- SSD -->
-                            <div class="input-group">
-                                <label for="ssd">Storage (SSD)</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-hdd"></i>
-                                    <select id="ssd" required>
-                                        <option value="">Select Storage</option>
-                                        <option value="128GB">128 GB</option>
-                                        <option value="256GB">256 GB</option>
-                                        <option value="512GB">512 GB</option>
-                                        <option value="1TB">1 TB</option>
-                                        <option value="2TB">2 TB</option>
-                                        <option value="4TB">4 TB</option>
-                                    </select>
-                                    <i class="fas fa-chevron-down select-arrow"></i>
-                                </div>
-                            </div>
-
-                            <!-- Graphics Card -->
-                            <div class="input-group">
-                                <label for="graphicsCard">Graphics Card</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-tv"></i>
-                                    <select id="graphicsCard">
-                                        <option value="">Select GPU (Optional)</option>
-                                        <option value="Integrated">Integrated Graphics</option>
-                                        <option value="NVIDIA RTX 4090">NVIDIA RTX 4090</option>
-                                        <option value="NVIDIA RTX 4080">NVIDIA RTX 4080</option>
-                                        <option value="NVIDIA RTX 4070">NVIDIA RTX 4070</option>
-                                        <option value="NVIDIA RTX 4060">NVIDIA RTX 4060</option>
-                                        <option value="NVIDIA RTX 4050">NVIDIA RTX 4050</option>
-                                        <option value="NVIDIA RTX 3080">NVIDIA RTX 3080</option>
-                                        <option value="NVIDIA RTX 3070">NVIDIA RTX 3070</option>
-                                        <option value="NVIDIA RTX 3060">NVIDIA RTX 3060</option>
-                                        <option value="NVIDIA RTX 3050">NVIDIA RTX 3050</option>
-                                        <option value="NVIDIA GTX 1660">NVIDIA GTX 1660</option>
-                                        <option value="NVIDIA GTX 1650">NVIDIA GTX 1650</option>
-                                        <option value="AMD RX 7900">AMD RX 7900</option>
-                                        <option value="AMD RX 7800">AMD RX 7800</option>
-                                        <option value="AMD RX 7600">AMD RX 7600</option>
-                                        <option value="AMD RX 6800">AMD RX 6800</option>
-                                        <option value="AMD RX 6700">AMD RX 6700</option>
-                                        <option value="AMD RX 6600">AMD RX 6600</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                    <i class="fas fa-chevron-down select-arrow"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary" style="margin-top: 24px;">
-                        <span>Create Account</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-
-                    <div id="msg" class="message"></div>
-
-                    <div class="divider">
-                        <span>or continue with</span>
-                    </div>
-
-                    <button type="button" class="btn-google" onclick="googleSignup()">
-                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-                        <span>Sign up with Google</span>
-                    </button>
-                </form>
-
-                <div class="form-footer">
-                    <p>Already have an account? <a href="login.html">Sign In</a></p>
+                        <button type="button" class="btn-skip" id="skipBtn">
+                            Skip for now →
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
     <script type="module">
+        import { CONFIG } from './public/scripts/config.js';
+        import { api } from './public/scripts/api.js';
+        import { debounce } from './public/scripts/utils.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {
             getAuth,
@@ -269,122 +226,331 @@
             updateProfile
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCywnIfR3dhZAWLT-1Nn6iz_6BCBgipLqE",
-            authDomain: "specmatch-auth.firebaseapp.com",
-            projectId: "specmatch-auth",
-            storageBucket: "specmatch-auth.firebasestorage.app",
-            messagingSenderId: "170230638392",
-            appId: "1:170230638392:web:b321a6925f740afd16c3cd",
-            measurementId: "G-EJN8RJ4CPH"
-        };
-
-        const app = initializeApp(firebaseConfig);
+        // Initialize Firebase
+        const app = initializeApp(CONFIG.FIREBASE);
         const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-        const msg = document.getElementById("msg");
+        const googleProvider = new GoogleAuthProvider();
 
-        // Get laptop specs from form
-        function getLaptopSpecs() {
-            return {
-                company: document.getElementById("company").value,
-                generation: document.getElementById("generation").value,
-                core: document.getElementById("core").value,
-                ram: document.getElementById("ram").value,
-                ssd: document.getElementById("ssd").value,
-                graphicsCard: document.getElementById("graphicsCard").value || "Integrated"
-            };
+        // DOM Elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const accountForm = document.getElementById('accountForm');
+        const laptopForm = document.getElementById('laptopForm');
+        const backBtn = document.getElementById('backBtn');
+        const skipBtn = document.getElementById('skipBtn');
+        const googleSignupBtn = document.getElementById('googleSignupBtn');
+
+        // Autocomplete elements
+        const cpuSearch = document.getElementById('cpuSearch');
+        const gpuSearch = document.getElementById('gpuSearch');
+        const cpuDropdown = document.getElementById('cpuDropdown');
+        const gpuDropdown = document.getElementById('gpuDropdown');
+
+        // Store data
+        let onboardingData = { cpus: [], gpus: [], ramSizes: [], storageSizes: [] };
+        let currentUser = null;
+
+        // Load onboarding options on page load
+        async function loadOnboardingOptions() {
+            try {
+                const response = await api.getOnboardingOptions();
+                if (response.success) {
+                    onboardingData = response.data;
+                    populateDropdowns();
+                }
+            } catch (error) {
+                console.error('Error loading onboarding options:', error);
+            }
         }
 
-        // Email Signup
-        document.getElementById("signupForm").addEventListener("submit", (e) => {
-            e.preventDefault();
-            
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
+        // Populate RAM and Storage dropdowns
+        function populateDropdowns() {
+            const ramSelect = document.getElementById('ram');
+            const storageSelect = document.getElementById('storage');
 
-            // Validate passwords match
-            if (password !== confirmPassword) {
-                msg.className = "message error";
-                msg.innerText = "Passwords do not match!";
+            onboardingData.ramSizes.forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = `${size} GB`;
+                ramSelect.appendChild(option);
+            });
+
+            onboardingData.storageSizes.forEach(size => {
+                const option = document.createElement('option');
+                option.value = size;
+                option.textContent = size >= 1024 ? `${size / 1024} TB` : `${size} GB`;
+                storageSelect.appendChild(option);
+            });
+        }
+
+        // CPU Autocomplete
+        const searchCPU = debounce((query) => {
+            if (query.length < 2) {
+                cpuDropdown.classList.remove('show');
                 return;
             }
 
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(async (res) => {
-                    // Update profile with name
-                    await updateProfile(res.user, { displayName: name });
-                    handleUser(res.user, name);
-                    msg.className = "message success";
-                    msg.innerText = "Account Created Successfully! Redirecting...";
-                    setTimeout(() => {
-                        window.location.href = "login.html";
-                    }, 1500);
-                })
-                .catch(err => {
-                    msg.className = "message error";
-                    msg.innerText = err.message;
-                });
-        });
+            const filtered = onboardingData.cpus.filter(cpu =>
+                cpu.name.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 10);
 
-        // Google Signup
-        window.googleSignup = () => {
-            signInWithPopup(auth, provider)
-                .then(res => {
-                    handleUser(res.user, res.user.displayName);
-                    msg.className = "message success";
-                    msg.innerText = "Account Created Successfully! Redirecting...";
-                    setTimeout(() => {
-                        window.location.href = "dashboard.html";
-                    }, 1500);
-                })
-                .catch(err => {
-                    msg.className = "message error";
-                    msg.innerText = err.message;
-                });
-        };
+            renderAutocomplete(cpuDropdown, filtered, 'cpu');
+        }, 200);
 
-        function handleUser(user, name) {
-            const userObj = {
-                firebaseUID: user.uid,
-                email: user.email,
-                name: name || user.displayName || "",
-                provider: user.providerData[0].providerId,
-                currentLaptop: getLaptopSpecs(),
-                createdAt: new Date()
-            };
-            saveUser(userObj);
+        // GPU Autocomplete
+        const searchGPU = debounce((query) => {
+            if (query.length < 2) {
+                gpuDropdown.classList.remove('show');
+                return;
+            }
+
+            const filtered = onboardingData.gpus.filter(gpu =>
+                gpu.name.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 10);
+
+            renderAutocomplete(gpuDropdown, filtered, 'gpu');
+        }, 200);
+
+        // Render autocomplete dropdown
+        function renderAutocomplete(dropdown, items, type) {
+            if (items.length === 0) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            dropdown.innerHTML = items.map(item => `
+                <div class="autocomplete-item" data-name="${item.name}" data-score="${item.score}">
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-details">
+                            ${item.manufacturer ? `<span>${item.manufacturer}</span>` : ''}
+                            <span>Score: ${item.score?.toLocaleString() || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            dropdown.classList.add('show');
+
+            // Add click handlers
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => selectComponent(type, item.dataset.name, item.dataset.score));
+            });
         }
 
-        function saveUser(userObj) {
-            fetch("http://localhost:5000/save-user", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(userObj)
-            })
-            .then(res => res.json())
-            .then(data => console.log("User saved:", data))
-            .catch(err => console.error("Error saving user:", err));
-        }
-    </script>
-
-    <script>
-        function togglePassword(inputId, iconId) {
-            const passwordInput = document.getElementById(inputId);
-            const eyeIcon = document.getElementById(iconId);
-            
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                eyeIcon.classList.remove("fa-eye");
-                eyeIcon.classList.add("fa-eye-slash");
+        // Select component from autocomplete
+        function selectComponent(type, name, score) {
+            if (type === 'cpu') {
+                document.getElementById('cpuName').value = name;
+                document.getElementById('cpuScore').value = score;
+                document.getElementById('cpuSearch').value = name;
+                document.getElementById('selectedCpu').innerHTML = `
+                    <i class="fas fa-check-circle"></i>
+                    <span>${name}</span>
+                    <button type="button" class="clear-btn" onclick="clearCpu()"><i class="fas fa-times"></i></button>
+                `;
+                document.getElementById('selectedCpu').classList.add('show');
+                cpuDropdown.classList.remove('show');
             } else {
-                passwordInput.type = "password";
-                eyeIcon.classList.remove("fa-eye-slash");
-                eyeIcon.classList.add("fa-eye");
+                document.getElementById('gpuName').value = name;
+                document.getElementById('gpuScore').value = score;
+                document.getElementById('gpuSearch').value = name;
+                document.getElementById('selectedGpu').innerHTML = `
+                    <i class="fas fa-check-circle"></i>
+                    <span>${name}</span>
+                    <button type="button" class="clear-btn" onclick="clearGpu()"><i class="fas fa-times"></i></button>
+                `;
+                document.getElementById('selectedGpu').classList.add('show');
+                gpuDropdown.classList.remove('show');
             }
         }
+
+        // Clear selections (exposed globally)
+        window.clearCpu = () => {
+            document.getElementById('cpuName').value = '';
+            document.getElementById('cpuScore').value = '';
+            document.getElementById('cpuSearch').value = '';
+            document.getElementById('selectedCpu').classList.remove('show');
+        };
+
+        window.clearGpu = () => {
+            document.getElementById('gpuName').value = '';
+            document.getElementById('gpuScore').value = '';
+            document.getElementById('gpuSearch').value = '';
+            document.getElementById('selectedGpu').classList.remove('show');
+        };
+
+        // Event listeners for autocomplete
+        cpuSearch.addEventListener('input', (e) => searchCPU(e.target.value));
+        gpuSearch.addEventListener('input', (e) => searchGPU(e.target.value));
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.autocomplete-wrapper')) {
+                cpuDropdown.classList.remove('show');
+                gpuDropdown.classList.remove('show');
+            }
+        });
+
+        // Step navigation
+        function goToStep(stepNum) {
+            step1.classList.toggle('active', stepNum === 1);
+            step2.classList.toggle('active', stepNum === 2);
+            progressSteps.forEach(step => {
+                const sNum = parseInt(step.dataset.step);
+                step.classList.toggle('active', sNum === stepNum);
+                step.classList.toggle('completed', sNum < stepNum);
+            });
+        }
+
+        // Account form submission
+        accountForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const msgEl = document.getElementById('accountMsg');
+
+            if (password !== confirmPassword) {
+                msgEl.className = 'message error';
+                msgEl.textContent = 'Passwords do not match!';
+                return;
+            }
+
+            try {
+                msgEl.className = 'message';
+                msgEl.textContent = 'Creating account...';
+
+                const result = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(result.user, { displayName: name });
+
+                // Save user to backend
+                await api.saveUser({
+                    firebaseUID: result.user.uid,
+                    email: result.user.email,
+                    name: name,
+                    provider: 'email'
+                });
+
+                currentUser = result.user;
+                msgEl.className = 'message success';
+                msgEl.textContent = 'Account created! Setting up your profile...';
+
+                setTimeout(() => goToStep(2), 1000);
+            } catch (error) {
+                msgEl.className = 'message error';
+                msgEl.textContent = error.message;
+            }
+        });
+
+        // Google signup
+        googleSignupBtn.addEventListener('click', async () => {
+            const msgEl = document.getElementById('accountMsg');
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+
+                await api.saveUser({
+                    firebaseUID: result.user.uid,
+                    email: result.user.email,
+                    name: result.user.displayName,
+                    provider: 'google'
+                });
+
+                currentUser = result.user;
+                msgEl.className = 'message success';
+                msgEl.textContent = 'Account created! Setting up your profile...';
+
+                setTimeout(() => goToStep(2), 1000);
+            } catch (error) {
+                msgEl.className = 'message error';
+                msgEl.textContent = error.message;
+            }
+        });
+
+        // Back button
+        backBtn.addEventListener('click', () => goToStep(1));
+
+        // Laptop form submission
+        laptopForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgEl = document.getElementById('laptopMsg');
+
+            const cpuName = document.getElementById('cpuName').value;
+            const gpuName = document.getElementById('gpuName').value;
+
+            if (!cpuName || !gpuName) {
+                msgEl.className = 'message error';
+                msgEl.textContent = 'Please select both CPU and GPU';
+                return;
+            }
+
+            try {
+                msgEl.className = 'message';
+                msgEl.textContent = 'Saving your laptop...';
+
+                const laptopData = {
+                    name: document.getElementById('laptopName').value || 'My Laptop',
+                    cpu_text: cpuName,
+                    cpu_score: parseInt(document.getElementById('cpuScore').value) || 0,
+                    gpu_text: gpuName,
+                    gpu_score: parseInt(document.getElementById('gpuScore').value) || 0,
+                    ram_gb: parseInt(document.getElementById('ram').value),
+                    storage_gb: parseInt(document.getElementById('storage').value)
+                };
+
+                await api.addUserLaptop(currentUser.uid, laptopData);
+
+                msgEl.className = 'message success';
+                msgEl.textContent = 'Setup complete! Redirecting...';
+
+                localStorage.setItem('specmatch_user', JSON.stringify({
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    name: currentUser.displayName
+                }));
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } catch (error) {
+                msgEl.className = 'message error';
+                msgEl.textContent = error.message;
+            }
+        });
+
+        // Skip button
+        skipBtn.addEventListener('click', () => {
+            localStorage.setItem('specmatch_user', JSON.stringify({
+                uid: currentUser.uid,
+                email: currentUser.email,
+                name: currentUser.displayName
+            }));
+            window.location.href = 'index.html';
+        });
+
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
+                const icon = btn.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+
+        // Initialize
+        loadOnboardingOptions();
     </script>
 </body>
+
 </html>
