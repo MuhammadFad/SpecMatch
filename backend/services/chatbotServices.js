@@ -4,7 +4,7 @@
  */
 
 import mongoose from 'mongoose';
-import { generateEmbedding, cosineSimilarity } from '../utils/embeddings.js';
+import { generateEmbedding } from '../utils/embeddings.js';
 import {
   routeQuery,
   extractSearchParams,
@@ -13,6 +13,9 @@ import {
   generateNeedMoreInfoResponse,
   getNotRelevantResponse,
 } from './langchainService.js';
+
+// Vector search index name (must match the index created in MongoDB Atlas)
+const VECTOR_INDEX_NAME = 'vector_index';
 
 // Get the Laptops collection with error handling
 const getLaptopCollection = () => {
@@ -118,7 +121,7 @@ export function buildMongoFilter(filters = {}) {
 }
 
 /**
- * Perform hybrid search combining filters and semantic similarity
+ * Perform hybrid search combining filters and semantic similarity using MongoDB Atlas $vectorSearch
  * @param {string} semanticQuery - Natural language query for embedding
  * @param {Object} filters - MongoDB filter object
  * @param {number} topK - Number of results to return
@@ -136,23 +139,42 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
     throw err;
   }
 
-  // Build the MongoDB filter
-  const mongoFilter = buildMongoFilter(filters);
-  
-  // Ensure we only get documents with embeddings
-  mongoFilter.embedding = { $exists: true, $not: { $size: 0 } };
+  // Generate query embedding
+  console.log('🔍 Generating query embedding...');
+  const queryEmbedding = await generateEmbedding(semanticQuery);
+  console.log(`✅ Generated embedding (${queryEmbedding.length} dimensions)`);
 
+  // Build the MongoDB filter for pre/post filtering
+  const mongoFilter = buildMongoFilter(filters);
   console.log('📊 MongoDB Filter:', JSON.stringify(mongoFilter, null, 2));
 
-  // Fetch filtered laptops
-  let laptops;
-  try {
-    laptops = await collection.find(mongoFilter, {
-      projection: {
+  // Build the $vectorSearch aggregation pipeline
+  // MongoDB Atlas $vectorSearch is highly optimized and runs on Atlas infrastructure
+  const numCandidates = Math.max(topK * 20, 100); // Get more candidates for better results after deduplication
+
+  const pipeline = [
+    {
+      $vectorSearch: {
+        index: VECTOR_INDEX_NAME,
+        path: 'embedding',
+        queryVector: queryEmbedding,
+        numCandidates: numCandidates,
+        limit: numCandidates, // Get more to account for deduplication
+        // filter: mongoFilter, // Uncomment when filters are enabled and index supports them
+      }
+    },
+    {
+      $addFields: {
+        similarity: { $meta: 'vectorSearchScore' }
+      }
+    },
+    {
+      $project: {
         _id: 1,
         name: 1,
         brand: 1,
         slug: 1,
+        group_id: 1,
         cpu: 1,
         gpu: 1,
         ram: 1,
@@ -163,13 +185,31 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
         pricing: 1,
         keywords: 1,
         semantic_text: 1,
-        embedding: 1,
         images: 1,
+        similarity: 1,
+        // Note: embedding is NOT projected (saves bandwidth)
       }
-    }).toArray();
-    console.log(`📊 Filtered results: ${laptops.length} laptops`);
+    }
+  ];
+
+  // Apply post-filter if we have filters (until filter is enabled in $vectorSearch)
+  if (Object.keys(mongoFilter).length > 0) {
+    pipeline.push({ $match: mongoFilter });
+  }
+
+  console.log('🚀 Running $vectorSearch aggregation...');
+  
+  let laptops;
+  try {
+    laptops = await collection.aggregate(pipeline).toArray();
+    console.log(`📊 Vector search returned: ${laptops.length} laptops`);
   } catch (err) {
-    console.error('❌ MongoDB query failed:', err.message);
+    console.error('❌ $vectorSearch failed:', err.message);
+    // Fallback error message for common issues
+    if (err.message.includes('index') || err.message.includes('vectorSearch')) {
+      console.error('💡 Hint: Make sure you have created a vector search index named "vector_index" in MongoDB Atlas');
+      console.error('   Index should be on the "embedding" field with 384 dimensions and cosine similarity');
+    }
     throw err;
   }
 
@@ -177,17 +217,8 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
     return [];
   }
 
-  // Generate query embedding
-  console.log('🔍 Generating query embedding...');
-  const queryEmbedding = await generateEmbedding(semanticQuery);
-
-  // Calculate similarity scores
-  const scoredLaptops = laptops.map(laptop => {
-    const similarity = cosineSimilarity(queryEmbedding, laptop.embedding);
-    
-    // Remove embedding from result (too large to send)
-    const { embedding, ...laptopWithoutEmbedding } = laptop;
-    
+  // Process results: clean up display names and deduplicate
+  const processedLaptops = laptops.map(laptop => {
     // Clean up the display name (remove duplicate brand from name)
     let displayName = laptop.name || '';
     const brand = laptop.brand || '';
@@ -195,28 +226,24 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
     // Remove brand repetition from name (handles "HP HP 15" -> "HP 15")
     if (brand && displayName.toLowerCase().startsWith(brand.toLowerCase())) {
       displayName = displayName.substring(brand.length).trim();
-      // Handle double brand like "HP HP 15" -> "HP 15" (remove second occurrence too)
+      // Handle double brand like "HP HP 15" -> "HP 15"
       if (displayName.toLowerCase().startsWith(brand.toLowerCase())) {
         displayName = displayName.substring(brand.length).trim();
       }
     }
     
     return {
-      ...laptopWithoutEmbedding,
-      displayName, // Cleaned name without brand duplication
-      similarity,
+      ...laptop,
+      displayName,
     };
   });
 
-  // Sort by similarity (descending)
-  scoredLaptops.sort((a, b) => b.similarity - a.similarity);
-  
   // Deduplicate by group_id or slug prefix (keep only highest scoring variant per model)
+  // Results are already sorted by similarity from $vectorSearch
   const seen = new Set();
   const deduplicated = [];
   
-  for (const laptop of scoredLaptops) {
-    // Use group_id if available, otherwise use slug prefix (before last hyphen)
+  for (const laptop of processedLaptops) {
     const dedupeKey = laptop.group_id || laptop.slug?.replace(/-\d+$/, '') || laptop._id.toString();
     
     if (!seen.has(dedupeKey)) {
@@ -229,7 +256,7 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
     }
   }
   
-  console.log(`Found ${deduplicated.length} unique matching laptops`);
+  console.log(`✅ Found ${deduplicated.length} unique matching laptops`);
   
   return deduplicated;
 }
@@ -243,7 +270,7 @@ export async function hybridSearch(semanticQuery, filters = {}, topK = 5) {
 export async function handleMessage(message, history = []) {
   try {
     console.log('\n' + '='.repeat(60));
-    console.log('🤖 Processing message:', message);
+    console.log(' Processing message:', message);
     console.log('='.repeat(60));
 
     // Step 1: Route the query
@@ -253,7 +280,7 @@ export async function handleMessage(message, history = []) {
 
     // Handle NOT_RELEVANT
     if (routeResult.classification === 'NOT_RELEVANT') {
-      console.log('❌ Query not relevant to laptops');
+      console.log('Query not relevant to laptops');
       return {
         success: true,
         data: {
@@ -266,7 +293,7 @@ export async function handleMessage(message, history = []) {
 
     // Handle NEED_MORE_INFO
     if (routeResult.classification === 'NEED_MORE_INFO') {
-      console.log('❓ Need more information');
+      console.log('Need more information');
       const reply = await generateNeedMoreInfoResponse(
         message, 
         history, 

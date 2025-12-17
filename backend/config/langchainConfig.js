@@ -20,7 +20,7 @@ if (!process.env.CEREBRAS_API_KEY) {
 export const llm = new ChatCerebras({
   model: 'llama-3.3-70b',
   apiKey: process.env.CEREBRAS_API_KEY,
-  temperature: 0.3, // Lower for more consistent outputs
+  temperature: 0.3,
   maxTokens: 2048,
 });
 
@@ -28,9 +28,9 @@ export const llm = new ChatCerebras({
  * Router LLM - faster responses for classification
  */
 export const routerLlm = new ChatCerebras({
-  model: 'llama-3.3-70b',
+  model: 'qwen-3-32b',
   apiKey: process.env.CEREBRAS_API_KEY,
-  temperature: 0.1, // Very low for deterministic routing
+  temperature: 0.1, 
   maxTokens: 512,
 });
 
