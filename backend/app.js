@@ -109,8 +109,8 @@ app.get('/', (req, res) => {
 // START SERVER
 // =============================================================================
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+    app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
     });
 }
 
