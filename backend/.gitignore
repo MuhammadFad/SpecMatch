@@ -16,3 +16,6 @@ serviceAccountKey.json
 
 .DS_Store
 Thumbs.db
+
+# Useless UTILS files
+ingestion/
