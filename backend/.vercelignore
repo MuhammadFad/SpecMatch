@@ -1,0 +1,9 @@
+# Ignore the frontend directory (so it doesn't get bundled into the API)
+frontend
+
+
+# Ignore heavy media or scraped data
+*.png
+*.jpg
+*.mp4
+scraper_data.json
