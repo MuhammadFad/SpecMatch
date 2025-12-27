@@ -1,51 +1,55 @@
-import { pipeline, env } from '@huggingface/transformers';
+import { HfInference } from '@huggingface/inference';
 
-// Configure cache directory for ONNX models
-env.cacheDir = './.cache';
+// Initialize the Hugging Face Inference client
+const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
-// Initialize the embedding model (lazy-loaded singleton)
-let embedder = null;
-
-/**
- * Get or initialize the embedding model
- * Uses Xenova/all-MiniLM-L6-v2 quantized ONNX model
- * @returns {Promise} The embedding pipeline
- */
-export async function getEmbedder() {
-  if (!embedder) {
-    console.log('Loading embedding model (all-MiniLM-L6-v2 quantized)...');
-    embedder = await pipeline(
-      'feature-extraction',
-      'Xenova/all-MiniLM-L6-v2',
-      { quantized: true }
-    );
-    console.log('Embedding model loaded successfully!');
-  }
-  return embedder;
-}
+// Model to use for embeddings (same as Xenova/all-MiniLM-L6-v2)
+const EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2';
 
 /**
- * Generate embedding for a single text
+ * Generate embedding for a single text using HuggingFace API
  * @param {string} text - The text to embed
  * @returns {Promise<number[]>} 384-dimensional embedding vector
  */
 export async function generateEmbedding(text) {
-  const model = await getEmbedder();
-  const output = await model(text, { pooling: 'mean', normalize: true });
-  return Array.from(output.data);
+  try {
+    console.log('Requesting embedding from Hugging Face API...');
+    
+    const embedding = await hf.featureExtraction({
+      model: EMBEDDING_MODEL,
+      inputs: text,
+    });
+
+    console.log('Embedding received successfully!');
+    // The API returns the embedding directly as a float array
+    return Array.from(embedding);
+  } catch (error) {
+    console.error('Error fetching embedding from HuggingFace API:', error);
+    throw error;
+  }
 }
 
 /**
- * Generate embeddings for multiple texts
+ * Generate embeddings for multiple texts using HuggingFace API
  * @param {string[]} texts - Array of texts to embed
  * @returns {Promise<number[][]>} Array of 384-dimensional embedding vectors
  */
 export async function generateEmbeddings(texts) {
-  const model = await getEmbedder();
-  const embeddings = await Promise.all(
-    texts.map(text => model(text, { pooling: 'mean', normalize: true }))
-  );
-  return embeddings.map(emb => Array.from(emb.data));
+  try {
+    console.log(`Requesting embeddings for ${texts.length} texts from Hugging Face API...`);
+    
+    const embeddings = await hf.featureExtraction({
+      model: EMBEDDING_MODEL,
+      inputs: texts,
+    });
+
+    console.log('Embeddings received successfully!');
+    // Convert to array of arrays if not already
+    return embeddings.map(emb => Array.from(emb));
+  } catch (error) {
+    console.error('Error fetching embeddings from HuggingFace API:', error);
+    throw error;
+  }
 }
 
 /**
