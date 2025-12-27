@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "@huggingface/inference": "^4.13.5",
-    "@huggingface/transformers": "^3.8.1",
     "@langchain/cerebras": "^1.0.1",
     "@langchain/core": "^1.1.5",
     "axios": "^1.13.2",
