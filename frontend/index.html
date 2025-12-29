@@ -298,10 +298,10 @@
 
             container.innerHTML = laptops.map(laptop => `
                 <div class="laptop-card card" onclick="window.location.href='laptop.html?slug=${laptop.slug}'">
-                    <img src="${laptop.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                    <img src="${laptop.images?.[0] || 'https://placehold.co/300x200?text=No+Image'}" 
                          alt="${laptop.name}" 
                          class="card-image"
-                         onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                         onerror="this.onerror=null; this.src='https://placehold.co/300x200?text=No+Image'">
                     <div class="card-body">
                         <div class="card-subtitle">${laptop.brand}</div>
                         <div class="card-title">${laptop.name}</div>
@@ -367,7 +367,7 @@
             // Click handlers
             gameDropdown.querySelectorAll('.autocomplete-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    window.location.href = `game.html?id=${item.dataset.appid}`;
+                    window.location.href = `game.html?appId=${item.dataset.appid}`;
                 });
             });
         }

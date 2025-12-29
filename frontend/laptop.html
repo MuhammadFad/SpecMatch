@@ -132,10 +132,10 @@
                     <!-- Left: Image Gallery -->
                     <div class="gallery">
                         <div class="gallery-main">
-                            <img src="${l.images?.[0] || 'https://via.placeholder.com/600x400?text=No+Image'}" 
+                            <img src="${l.images?.[0] || 'https://placehold.co/600x400?text=No+Image'}" 
                                  alt="${l.name}" 
                                  id="mainImage"
-                                 onerror="this.src='https://via.placeholder.com/600x400?text=No+Image'">
+                                 onerror="this.onerror=null; this.src='https://placehold.co/600x400?text=No+Image'">
                         </div>
                         ${l.images?.length > 1 ? `
                             <div class="gallery-thumbs">

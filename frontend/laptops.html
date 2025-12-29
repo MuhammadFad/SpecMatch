@@ -347,11 +347,11 @@
             resultsGrid.innerHTML = laptops.map(laptop => `
                 <div class="laptop-card card" onclick="window.location.href='laptop.html?slug=${laptop.slug}'">
                     <div class="card-image-wrapper">
-                        <img src="${laptop.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                        <img src="${laptop.images?.[0] || 'https://placehold.co/300x200?text=No+Image'}" 
                              alt="${laptop.name}" 
                              class="card-image"
                              loading="lazy"
-                             onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                             onerror="this.onerror=null; this.src='https://placehold.co/300x200?text=No+Image'">
                         ${laptop.compatibilityVerdict ? `
                             <span class="compatibility-badge verdict-${laptop.compatibilityVerdict.toLowerCase()}">
                                 ${laptop.compatibilityVerdict}
