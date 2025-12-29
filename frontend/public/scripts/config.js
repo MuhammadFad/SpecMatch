@@ -7,10 +7,10 @@
 
 export const CONFIG = {
     // API Base URL
-    API_BASE_URL: 'http://localhost:3000/api',
+    API_BASE_URL: 'https://api.specmatch.app',
 
     // Auth Server (if separate)
-    AUTH_BASE_URL: 'http://localhost:5000',
+    AUTH_BASE_URL: 'https://api.specmatch.app',
 
     // Firebase Configuration
     FIREBASE: {
