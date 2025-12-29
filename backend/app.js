@@ -20,7 +20,12 @@ const port = process.env.PORT || 3000;
 // =============================================================================
 // MIDDLEWARE
 // =============================================================================
-app.use(cors());
+app.use(cors({
+  origin: ['https://specmatch.app', 'https://www.specmatch.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','UPDATE'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json()); // Parse JSON request bodies
 
 // Serve static files from frontend
