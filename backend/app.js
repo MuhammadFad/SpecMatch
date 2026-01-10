@@ -21,12 +21,12 @@ const port = process.env.PORT || 3000;
 // MIDDLEWARE
 // =============================================================================
 app.use(cors({
-  origin: ['https://specmatch.app', 'https://www.specmatch.app',
-    'https://sm-frontend-six.vercel.app'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','UPDATE'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
+    origin: ['https://specmatch.app', 'https://www.specmatch.app',
+        'https://sm-frontend-six.vercel.app'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'UPDATE'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json()); // Parse JSON request bodies
 
@@ -37,11 +37,39 @@ app.use('/public', express.static(path.join(__dirname, '../frontend/public')));
 // =============================================================================
 // DATABASE CONNECTION
 // =============================================================================
+// =============================================================================
+// DATABASE CONNECTION (SERVERLESS OPTIMIZED)
+// =============================================================================
 const MONGO_URI = process.env.MONGODB_URI;
+let cachedConnection = null;
 
-mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ Connected to MongoDB'))
-    .catch(err => console.error('❌ MongoDB connection error:', err));
+// Define the connection function
+const connectDB = async () => {
+    // If we are already connected (warm start), reuse the connection!
+    if (cachedConnection) {
+        return cachedConnection;
+    }
+
+    console.log('⏳ Connecting to MongoDB...');
+    cachedConnection = await mongoose.connect(MONGO_URI, {
+        bufferCommands: false, // Fail fast if we aren't connected
+        serverSelectionTimeoutMS: 5000,
+    });
+
+    console.log('✅ New MongoDB Connection established');
+    return cachedConnection;
+};
+
+// This forces every single request to wait for the DB before proceeding
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next(); // Proceed to the routes (laptops, games, etc.)
+    } catch (error) {
+        console.error("❌ DB Connection Failed:", error);
+        res.status(500).json({ error: "Database Connection Failed" });
+    }
+});
 
 // =============================================================================
 // API ROUTES
