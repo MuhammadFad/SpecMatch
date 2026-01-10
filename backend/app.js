@@ -22,7 +22,7 @@ const port = process.env.PORT || 3000;
 // =============================================================================
 app.use(cors({
     origin: ['https://specmatch.app', 'https://www.specmatch.app',
-        'https://sm-frontend-six.vercel.app'
+        'https://spec-match-lt45.vercel.app'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'UPDATE'],
     credentials: true,
