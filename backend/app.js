@@ -55,8 +55,6 @@ app.use(cors({
     maxAge: 86400 // Cache preflight for 24 hours
 }));
 
-// Handle preflight requests explicitly
-app.options('*', cors());
 
 app.use(express.json()); // Parse JSON request bodies
 
