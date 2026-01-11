@@ -519,8 +519,11 @@ export const calculateCompatibility = async (laptopId, gameId) => {
 
     // 2. Extract values (with fallbacks)
     const laptopSpecs = {
-        cpuScore: laptop.cpu?.score || 0,
-        gpuScore: laptop.gpu?.score || 0,
+        cpuScore: laptop.cpu?.score || laptop.cpu?.benchmark_score || 0,
+        cpuName: laptop.cpu?.name || 'Unknown CPU',
+        gpuScore: laptop.gpu?.score || laptop.gpu?.benchmark_score || 0,
+        gpuName: laptop.gpu?.name || 'Unknown GPU',
+        gpuVram: laptop.gpu?.vram_gb || 0,
         ramGb: laptop.ram?.size_gb || 0,
         storageGb: laptop.storage?.capacity_gb || 0
     };
@@ -528,12 +531,31 @@ export const calculateCompatibility = async (laptopId, gameId) => {
     const minReqs = game.requirements?.minimum || {};
     const recReqs = game.requirements?.recommended || {};
 
-    // 3. Compare each component
+    // 3. Compare each component with verbose output
     const details = {
-        cpu: compareComponent(laptopSpecs.cpuScore, minReqs.cpu_score || 0, recReqs.cpu_score || 0),
-        gpu: compareComponent(laptopSpecs.gpuScore, minReqs.gpu_score || 0, recReqs.gpu_score || 0),
-        ram: compareComponent(laptopSpecs.ramGb, minReqs.ram_gb || 0, recReqs.ram_gb || 0),
-        storage: compareComponent(laptopSpecs.storageGb, minReqs.storage_gb || 0, recReqs.storage_gb || 0)
+        cpu: {
+            ...compareComponent(laptopSpecs.cpuScore, minReqs.cpu_score || 0, recReqs.cpu_score || 0, 'CPU'),
+            laptopName: laptopSpecs.cpuName,
+            requiredMinText: minReqs.cpu_text || 'Not specified',
+            requiredRecText: recReqs.cpu_text || 'Not specified'
+        },
+        gpu: {
+            ...compareComponent(laptopSpecs.gpuScore, minReqs.gpu_score || 0, recReqs.gpu_score || 0, 'GPU'),
+            laptopName: laptopSpecs.gpuName,
+            laptopVram: laptopSpecs.gpuVram,
+            requiredMinText: minReqs.gpu_text || 'Not specified',
+            requiredRecText: recReqs.gpu_text || 'Not specified'
+        },
+        ram: {
+            ...compareComponent(laptopSpecs.ramGb, minReqs.ram_gb || 0, recReqs.ram_gb || 0, 'RAM'),
+            laptopValue: laptopSpecs.ramGb,
+            unit: 'GB'
+        },
+        storage: {
+            ...compareComponent(laptopSpecs.storageGb, minReqs.storage_gb || 0, recReqs.storage_gb || 0, 'Storage'),
+            laptopValue: laptopSpecs.storageGb,
+            unit: 'GB'
+        }
     };
 
     // 4. Calculate overall score and verdict
@@ -545,7 +567,10 @@ export const calculateCompatibility = async (laptopId, gameId) => {
     // 6. Estimate performance tier
     const estimatedPerformance = getPerformanceTier(score);
 
-    // 7. Return comprehensive report
+    // 7. Generate human-readable summary
+    const summary = generateCompatibilitySummary(details, verdict, bottleneck);
+
+    // 8. Return comprehensive report with verbose data
     return {
         laptop: {
             id: laptop._id,
@@ -566,13 +591,17 @@ export const calculateCompatibility = async (laptopId, gameId) => {
             requirements: {
                 minimum: {
                     cpu: minReqs.cpu_text || 'Unknown',
+                    cpu_score: minReqs.cpu_score || 0,
                     gpu: minReqs.gpu_text || 'Unknown',
+                    gpu_score: minReqs.gpu_score || 0,
                     ram_gb: minReqs.ram_gb || 0,
                     storage_gb: minReqs.storage_gb || 0
                 },
                 recommended: {
                     cpu: recReqs.cpu_text || 'Unknown',
+                    cpu_score: recReqs.cpu_score || 0,
                     gpu: recReqs.gpu_text || 'Unknown',
+                    gpu_score: recReqs.gpu_score || 0,
                     ram_gb: recReqs.ram_gb || 0,
                     storage_gb: recReqs.storage_gb || 0
                 }
@@ -584,10 +613,79 @@ export const calculateCompatibility = async (laptopId, gameId) => {
             score,
             bottleneck,
             details,
-            estimatedPerformance
+            estimatedPerformance,
+            summary
+        },
+        // Add gameName at top level for easier frontend access
+        gameName: game.name,
+        // Simplified details for quick UI display
+        verdict,
+        details: {
+            cpu: {
+                meets: details.cpu.meets === 'below' ? false : true,
+                level: details.cpu.level,
+                description: details.cpu.description,
+                laptopValue: `${laptopSpecs.cpuName} (Score: ${laptopSpecs.cpuScore})`,
+                requiredValue: details.cpu.requiredMinText
+            },
+            gpu: {
+                meets: details.gpu.meets === 'below' ? false : true,
+                level: details.gpu.level,
+                description: details.gpu.description,
+                laptopValue: `${laptopSpecs.gpuName} (Score: ${laptopSpecs.gpuScore})`,
+                requiredValue: details.gpu.requiredMinText
+            },
+            ram: {
+                meets: details.ram.meets === 'below' ? false : true,
+                level: details.ram.level,
+                description: details.ram.description,
+                laptopValue: `${laptopSpecs.ramGb} GB`,
+                requiredValue: `${minReqs.ram_gb || 0} GB minimum`
+            },
+            storage: {
+                meets: details.storage.meets === 'below' ? false : true,
+                level: details.storage.level,
+                description: details.storage.description,
+                laptopValue: `${laptopSpecs.storageGb} GB`,
+                requiredValue: `${minReqs.storage_gb || 0} GB minimum`
+            }
         }
     };
 };
+
+/**
+ * Generate a human-readable summary of compatibility
+ */
+function generateCompatibilitySummary(details, verdict, bottleneck) {
+    const components = ['cpu', 'gpu', 'ram', 'storage'];
+    const passing = components.filter(c => details[c].meets !== 'below');
+    const failing = components.filter(c => details[c].meets === 'below');
+
+    let summary = '';
+
+    switch (verdict) {
+        case 'Excellent':
+            summary = 'This laptop exceeds recommended specifications. Expect smooth gameplay at high/ultra settings.';
+            break;
+        case 'Good':
+            summary = 'This laptop meets most recommended specs. Good performance expected at medium-high settings.';
+            break;
+        case 'Playable':
+            summary = 'This laptop meets minimum requirements. Playable at lower settings with acceptable performance.';
+            break;
+        case 'Struggle':
+            summary = `This laptop is slightly below minimum specs. May run with reduced settings. Bottleneck: ${bottleneck}.`;
+            break;
+        case 'Unplayable':
+            const failingNames = failing.map(c => c.toUpperCase()).join(', ');
+            summary = `This laptop does not meet minimum requirements. Components below spec: ${failingNames}.`;
+            break;
+        default:
+            summary = 'Unable to determine compatibility. Game requirements may be incomplete.';
+    }
+
+    return summary;
+}
 
 
 // =============================================================================
@@ -724,16 +822,21 @@ export const calculateBatchCompatibility = async (laptopIds, gameId, sortBy = 's
 
 /**
  * Compare a laptop's component value against min/rec requirements
+ * IMPROVED: Returns more verbose comparison data for frontend display
  */
-function compareComponent(laptopValue, minRequired, recRequired) {
-    // Handle edge cases
+function compareComponent(laptopValue, minRequired, recRequired, componentName = 'component') {
+    // Handle edge cases - if no requirements exist
     if (minRequired === 0 && recRequired === 0) {
         return {
             laptopValue,
             requiredMin: minRequired,
             requiredRec: recRequired,
             meets: 'recommended', // No requirement = always meets
-            percentage: 100
+            level: 'recommended',
+            percentage: 100,
+            status: 'pass',
+            description: 'No specific requirement',
+            comparison: 'Not specified'
         };
     }
 
@@ -743,13 +846,34 @@ function compareComponent(laptopValue, minRequired, recRequired) {
         : (laptopValue >= minRequired ? 100 : Math.round((laptopValue / minRequired) * 100));
 
     // Determine status
-    let meets;
+    let meets, level, status, description, comparison;
+
     if (laptopValue >= recRequired && recRequired > 0) {
         meets = 'recommended';
-    } else if (laptopValue >= minRequired) {
+        level = 'recommended';
+        status = 'pass';
+        description = `Exceeds recommended (${Math.round(percentage)}%)`;
+        comparison = `${laptopValue} ≥ ${recRequired} (Recommended)`;
+    } else if (laptopValue >= minRequired && minRequired > 0) {
         meets = 'minimum';
-    } else {
+        level = 'minimum';
+        status = 'pass';
+        const minPct = Math.round((laptopValue / minRequired) * 100);
+        description = `Meets minimum (${minPct}% of recommended)`;
+        comparison = `${laptopValue} ≥ ${minRequired} (Minimum)`;
+    } else if (laptopValue > 0 && minRequired > 0) {
         meets = 'below';
+        level = 'below';
+        status = 'fail';
+        const deficit = Math.round(((minRequired - laptopValue) / minRequired) * 100);
+        description = `Below minimum by ${deficit}%`;
+        comparison = `${laptopValue} < ${minRequired} (Minimum)`;
+    } else {
+        meets = 'unknown';
+        level = 'unknown';
+        status = 'unknown';
+        description = 'Unable to determine';
+        comparison = 'Insufficient data';
     }
 
     return {
@@ -757,7 +881,11 @@ function compareComponent(laptopValue, minRequired, recRequired) {
         requiredMin: minRequired,
         requiredRec: recRequired,
         meets,
-        percentage
+        level,
+        percentage,
+        status,
+        description,
+        comparison
     };
 }
 

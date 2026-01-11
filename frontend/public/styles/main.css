@@ -25,17 +25,27 @@
     --secondary-500: #764ba2;
     --secondary-600: #6b4190;
 
-    /* Colors - Neutral */
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
+    /* Colors - Neutral - Higher Contrast */
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+
+    /* Section & Card Styling */
+    --section-border: #e2e8f0;
+    --section-bg: #ffffff;
+    --section-bg-alt: #f8fafc;
+    --card-border: #e2e8f0;
+    --card-hover-border: var(--primary-400);
+    --selected-bg: rgba(102, 126, 234, 0.08);
+    --selected-border: var(--primary-500);
+    --highlight-glow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 
     /* Colors - Semantic */
     --success: #22c55e;
@@ -526,7 +536,14 @@ h6 {
 
 .autocomplete-item:hover,
 .autocomplete-item.highlighted {
-    background: var(--gray-50);
+    background: var(--selected-bg);
+    border-left: 3px solid var(--primary-500);
+}
+
+.autocomplete-item.selected {
+    background: var(--primary-100);
+    border-left: 3px solid var(--primary-600);
+    font-weight: 500;
 }
 
 .autocomplete-item img {
@@ -563,11 +580,20 @@ h6 {
     box-shadow: var(--shadow);
     overflow: hidden;
     transition: all var(--transition);
+    border: 1px solid var(--card-border);
 }
 
 .card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-md);
+    border-color: var(--card-hover-border);
+}
+
+.card.selected,
+.card:focus {
+    background: var(--selected-bg);
+    border-color: var(--selected-border);
+    box-shadow: var(--highlight-glow);
 }
 
 .card-image {
@@ -705,12 +731,20 @@ h6 {
     font-size: 0.9375rem;
     font-weight: 500;
     color: var(--gray-600);
-    transition: color var(--transition-fast);
+    transition: all var(--transition-fast);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
 }
 
-.navbar-link:hover,
-.navbar-link.active {
+.navbar-link:hover {
     color: var(--primary-600);
+    background: var(--gray-100);
+}
+
+.navbar-link.active {
+    color: var(--primary-700);
+    background: var(--primary-100);
+    font-weight: 600;
 }
 
 .navbar-actions {

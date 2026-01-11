@@ -20,14 +20,44 @@ const port = process.env.PORT || 3000;
 // =============================================================================
 // MIDDLEWARE
 // =============================================================================
+// CORS Configuration - Updated for Vercel deployment
+const allowedOrigins = [
+    'https://specmatch.app',
+    'https://www.specmatch.app',
+    'https://spec-match-lt45.vercel.app',
+    'https://specmatch.vercel.app',
+    // Allow localhost for development
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173'
+];
+
 app.use(cors({
-    origin: ['https://specmatch.app', 'https://www.specmatch.app',
-        'https://spec-match-lt45.vercel.app'
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'UPDATE'],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        if (!origin) return callback(null, true);
+
+        // Check if origin is in allowed list or matches vercel preview deployments
+        if (allowedOrigins.includes(origin) ||
+            origin.endsWith('.vercel.app') ||
+            origin.includes('specmatch')) {
+            return callback(null, true);
+        }
+
+        console.warn(`⚠️ CORS blocked request from: ${origin}`);
+        return callback(new Error('Not allowed by CORS'), false);
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Content-Length', 'X-Request-Id'],
+    maxAge: 86400 // Cache preflight for 24 hours
 }));
+
+// Handle preflight requests explicitly
+app.options('*', cors());
+
 app.use(express.json()); // Parse JSON request bodies
 
 // Serve static files from frontend

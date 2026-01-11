@@ -82,6 +82,12 @@ export const findGames = async (queryText, limit = 20) => {
  * @description Search the SteamApps index for game names using MongoDB Atlas Search
  * This is the FIRST step - returns lightweight results for autocomplete/search
  * 
+ * IMPROVED SEARCH LOGIC:
+ * 1. Try Atlas Search first (best for fuzzy matching)
+ * 2. Fall back to prefix regex (for exact prefix like "Elden" → "Elden Ring")
+ * 3. Fall back to contains regex (broader search)
+ * This ensures we ALWAYS return results if any exist
+ * 
  * WHY TWO COLLECTIONS?
  * - SteamApps: 200k entries, just { appid, name } = Fast searching
  * - Games: Full data with requirements = Heavy, fetched on-demand
@@ -103,82 +109,100 @@ export const searchSteamApps = async (queryText, limit = 10) => {
         return [];
     }
 
-    // Use MongoDB Atlas Search for fuzzy matching
-    const pipeline = [
-        {
-            $search: {
-                index: 'steam_apps_search', // Atlas Search index name
-                compound: {
-                    should: [
-                        {
-                            text: {
-                                query: queryText,
-                                path: 'name',
-                                fuzzy: {
-                                    maxEdits: 2,
-                                    prefixLength: 1
-                                },
-                                score: { boost: { value: 3 } }
-                            }
-                        },
-                        {
-                            autocomplete: {
-                                query: queryText,
-                                path: 'name',
-                                fuzzy: {
-                                    maxEdits: 1,
-                                    prefixLength: 2
+    // Escape special regex characters for safe regex search
+    const escapedQuery = queryText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // STRATEGY 1: Try Atlas Search first (best for fuzzy matching)
+    try {
+        const pipeline = [
+            {
+                $search: {
+                    index: 'steam_apps_search', // Atlas Search index name
+                    compound: {
+                        should: [
+                            {
+                                text: {
+                                    query: queryText,
+                                    path: 'name',
+                                    fuzzy: {
+                                        maxEdits: 2,
+                                        prefixLength: 1
+                                    },
+                                    score: { boost: { value: 3 } }
+                                }
+                            },
+                            {
+                                autocomplete: {
+                                    query: queryText,
+                                    path: 'name',
+                                    fuzzy: {
+                                        maxEdits: 1,
+                                        prefixLength: 2
+                                    }
                                 }
                             }
-                        }
-                    ],
-                    minimumShouldMatch: 1
+                        ],
+                        minimumShouldMatch: 1
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    searchScore: { $meta: 'searchScore' }
+                }
+            },
+            { $sort: { searchScore: -1 } },
+            { $limit: limit },
+            {
+                $project: {
+                    appid: 1,
+                    name: 1,
+                    _id: 0
                 }
             }
-        },
-        {
-            $addFields: {
-                searchScore: { $meta: 'searchScore' }
-            }
-        },
-        { $sort: { searchScore: -1 } },
-        { $limit: limit },
-        {
-            $project: {
-                appid: 1,
-                name: 1,
-                _id: 0
-            }
+        ];
+
+        const atlasResults = await SteamApp.aggregate(pipeline);
+        console.log(`📡 [GameService.searchSteamApps] Atlas Search found ${atlasResults.length} matches`);
+
+        if (atlasResults.length > 0) {
+            return atlasResults;
         }
-    ];
-
-    try {
-        const results = await SteamApp.aggregate(pipeline);
-        console.log(`📡 [GameService.searchSteamApps] Atlas Search found ${results.length} matches`);
-
-        // If Atlas Search returns results, use them
-        if (results.length > 0) {
-            return results;
-        }
-
-        // If Atlas Search returns 0 results, try regex fallback
-        console.log(`📡 [GameService.searchSteamApps] Atlas Search returned 0, trying regex fallback`);
-        const regexResults = await SteamApp.find({
-            name: { $regex: queryText, $options: 'i' }
-        })
-            .limit(limit)
-            .lean();
-        console.log(`📡 [GameService.searchSteamApps] Regex fallback found ${regexResults.length} matches`);
-        return regexResults;
     } catch (error) {
-        // Fallback to regex search if Atlas Search fails
-        console.warn(`📡 [GameService.searchSteamApps] Atlas Search failed, falling back to regex: ${error.message}`);
-        const results = await SteamApp.find({
-            name: { $regex: queryText, $options: 'i' }
+        console.warn(`📡 [GameService.searchSteamApps] Atlas Search failed: ${error.message}`);
+    }
+
+    // STRATEGY 2: Prefix regex (for cases like "Elden" → "Elden Ring")
+    console.log(`📡 [GameService.searchSteamApps] Trying prefix regex search for: "${queryText}"`);
+    try {
+        const prefixResults = await SteamApp.find({
+            name: { $regex: `^${escapedQuery}`, $options: 'i' }
         })
             .limit(limit)
             .lean();
-        return results;
+
+        if (prefixResults.length > 0) {
+            console.log(`📡 [GameService.searchSteamApps] Prefix regex found ${prefixResults.length} matches`);
+            return prefixResults.map(r => ({ appid: r.appid, name: r.name }));
+        }
+    } catch (error) {
+        console.warn(`📡 [GameService.searchSteamApps] Prefix regex failed: ${error.message}`);
+    }
+
+    // STRATEGY 3: Contains regex (broadest search - finds any match)
+    console.log(`📡 [GameService.searchSteamApps] Trying contains regex search for: "${queryText}"`);
+    try {
+        const containsResults = await SteamApp.find({
+            name: { $regex: escapedQuery, $options: 'i' }
+        })
+            .limit(limit)
+            .lean();
+
+        console.log(`📡 [GameService.searchSteamApps] Contains regex found ${containsResults.length} matches`);
+        return containsResults.map(r => ({ appid: r.appid, name: r.name }));
+    } catch (error) {
+        console.error(`📡 [GameService.searchSteamApps] All search strategies failed: ${error.message}`);
+        return [];
     }
 };
 
@@ -190,6 +214,8 @@ export const searchSteamApps = async (queryText, limit = 10) => {
  * @function getGameSearchResults
  * @description Returns search results formatted for display as a grid of game tiles
  * Used when user presses Enter in the search box without selecting an autocomplete result
+ * 
+ * IMPROVED: Guarantees results by trying multiple search strategies
  * 
  * Returns results with:
  * - Steam image URLs (header images)
@@ -221,9 +247,22 @@ export const getGameSearchResults = async (queryText, page = 1, limit = 20) => {
         return { games: [], total: 0, page: 1, totalPages: 0 };
     }
 
-    // Get a larger set for pagination calculation
+    // Get a larger set for pagination calculation - use enhanced search
     const maxResults = 100;
-    const steamApps = await searchSteamApps(queryText, maxResults);
+    let steamApps = await searchSteamApps(queryText, maxResults);
+
+    // If still no results, try searching our Games collection directly
+    if (steamApps.length === 0) {
+        console.log(`📡 [GameService.getGameSearchResults] SteamApps empty, searching Games collection...`);
+        const gamesFromDb = await findGames(queryText, maxResults);
+        if (gamesFromDb.length > 0) {
+            steamApps = gamesFromDb.map(g => ({
+                appid: g.steam_app_id,
+                name: g.name
+            }));
+            console.log(`📡 [GameService.getGameSearchResults] Found ${steamApps.length} games in Games collection`);
+        }
+    }
 
     if (steamApps.length === 0) {
         return { games: [], total: 0, page: 1, totalPages: 0 };

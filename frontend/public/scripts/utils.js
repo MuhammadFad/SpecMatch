@@ -106,9 +106,13 @@ export function getVerdictClass(verdict) {
     const classes = {
         'Excellent': 'verdict-excellent',
         'Good': 'verdict-good',
+        'Recommended': 'verdict-recommended',
         'Playable': 'verdict-playable',
+        'Minimum': 'verdict-minimum',
         'Struggle': 'verdict-struggle',
-        'Unplayable': 'verdict-unplayable'
+        'Unplayable': 'verdict-unplayable',
+        'Insufficient': 'verdict-insufficient',
+        'Unknown': 'verdict-unknown'
     };
     return classes[verdict] || 'verdict-unknown';
 }
@@ -120,9 +124,13 @@ export function getVerdictColor(verdict) {
     const colors = {
         'Excellent': '#22c55e',
         'Good': '#84cc16',
+        'Recommended': '#22c55e',
         'Playable': '#eab308',
+        'Minimum': '#f97316',
         'Struggle': '#f97316',
-        'Unplayable': '#ef4444'
+        'Unplayable': '#ef4444',
+        'Insufficient': '#ef4444',
+        'Unknown': '#6b7280'
     };
     return colors[verdict] || '#6b7280';
 }
