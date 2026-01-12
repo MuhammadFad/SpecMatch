@@ -75,16 +75,16 @@ export const findGames = async (queryText, limit = 20) => {
 
 
 // =============================================================================
-// SEARCH STEAM APPS (Lightweight lookup - PREFIX ONLY)
+// SEARCH STEAM APPS (Lightweight lookup)
 // =============================================================================
 /**
  * @function searchSteamApps
- * @description Search for games using PREFIX matching
+ * @description Search for games - Steam API returns relevance-sorted results
  * 
  * SEARCH STRATEGY:
- * 1. ALWAYS query Steam API first (most comprehensive source)
- * 2. Then add local DB results to fill any gaps
- * 3. Returns prefix-matched results only
+ * 1. ALWAYS query Steam API first (most comprehensive, returns relevant matches)
+ * 2. Then add local DB prefix matches to fill any gaps
+ * 3. Steam API returns results like "ELDEN RING" for query "elden" - this is good!
  * 
  * @param {String} queryText - The user's search input
  * @param {Number} [limit=10] - Maximum results to return
@@ -93,7 +93,7 @@ export const findGames = async (queryText, limit = 20) => {
  * @returns {Array} Array of { appid, name } objects
  */
 export const searchSteamApps = async (queryText, limit = 10, fetchFromSteamIfNeeded = false) => {
-    console.log(`📡 [GameService.searchSteamApps] PREFIX search: "${queryText}" (limit: ${limit}, fetchFromSteam: ${fetchFromSteamIfNeeded})`);
+    console.log(`📡 [GameService.searchSteamApps] Search: "${queryText}" (limit: ${limit}, fetchFromSteam: ${fetchFromSteamIfNeeded})`);
 
     if (!queryText || queryText.length < 2) {
         return [];
@@ -111,34 +111,34 @@ export const searchSteamApps = async (queryText, limit = 10, fetchFromSteamIfNee
     const existingAppIds = new Set();
 
     // STRATEGY 1: Query Steam API FIRST (if enabled) - this has all games
+    // Steam API returns relevance-sorted results, so "elden" returns "ELDEN RING" first
     if (fetchFromSteamIfNeeded) {
         console.log(`📡 [GameService.searchSteamApps] Querying Steam API first...`);
         try {
             const steamResults = await fetchGamesFromSteamAPI(queryText);
 
-            // Filter to only prefix matches (case-insensitive)
+            // Add ALL Steam results - Steam API already does relevance matching
+            // "elden" query returns "ELDEN RING" at top - we want that!
             steamResults.forEach(r => {
-                if (r.name.toLowerCase().startsWith(normalizedQuery)) {
-                    if (!existingAppIds.has(r.appid)) {
-                        allResults.push({ appid: r.appid, name: r.name });
-                        existingAppIds.add(r.appid);
+                if (!existingAppIds.has(r.appid)) {
+                    allResults.push({ appid: r.appid, name: r.name });
+                    existingAppIds.add(r.appid);
 
-                        // Cache to local DB for future searches
-                        SteamApp.findOneAndUpdate(
-                            { appid: r.appid },
-                            { appid: r.appid, name: r.name },
-                            { upsert: true, new: true }
-                        ).catch(err => console.warn(`Failed to cache Steam app ${r.appid}`));
-                    }
+                    // Cache to local DB for future searches
+                    SteamApp.findOneAndUpdate(
+                        { appid: r.appid },
+                        { appid: r.appid, name: r.name },
+                        { upsert: true, new: true }
+                    ).catch(err => console.warn(`Failed to cache Steam app ${r.appid}`));
                 }
             });
-            console.log(`📡 [GameService.searchSteamApps] Steam API prefix matches: ${allResults.length}`);
+            console.log(`📡 [GameService.searchSteamApps] Steam API results: ${allResults.length}`);
         } catch (error) {
             console.warn(`📡 [GameService.searchSteamApps] Steam API query failed: ${error.message}`);
         }
     }
 
-    // STRATEGY 2: Add local DB results (to fill gaps and provide more results)
+    // STRATEGY 2: Add local DB prefix results (to fill gaps and provide more results)
     if (allResults.length < limit) {
         try {
             const localResults = await SteamApp.find({
@@ -184,9 +184,20 @@ export const fetchGamesFromSteamAPI = async (queryText) => {
     console.log(`📡 [GameService.fetchGamesFromSteamAPI] Fetching from Steam: "${queryText}"`);
 
     try {
-        // Steam Store search API
+        // Steam Store search API - returns up to 50 results
         const searchUrl = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(queryText)}&l=english&cc=US`;
-        const response = await axios.get(searchUrl, { timeout: 10000 });
+        console.log(`📡 [GameService.fetchGamesFromSteamAPI] URL: ${searchUrl}`);
+
+        const response = await axios.get(searchUrl, {
+            timeout: 15000,
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'SpecMatch/1.0'
+            }
+        });
+
+        console.log(`📡 [GameService.fetchGamesFromSteamAPI] Response status: ${response.status}`);
+        console.log(`📡 [GameService.fetchGamesFromSteamAPI] Response has items: ${!!(response.data && response.data.items)}`);
 
         if (response.data && response.data.items) {
             const games = response.data.items
@@ -197,12 +208,17 @@ export const fetchGamesFromSteamAPI = async (queryText) => {
                 }));
 
             console.log(`📡 [GameService.fetchGamesFromSteamAPI] Found ${games.length} games from Steam API`);
+            if (games.length > 0) {
+                console.log(`📡 [GameService.fetchGamesFromSteamAPI] First result: ${games[0].name} (${games[0].appid})`);
+            }
             return games;
         }
 
+        console.log(`📡 [GameService.fetchGamesFromSteamAPI] No items in response`);
         return [];
     } catch (error) {
         console.error(`❌ [GameService.fetchGamesFromSteamAPI] Error: ${error.message}`);
+        console.error(`❌ [GameService.fetchGamesFromSteamAPI] Stack: ${error.stack}`);
         return [];
     }
 };
