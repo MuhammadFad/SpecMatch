@@ -79,21 +79,21 @@ export const findGames = async (queryText, limit = 20) => {
 // =============================================================================
 /**
  * @function searchSteamApps
- * @description Search for games - Steam API returns relevance-sorted results
+ * @description Search for games - ALWAYS uses Steam API for best results
  * 
  * SEARCH STRATEGY:
- * 1. ALWAYS query Steam API first (most comprehensive, returns relevant matches)
- * 2. Then add local DB prefix matches to fill any gaps
+ * 1. ALWAYS query Steam API (most comprehensive, returns relevant matches)
+ * 2. Then add local DB results to fill any gaps
  * 3. Steam API returns results like "ELDEN RING" for query "elden" - this is good!
  * 
  * @param {String} queryText - The user's search input
  * @param {Number} [limit=10] - Maximum results to return
- * @param {Boolean} [fetchFromSteamIfNeeded=false] - Whether to query Steam API (RECOMMENDED: true for full search)
+ * @param {Boolean} [fetchFromSteamIfNeeded=false] - IGNORED - we always fetch from Steam now
  * 
  * @returns {Array} Array of { appid, name } objects
  */
 export const searchSteamApps = async (queryText, limit = 10, fetchFromSteamIfNeeded = false) => {
-    console.log(`📡 [GameService.searchSteamApps] Search: "${queryText}" (limit: ${limit}, fetchFromSteam: ${fetchFromSteamIfNeeded})`);
+    console.log(`📡 [GameService.searchSteamApps] Search: "${queryText}" (limit: ${limit})`);
 
     if (!queryText || queryText.length < 2) {
         return [];
@@ -110,35 +110,31 @@ export const searchSteamApps = async (queryText, limit = 10, fetchFromSteamIfNee
     let allResults = [];
     const existingAppIds = new Set();
 
-    // STRATEGY 1: Query Steam API FIRST (if enabled) - this has all games
-    // Steam API returns relevance-sorted results, so "elden" returns "ELDEN RING" first
-    if (fetchFromSteamIfNeeded) {
-        console.log(`📡 [GameService.searchSteamApps] Querying Steam API first...`);
-        try {
-            const steamResults = await fetchGamesFromSteamAPI(queryText);
+    // STRATEGY 1: ALWAYS Query Steam API - this has all games including new ones
+    console.log(`📡 [GameService.searchSteamApps] Querying Steam API...`);
+    try {
+        const steamResults = await fetchGamesFromSteamAPI(queryText);
 
-            // Add ALL Steam results - Steam API already does relevance matching
-            // "elden" query returns "ELDEN RING" at top - we want that!
-            steamResults.forEach(r => {
-                if (!existingAppIds.has(r.appid)) {
-                    allResults.push({ appid: r.appid, name: r.name });
-                    existingAppIds.add(r.appid);
+        // Add ALL Steam results - Steam API already does relevance matching
+        steamResults.forEach(r => {
+            if (!existingAppIds.has(r.appid)) {
+                allResults.push({ appid: r.appid, name: r.name });
+                existingAppIds.add(r.appid);
 
-                    // Cache to local DB for future searches
-                    SteamApp.findOneAndUpdate(
-                        { appid: r.appid },
-                        { appid: r.appid, name: r.name },
-                        { upsert: true, new: true }
-                    ).catch(err => console.warn(`Failed to cache Steam app ${r.appid}`));
-                }
-            });
-            console.log(`📡 [GameService.searchSteamApps] Steam API results: ${allResults.length}`);
-        } catch (error) {
-            console.warn(`📡 [GameService.searchSteamApps] Steam API query failed: ${error.message}`);
-        }
+                // Cache to local DB for future searches
+                SteamApp.findOneAndUpdate(
+                    { appid: r.appid },
+                    { appid: r.appid, name: r.name },
+                    { upsert: true, new: true }
+                ).catch(err => console.warn(`Failed to cache Steam app ${r.appid}`));
+            }
+        });
+        console.log(`📡 [GameService.searchSteamApps] Steam API results: ${allResults.length}`);
+    } catch (error) {
+        console.error(`❌ [GameService.searchSteamApps] Steam API query failed: ${error.message}`);
     }
 
-    // STRATEGY 2: Add local DB prefix results (to fill gaps and provide more results)
+    // STRATEGY 2: Add local DB results (to fill gaps if Steam API failed or returned few results)
     if (allResults.length < limit) {
         try {
             const localResults = await SteamApp.find({
@@ -160,9 +156,6 @@ export const searchSteamApps = async (queryText, limit = 10, fetchFromSteamIfNee
             console.error(`❌ [GameService.searchSteamApps] Local search failed: ${error.message}`);
         }
     }
-
-    // Sort results alphabetically by name
-    allResults.sort((a, b) => a.name.localeCompare(b.name));
 
     console.log(`📡 [GameService.searchSteamApps] Returning ${Math.min(allResults.length, limit)} results`);
     return allResults.slice(0, limit);

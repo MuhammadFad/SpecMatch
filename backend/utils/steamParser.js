@@ -11,27 +11,43 @@ function parseGB(text) {
 function extractFieldValue(htmlString, fieldName) {
     if (!htmlString) return "";
 
-    // Create regex to match the field and capture only its value (not subsequent fields)
-    // This handles formats like:
-    // <strong>Processor:</strong> Intel Core i5<br>
-    // <li><strong>Memory:</strong> 8 GB RAM</li>
-    const patterns = [
-        // Pattern 1: <strong>Field:</strong> value<br> or </li>
-        new RegExp(`<strong>${fieldName}:?<\\/strong>\\s*([^<]+?)(?:<br|<\\/li|<strong)`, 'i'),
-        // Pattern 2: Field: value (without strong tags)
-        new RegExp(`${fieldName}:?\\s*([^<\\n]+?)(?:<br|<\\/li|<strong|\\n)`, 'i'),
-    ];
+    // List of all field names to stop at (prevents capturing subsequent fields)
+    const stopFields = ['OS', 'Processor', 'Memory', 'Graphics', 'DirectX', 'Network', 'Storage', 'Hard Drive', 'Hard Disk', 'Sound', 'Additional Notes', 'VR Support'];
 
-    for (const pattern of patterns) {
-        const match = htmlString.match(pattern);
-        if (match && match[1]) {
-            // Clean up the extracted value
-            return match[1]
-                .replace(/<[^>]*>/g, '') // Remove any remaining HTML tags
-                .replace(/&nbsp;/g, ' ')  // Replace HTML spaces
-                .replace(/&amp;/g, '&')   // Replace HTML ampersand
-                .trim();
+    // Build a regex that captures content after fieldName but stops before any other field
+    // or before common HTML boundaries
+    const stopPattern = stopFields
+        .filter(f => f.toLowerCase() !== fieldName.toLowerCase())
+        .map(f => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('|');
+
+    // Pattern: <strong>FieldName:</strong> VALUE (stop at next field or HTML boundary)
+    const regex = new RegExp(
+        `<strong>\\s*${fieldName}:?\\s*<\\/strong>\\s*([\\s\\S]*?)(?=<strong>\\s*(?:${stopPattern})|<\\/li>|<\\/ul>|$)`,
+        'i'
+    );
+
+    const match = htmlString.match(regex);
+    if (match && match[1]) {
+        // Clean up the extracted value
+        let value = match[1]
+            .replace(/<[^>]*>/g, '')      // Remove HTML tags
+            .replace(/&nbsp;/g, ' ')       // Replace HTML spaces
+            .replace(/&amp;/g, '&')        // Replace HTML ampersand
+            .replace(/&trade;/gi, '™')     // Replace trademark
+            .replace(/&reg;/gi, '®')       // Replace registered
+            .replace(/\s+/g, ' ')          // Collapse whitespace
+            .trim();
+
+        // Remove any trailing field names that might have leaked through
+        for (const field of stopFields) {
+            const idx = value.indexOf(field + ':');
+            if (idx > 0) {
+                value = value.substring(0, idx).trim();
+            }
         }
+
+        return value;
     }
 
     return "";
