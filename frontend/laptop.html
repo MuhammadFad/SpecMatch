@@ -495,8 +495,8 @@
                 searchHint.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Searching...</span>`;
 
                 try {
-                    // Autocomplete: 10 results, no Steam API fetch
-                    const response = await api.lookupGames(query, 10, false);
+                    // Autocomplete: 10 results, WITH Steam API for better results
+                    const response = await api.lookupGames(query, 10, true);
 
                     if (response.success && response.data?.length > 0) {
                         const games = response.data;

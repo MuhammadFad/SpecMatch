@@ -75,146 +75,96 @@ export const findGames = async (queryText, limit = 20) => {
 
 
 // =============================================================================
-// SEARCH STEAM APPS (Lightweight lookup with Atlas Search)
+// SEARCH STEAM APPS (Lightweight lookup - PREFIX ONLY)
 // =============================================================================
 /**
  * @function searchSteamApps
- * @description Search the SteamApps index for game names using MongoDB Atlas Search
- * This is the FIRST step - returns lightweight results for autocomplete/search
+ * @description Search for games using PREFIX matching
  * 
- * IMPROVED SEARCH LOGIC:
- * 1. Try Atlas Search first (best for fuzzy matching)
- * 2. Fall back to prefix regex (for exact prefix like "Elden" → "Elden Ring")
- * 3. Fall back to contains regex (broader search)
- * 4. If still not enough results, query Steam API directly
- * This ensures we ALWAYS return results if any exist
+ * SEARCH STRATEGY:
+ * 1. ALWAYS query Steam API first (most comprehensive source)
+ * 2. Then add local DB results to fill any gaps
+ * 3. Returns prefix-matched results only
  * 
  * @param {String} queryText - The user's search input
  * @param {Number} [limit=10] - Maximum results to return
- * @param {Boolean} [fetchFromSteamIfNeeded=false] - Whether to query Steam API if local results are insufficient
+ * @param {Boolean} [fetchFromSteamIfNeeded=false] - Whether to query Steam API (RECOMMENDED: true for full search)
  * 
  * @returns {Array} Array of { appid, name } objects
  */
 export const searchSteamApps = async (queryText, limit = 10, fetchFromSteamIfNeeded = false) => {
-    console.log(`📡 [GameService.searchSteamApps] Searching Steam index: "${queryText}" (limit: ${limit}, fetchFromSteam: ${fetchFromSteamIfNeeded})`);
+    console.log(`📡 [GameService.searchSteamApps] PREFIX search: "${queryText}" (limit: ${limit}, fetchFromSteam: ${fetchFromSteamIfNeeded})`);
 
     if (!queryText || queryText.length < 2) {
         return [];
     }
 
+    // Normalize query: trim and lowercase for comparison
+    const normalizedQuery = queryText.trim().toLowerCase();
+
     // Escape special regex characters for safe regex search
-    const escapedQuery = queryText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapedQuery = normalizedQuery.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&');
+
+    console.log(`📡 [GameService.searchSteamApps] Normalized query: "${normalizedQuery}"`);
+
     let allResults = [];
+    const existingAppIds = new Set();
 
-    // STRATEGY 1: Try Atlas Search first (best for fuzzy matching)
-    try {
-        const pipeline = [
-            {
-                $search: {
-                    index: 'steam_apps_search',
-                    compound: {
-                        should: [
-                            {
-                                text: {
-                                    query: queryText,
-                                    path: 'name',
-                                    fuzzy: { maxEdits: 2, prefixLength: 1 },
-                                    score: { boost: { value: 3 } }
-                                }
-                            },
-                            {
-                                autocomplete: {
-                                    query: queryText,
-                                    path: 'name',
-                                    fuzzy: { maxEdits: 1, prefixLength: 2 }
-                                }
-                            }
-                        ],
-                        minimumShouldMatch: 1
-                    }
-                }
-            },
-            { $addFields: { searchScore: { $meta: 'searchScore' } } },
-            { $sort: { searchScore: -1 } },
-            { $limit: Math.max(limit, 50) }, // Get more for deduplication
-            { $project: { appid: 1, name: 1, _id: 0 } }
-        ];
-
-        const atlasResults = await SteamApp.aggregate(pipeline);
-        console.log(`📡 [GameService.searchSteamApps] Atlas Search found ${atlasResults.length} matches`);
-        allResults = atlasResults;
-    } catch (error) {
-        console.warn(`📡 [GameService.searchSteamApps] Atlas Search failed: ${error.message}`);
-    }
-
-    // STRATEGY 2: If not enough results, try regex searches
-    if (allResults.length < limit) {
-        try {
-            // Prefix regex
-            const prefixResults = await SteamApp.find({
-                name: { $regex: `^${escapedQuery}`, $options: 'i' }
-            }).limit(limit).lean();
-
-            // Merge results (avoid duplicates)
-            const existingAppIds = new Set(allResults.map(r => r.appid));
-            prefixResults.forEach(r => {
-                if (!existingAppIds.has(r.appid)) {
-                    allResults.push({ appid: r.appid, name: r.name });
-                    existingAppIds.add(r.appid);
-                }
-            });
-            console.log(`📡 [GameService.searchSteamApps] After prefix regex: ${allResults.length} total`);
-        } catch (error) {
-            console.warn(`📡 [GameService.searchSteamApps] Prefix regex failed: ${error.message}`);
-        }
-    }
-
-    // STRATEGY 3: Contains regex for even more results
-    if (allResults.length < limit) {
-        try {
-            const containsResults = await SteamApp.find({
-                name: { $regex: escapedQuery, $options: 'i' }
-            }).limit(limit * 2).lean();
-
-            const existingAppIds = new Set(allResults.map(r => r.appid));
-            containsResults.forEach(r => {
-                if (!existingAppIds.has(r.appid)) {
-                    allResults.push({ appid: r.appid, name: r.name });
-                    existingAppIds.add(r.appid);
-                }
-            });
-            console.log(`📡 [GameService.searchSteamApps] After contains regex: ${allResults.length} total`);
-        } catch (error) {
-            console.warn(`📡 [GameService.searchSteamApps] Contains regex failed: ${error.message}`);
-        }
-    }
-
-    // STRATEGY 4: Query Steam API directly if we still need more results
-    if (fetchFromSteamIfNeeded && allResults.length < limit) {
-        console.log(`📡 [GameService.searchSteamApps] Querying Steam API for more results...`);
+    // STRATEGY 1: Query Steam API FIRST (if enabled) - this has all games
+    if (fetchFromSteamIfNeeded) {
+        console.log(`📡 [GameService.searchSteamApps] Querying Steam API first...`);
         try {
             const steamResults = await fetchGamesFromSteamAPI(queryText);
-            const existingAppIds = new Set(allResults.map(r => r.appid));
 
+            // Filter to only prefix matches (case-insensitive)
             steamResults.forEach(r => {
-                if (!existingAppIds.has(r.appid)) {
-                    allResults.push({ appid: r.appid, name: r.name });
-                    existingAppIds.add(r.appid);
+                if (r.name.toLowerCase().startsWith(normalizedQuery)) {
+                    if (!existingAppIds.has(r.appid)) {
+                        allResults.push({ appid: r.appid, name: r.name });
+                        existingAppIds.add(r.appid);
 
-                    // Also save to our SteamApps collection for future searches
-                    SteamApp.findOneAndUpdate(
-                        { appid: r.appid },
-                        { appid: r.appid, name: r.name },
-                        { upsert: true, new: true }
-                    ).catch(err => console.warn(`Failed to save Steam app ${r.appid}:`, err.message));
+                        // Cache to local DB for future searches
+                        SteamApp.findOneAndUpdate(
+                            { appid: r.appid },
+                            { appid: r.appid, name: r.name },
+                            { upsert: true, new: true }
+                        ).catch(err => console.warn(`Failed to cache Steam app ${r.appid}`));
+                    }
                 }
             });
-            console.log(`📡 [GameService.searchSteamApps] After Steam API: ${allResults.length} total`);
+            console.log(`📡 [GameService.searchSteamApps] Steam API prefix matches: ${allResults.length}`);
         } catch (error) {
             console.warn(`📡 [GameService.searchSteamApps] Steam API query failed: ${error.message}`);
         }
     }
 
+    // STRATEGY 2: Add local DB results (to fill gaps and provide more results)
+    if (allResults.length < limit) {
+        try {
+            const localResults = await SteamApp.find({
+                name: { $regex: `^${escapedQuery}`, $options: 'i' }
+            })
+                .sort({ name: 1 })
+                .limit(Math.max(limit, 100))
+                .lean();
+
+            console.log(`📡 [GameService.searchSteamApps] Local DB found ${localResults.length} matches`);
+
+            localResults.forEach(r => {
+                if (!existingAppIds.has(r.appid)) {
+                    allResults.push({ appid: r.appid, name: r.name });
+                    existingAppIds.add(r.appid);
+                }
+            });
+        } catch (error) {
+            console.error(`❌ [GameService.searchSteamApps] Local search failed: ${error.message}`);
+        }
+    }
+
+    // Sort results alphabetically by name
+    allResults.sort((a, b) => a.name.localeCompare(b.name));
+
+    console.log(`📡 [GameService.searchSteamApps] Returning ${Math.min(allResults.length, limit)} results`);
     return allResults.slice(0, limit);
 };
 
