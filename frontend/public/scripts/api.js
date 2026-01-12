@@ -119,9 +119,16 @@ class ApiService {
 
     /**
      * Autocomplete search for games
+     * @param {string} query - Search query
+     * @param {number} limit - Max results to return (default 10)
+     * @param {boolean} fetchFromSteam - If true, query Steam API when local results are insufficient
      */
-    async lookupGames(query, limit = 10) {
-        return this.get(ENDPOINTS.GAMES.LOOKUP, { q: query, limit });
+    async lookupGames(query, limit = 10, fetchFromSteam = false) {
+        return this.get(ENDPOINTS.GAMES.LOOKUP, {
+            q: query,
+            limit,
+            fetchFromSteam: fetchFromSteam.toString()
+        });
     }
 
     /**

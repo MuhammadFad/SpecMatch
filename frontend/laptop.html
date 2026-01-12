@@ -444,13 +444,23 @@
                     <p class="checker-description">Search for a game to see how well this laptop can run it.</p>
                     
                     <div class="game-search-wrapper">
-                        <div class="search-input-wrapper">
-                            <i class="fas fa-gamepad search-icon"></i>
-                            <input type="text" 
-                                   class="search-input" 
-                                   id="gameSearchInput" 
-                                   placeholder="Search for a game...">
-                            <div class="autocomplete-dropdown" id="gameDropdown"></div>
+                        <div class="search-row">
+                            <div class="search-input-wrapper">
+                                <i class="fas fa-gamepad search-icon"></i>
+                                <input type="text" 
+                                       class="search-input" 
+                                       id="gameSearchInput" 
+                                       placeholder="Search for a game..."
+                                       autocomplete="off">
+                                <div class="autocomplete-dropdown" id="gameDropdown"></div>
+                            </div>
+                            <button class="search-btn" id="gameSearchBtn" title="Search for more results">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="search-hint" id="searchHint">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Type at least 2 characters, then click a result or press Enter for more</span>
                         </div>
                     </div>
 
@@ -464,33 +474,129 @@
             const input = document.getElementById('gameSearchInput');
             const dropdown = document.getElementById('gameDropdown');
             const resultDiv = document.getElementById('compatibilityResult');
+            const searchBtn = document.getElementById('gameSearchBtn');
+            const searchHint = document.getElementById('searchHint');
 
             if (!input) return;
 
-            const searchGames = debounce(async (query) => {
+            let lastQuery = '';
+
+            // Debounced autocomplete search (shows 10 results in dropdown)
+            const searchGamesAutocomplete = debounce(async (query) => {
+                lastQuery = query;
+
                 if (query.length < 2) {
                     dropdown.innerHTML = '';
                     dropdown.classList.remove('active');
+                    searchHint.innerHTML = `<i class="fas fa-info-circle"></i><span>Type at least 2 characters to search</span>`;
                     return;
                 }
 
+                searchHint.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Searching...</span>`;
+
                 try {
-                    const response = await api.lookupGames(query);
+                    // Autocomplete: 10 results, no Steam API fetch
+                    const response = await api.lookupGames(query, 10, false);
+
                     if (response.success && response.data?.length > 0) {
-                        dropdown.innerHTML = response.data.slice(0, 8).map(game => {
-                            // Handle both 'appid' (from SteamApps) and 'steam_appid' (from Games)
+                        const games = response.data;
+
+                        dropdown.innerHTML = `
+                            <div class="dropdown-header">
+                                <span>Quick Results (${games.length})</span>
+                            </div>
+                            ${games.map(game => {
                             const gameAppId = game.appid || game.steam_appid;
                             return `
-                            <div class="autocomplete-item" data-appid="${gameAppId}">
-                                <img src="${getSteamHeaderImage(gameAppId)}" 
-                                     alt="${game.name}" 
-                                     class="game-thumb"
-                                     onerror="this.style.display='none'">
-                                <span>${game.name}</span>
+                                <div class="autocomplete-item" data-appid="${gameAppId}">
+                                    <img src="${getSteamHeaderImage(gameAppId)}" 
+                                         alt="${game.name}" 
+                                         class="game-thumb"
+                                         onerror="this.style.display='none'">
+                                    <span>${game.name}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                            <div class="dropdown-footer">
+                                <span><i class="fas fa-keyboard"></i> Press Enter for more results</span>
                             </div>
                         `;
-                        }).join('');
                         dropdown.classList.add('active');
+
+                        searchHint.innerHTML = `<i class="fas fa-check-circle"></i><span>Found ${games.length} results. Click one or press Enter for more.</span>`;
+
+                        // Click handlers for autocomplete items
+                        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                            item.addEventListener('click', () => {
+                                const appId = item.dataset.appid;
+                                const name = item.querySelector('span').textContent;
+                                input.value = name;
+                                dropdown.classList.remove('active');
+                                checkCompatibility(appId);
+                            });
+                        });
+                    } else {
+                        dropdown.innerHTML = `
+                            <div class="autocomplete-empty">
+                                <i class="fas fa-search"></i>
+                                <span>No quick matches found</span>
+                                <small>Press Enter to search Steam database</small>
+                            </div>
+                        `;
+                        dropdown.classList.add('active');
+                        searchHint.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>No local results. Press Enter to search Steam.</span>`;
+                    }
+                } catch (error) {
+                    console.error('Game search error:', error);
+                    searchHint.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>Search error. Try again.</span>`;
+                }
+            }, 300);
+
+            // Full search (50 results, with Steam API fallback)
+            async function performFullSearch() {
+                const query = input.value.trim();
+
+                if (query.length < 2) {
+                    searchHint.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>Enter at least 2 characters to search</span>`;
+                    return;
+                }
+
+                dropdown.innerHTML = `
+                    <div class="dropdown-loading">
+                        <div class="spinner"></div>
+                        <span>Searching Steam database...</span>
+                    </div>
+                `;
+                dropdown.classList.add('active');
+                searchHint.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Performing deep search with Steam API...</span>`;
+
+                try {
+                    // Full search: 50 results, WITH Steam API fetch
+                    const response = await api.lookupGames(query, 50, true);
+
+                    if (response.success && response.data?.length > 0) {
+                        const games = response.data;
+
+                        dropdown.innerHTML = `
+                            <div class="dropdown-header">
+                                <span>All Results (${games.length})</span>
+                            </div>
+                            ${games.map(game => {
+                            const gameAppId = game.appid || game.steam_appid;
+                            return `
+                                <div class="autocomplete-item" data-appid="${gameAppId}">
+                                    <img src="${getSteamHeaderImage(gameAppId)}" 
+                                         alt="${game.name}" 
+                                         class="game-thumb"
+                                         onerror="this.style.display='none'">
+                                    <span>${game.name}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                        `;
+                        dropdown.classList.add('active');
+
+                        searchHint.innerHTML = `<i class="fas fa-check-circle"></i><span>Found ${games.length} results</span>`;
 
                         // Click handlers
                         dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
@@ -503,19 +609,41 @@
                             });
                         });
                     } else {
-                        dropdown.innerHTML = `<div class="autocomplete-empty">No games found</div>`;
-                        dropdown.classList.add('active');
+                        dropdown.innerHTML = `
+                            <div class="autocomplete-empty">
+                                <i class="fas fa-sad-tear"></i>
+                                <span>No games found for "${query}"</span>
+                                <small>Try different keywords</small>
+                            </div>
+                        `;
+                        searchHint.innerHTML = `<i class="fas fa-times-circle"></i><span>No results found</span>`;
                     }
                 } catch (error) {
-                    console.error('Game search error:', error);
+                    console.error('Full search error:', error);
+                    dropdown.innerHTML = `<div class="autocomplete-empty">Search failed. Try again.</div>`;
+                    searchHint.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>Search failed</span>`;
                 }
-            }, 300);
+            }
 
-            input.addEventListener('input', (e) => searchGames(e.target.value.trim()));
+            // Input event - autocomplete
+            input.addEventListener('input', (e) => searchGamesAutocomplete(e.target.value.trim()));
+
+            // Enter key - full search
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performFullSearch();
+                }
+            });
+
+            // Search button click - full search
+            searchBtn.addEventListener('click', () => {
+                performFullSearch();
+            });
 
             // Close dropdown on outside click
             document.addEventListener('click', (e) => {
-                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                if (!input.contains(e.target) && !dropdown.contains(e.target) && !searchBtn.contains(e.target)) {
                     dropdown.classList.remove('active');
                 }
             });

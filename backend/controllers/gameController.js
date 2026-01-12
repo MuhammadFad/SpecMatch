@@ -74,6 +74,7 @@ export const searchGames = async (req, res) => {
  * INPUT (req.query):
  *   - q: String (minimum 2 characters)
  *   - limit: Number (default 10)
+ *   - fetchFromSteam: Boolean (default false) - If true, query Steam API when local results are insufficient
  * 
  * OUTPUT:
  *   { success: true, count: N, data: [{ appid, name }, ...] }
@@ -82,13 +83,15 @@ export const searchGames = async (req, res) => {
  *   Autocomplete dropdown as user types game name.
  *   Returns lightweight results from 200k+ SteamApps index.
  *   Uses MongoDB Atlas Search for fuzzy matching.
+ *   If fetchFromSteam=true and not enough local results, queries Steam API directly.
  */
 export const lookupSteamApps = async (req, res) => {
     try {
         const query = req.query.q || '';
         const limit = parseInt(req.query.limit) || 10;
+        const fetchFromSteam = req.query.fetchFromSteam === 'true';
 
-        console.log(`🎮 [GameController.lookupSteamApps] Query: "${query}", Limit: ${limit}`);
+        console.log(`🎮 [GameController.lookupSteamApps] Query: "${query}", Limit: ${limit}, FetchFromSteam: ${fetchFromSteam}`);
 
         // Require minimum 2 characters
         if (query.length < 2) {
@@ -100,7 +103,7 @@ export const lookupSteamApps = async (req, res) => {
             });
         }
 
-        const results = await gameService.searchSteamApps(query, limit);
+        const results = await gameService.searchSteamApps(query, limit, fetchFromSteam);
 
         res.json({
             success: true,

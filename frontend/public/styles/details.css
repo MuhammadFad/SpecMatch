@@ -307,7 +307,7 @@
     background: var(--surface);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid var(--border);
 }
 
@@ -357,10 +357,12 @@
 .tab-content {
     display: none;
     padding: 2rem;
+    overflow: visible;
 }
 
 .tab-content.active {
     display: block;
+    overflow: visible;
 }
 
 /* Specs Grid */
@@ -427,8 +429,9 @@
 
 /* Compatibility Checker */
 .compatibility-checker {
-    max-width: 800px;
+    max-width: 100%;
     overflow: visible;
+    position: relative;
 }
 
 .compatibility-checker h3 {
@@ -447,12 +450,26 @@
     margin-bottom: 1.5rem;
     position: relative;
     overflow: visible;
-    z-index: 100;
+    z-index: 500;
 }
 
 .game-search-wrapper .search-input-wrapper {
     position: relative;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.game-search-wrapper .search-row {
+    display: flex;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.game-search-wrapper .search-input-container {
+    flex: 1;
+    position: relative;
 }
 
 .game-search-wrapper .search-input {
@@ -462,6 +479,7 @@
     border-radius: var(--radius-md);
     font-size: 1rem;
     transition: all 0.2s ease;
+    background: var(--surface);
 }
 
 .game-search-wrapper .search-input:focus {
@@ -470,35 +488,106 @@
     outline: none;
 }
 
+.game-search-wrapper .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.game-search-wrapper .search-btn {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), #764ba2);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.game-search-wrapper .search-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.game-search-wrapper .search-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.search-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-hint i {
+    color: var(--primary);
+}
+
+.search-hint.error {
+    color: #ef4444;
+}
+
+.search-hint.error i {
+    color: #ef4444;
+}
+
 /* Autocomplete Dropdown */
 .autocomplete-dropdown {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: var(--surface);
+    background: white;
     border: 2px solid var(--primary);
     border-radius: var(--radius-md);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    max-height: 450px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    max-height: 500px;
     overflow-y: auto;
     display: none;
-    margin-top: 4px;
 }
 
 .autocomplete-dropdown.active {
     display: block;
 }
 
+.autocomplete-header {
+    padding: 0.75rem 1rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+}
+
+.autocomplete-header strong {
+    color: var(--text-primary);
+}
+
 .autocomplete-item {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1rem 1.25rem;
+    padding: 0.875rem 1rem;
     cursor: pointer;
     transition: all 0.15s ease;
     border-bottom: 1px solid var(--border);
+    background: white;
 }
 
 .autocomplete-item:last-child {
@@ -506,25 +595,60 @@
 }
 
 .autocomplete-item:hover {
-    background: rgba(102, 126, 234, 0.1);
-    border-left: 4px solid var(--primary);
-    padding-left: calc(1.25rem - 4px);
+    background: rgba(102, 126, 234, 0.08);
+}
+
+.autocomplete-item.selected {
+    background: rgba(102, 126, 234, 0.12);
+    border-left: 3px solid var(--primary);
 }
 
 .autocomplete-item .game-thumb {
-    width: 80px;
-    height: 38px;
+    width: 120px;
+    height: 45px;
     object-fit: cover;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     flex-shrink: 0;
+    background: var(--bg-alt);
 }
 
-.autocomplete-item span {
+.autocomplete-item .game-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.autocomplete-item .game-name {
     font-size: 0.95rem;
     color: var(--text-primary);
-    font-weight: 500;
-    line-height: 1.4;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.25rem;
+}
+
+.autocomplete-item .game-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.autocomplete-footer {
+    padding: 0.75rem 1rem;
+    background: var(--bg-alt);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    position: sticky;
+    bottom: 0;
+}
+
+.autocomplete-footer kbd {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.15rem 0.4rem;
+    font-family: inherit;
+    font-size: 0.75rem;
 }
 
 .autocomplete-empty {
@@ -533,6 +657,10 @@
     color: var(--text-muted);
     font-size: 0.9rem;
     background: var(--bg-alt);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .autocomplete-empty i {
@@ -540,6 +668,59 @@
     margin-bottom: 0.5rem;
     display: block;
     opacity: 0.5;
+}
+
+.autocomplete-empty small {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* Dropdown Header and Footer */
+.dropdown-header {
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, var(--primary), #764ba2);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.dropdown-footer {
+    padding: 0.75rem 1rem;
+    background: var(--bg-alt);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}
+
+.dropdown-footer i {
+    margin-right: 0.25rem;
+    color: var(--primary);
+}
+
+.dropdown-loading {
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-muted);
+}
+
+.dropdown-loading .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
 }
 
 /* Compatibility Result */

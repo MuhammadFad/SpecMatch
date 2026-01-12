@@ -7,7 +7,37 @@ function parseGB(text) {
     return match ? parseInt(match[1]) : 0;
 }
 
-// B. Helper to find a Score by querying your Laptops collection
+// B. Helper to clean HTML and extract just the text value for a specific field
+function extractFieldValue(htmlString, fieldName) {
+    if (!htmlString) return "";
+
+    // Create regex to match the field and capture only its value (not subsequent fields)
+    // This handles formats like:
+    // <strong>Processor:</strong> Intel Core i5<br>
+    // <li><strong>Memory:</strong> 8 GB RAM</li>
+    const patterns = [
+        // Pattern 1: <strong>Field:</strong> value<br> or </li>
+        new RegExp(`<strong>${fieldName}:?<\\/strong>\\s*([^<]+?)(?:<br|<\\/li|<strong)`, 'i'),
+        // Pattern 2: Field: value (without strong tags)
+        new RegExp(`${fieldName}:?\\s*([^<\\n]+?)(?:<br|<\\/li|<strong|\\n)`, 'i'),
+    ];
+
+    for (const pattern of patterns) {
+        const match = htmlString.match(pattern);
+        if (match && match[1]) {
+            // Clean up the extracted value
+            return match[1]
+                .replace(/<[^>]*>/g, '') // Remove any remaining HTML tags
+                .replace(/&nbsp;/g, ' ')  // Replace HTML spaces
+                .replace(/&amp;/g, '&')   // Replace HTML ampersand
+                .trim();
+        }
+    }
+
+    return "";
+}
+
+// C. Helper to find a Score by querying your Laptops collection
 async function getComponentScore(componentName, type) {
     if (!componentName) return 0;
 
@@ -17,6 +47,8 @@ async function getComponentScore(componentName, type) {
         .replace(/nvidia|amd|intel|geforce|radeon|core|ryzen/gi, "")
         .trim();
 
+    if (!cleanName) return 1000;
+
     // 2. Query the Laptops DB
     // We look for ANY laptop that has this component string in its name
     const query = type === 'gpu'
@@ -24,11 +56,12 @@ async function getComponentScore(componentName, type) {
         : { 'cpu.name': { $regex: cleanName, $options: 'i' } };
 
     // We only need one result to get the score
-    const match = await Laptop.findOne(query).select(`${type}.score`);
+    const match = await Laptop.findOne(query).select(`${type}.score ${type}.benchmark_score`);
 
     if (match) {
         // Return the score found in your database
-        return type === 'gpu' ? match.gpu.score : match.cpu.score;
+        const component = type === 'gpu' ? match.gpu : match.cpu;
+        return component?.score || component?.benchmark_score || 1000;
     }
 
     // Fallback: If your Laptop DB doesn't have this old component
@@ -36,7 +69,7 @@ async function getComponentScore(componentName, type) {
     return 1000; // Return a low "entry level" score as default
 }
 
-// C. The Main Parsing Function
+// D. The Main Parsing Function
 export async function parseSteamRequirements(steamData) {
     // Steam returns requirements as an array or object, we need "pc_requirements"
     const pcReqs = steamData.pc_requirements || {};
@@ -45,18 +78,19 @@ export async function parseSteamRequirements(steamData) {
     const processTier = async (htmlString) => {
         if (!htmlString) return {};
 
-        // Simple Regex to extract the text lines from HTML
-        const ramMatch = htmlString.match(/Memory:<\/strong>\s*(.*?)(<br>|<\/li>)/i);
-        const gpuMatch = htmlString.match(/Graphics:<\/strong>\s*(.*?)(<br>|<\/li>)/i);
-        const cpuMatch = htmlString.match(/Processor:<\/strong>\s*(.*?)(<br>|<\/li>)/i);
-        const storageMatch = htmlString.match(/Storage:<\/strong>\s*(.*?)(<br>|<\/li>)/i);
+        // Extract individual fields using the improved extraction
+        const ramText = extractFieldValue(htmlString, 'Memory');
+        const gpuText = extractFieldValue(htmlString, 'Graphics');
+        const cpuText = extractFieldValue(htmlString, 'Processor');
+        const storageText = extractFieldValue(htmlString, 'Storage') ||
+            extractFieldValue(htmlString, 'Hard Drive') ||
+            extractFieldValue(htmlString, 'Hard Disk Space');
 
-        const gpuText = gpuMatch ? gpuMatch[1] : "";
-        const cpuText = cpuMatch ? cpuMatch[1] : "";
+        console.log(`📋 [SteamParser] Extracted - CPU: "${cpuText}", GPU: "${gpuText}", RAM: "${ramText}", Storage: "${storageText}"`);
 
         return {
-            ram_gb: parseGB(ramMatch ? ramMatch[1] : ""),
-            storage_gb: parseGB(storageMatch ? storageMatch[1] : ""),
+            ram_gb: parseGB(ramText),
+            storage_gb: parseGB(storageText),
 
             // ASYNC LOOKUP: Go find the scores from your Laptop DB
             gpu_score: await getComponentScore(gpuText, 'gpu'),
