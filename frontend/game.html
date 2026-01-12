@@ -325,22 +325,33 @@
             // Extract text content
             const text = temp.textContent || temp.innerText;
 
-            // Pattern matching for common requirement fields
-            const patterns = {
-                os: /OS[:\s*]+([^\n]+)/i,
-                processor: /Processor[:\s*]+([^\n]+)/i,
-                memory: /Memory[:\s*]+([^\n]+)/i,
-                graphics: /Graphics[:\s*]+([^\n]+)/i,
-                storage: /Storage[:\s*]+([^\n]+)/i,
-                directx: /DirectX[:\s*]+([^\n]+)/i
-            };
+            // List of all field names to use as stop boundaries
+            const fieldNames = ['OS', 'Processor', 'Memory', 'Graphics', 'DirectX', 'Network', 'Storage', 'Hard Drive', 'Sound', 'Additional Notes', 'VR Support'];
 
-            for (const [key, pattern] of Object.entries(patterns)) {
-                const match = text.match(pattern);
-                if (match) {
-                    result[key] = match[1].trim();
+            // Create a stop pattern that matches any of these field names followed by colon
+            const stopPattern = fieldNames.map(f => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*:').join('|');
+
+            // Helper function to extract a field value that stops at the next field
+            function extractField(fieldName) {
+                // Create regex that captures content after fieldName: until the next field or end
+                const regex = new RegExp(
+                    fieldName + '\\s*:\\s*(.+?)(?=' + stopPattern + '|$)',
+                    'i'
+                );
+                const match = text.match(regex);
+                if (match && match[1]) {
+                    return match[1].trim();
                 }
+                return '';
             }
+
+            // Extract each field
+            result.os = extractField('OS');
+            result.processor = extractField('Processor');
+            result.memory = extractField('Memory');
+            result.graphics = extractField('Graphics');
+            result.storage = extractField('Storage') || extractField('Hard Drive');
+            result.directx = extractField('DirectX');
 
             return result;
         }
