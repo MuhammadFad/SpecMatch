@@ -58,9 +58,9 @@ app.use(cors({
 
 app.use(express.json()); // Parse JSON request bodies
 
-// Serve static files from frontend
-app.use(express.static(path.join(__dirname, './public')));
-app.use('/public', express.static(path.join(__dirname, './public')));
+// Serve static files from backend/public
+const publicDir = path.join(__dirname, 'public');
+app.use(express.static(publicDir));
 
 // =============================================================================
 // DATABASE CONNECTION
@@ -165,7 +165,7 @@ app.get('/', (req, res) => {
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ success: false, message: 'API endpoint not found' });
     }
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+    res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 // =============================================================================

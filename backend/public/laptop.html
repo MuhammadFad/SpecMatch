@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,8 +7,8 @@
     <title>Laptop Details - SpecMatch</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="public/styles/main.css">
-    <link rel="stylesheet" href="public/styles/details.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/details.css">
 </head>
 
 <body>
@@ -40,8 +40,8 @@
     </div>
 
     <script type="module">
-        import { api } from './public/scripts/api.js';
-        import { formatPrice, formatStorage, getSteamHeaderImage, getVerdictClass, debounce, getUrlParams } from './public/scripts/utils.js';
+        import { api } from './scripts/api.js';
+        import { formatPrice, formatStorage, getSteamHeaderImage, getVerdictClass, debounce, getUrlParams } from './scripts/utils.js';
 
         // State
         let laptop = null;
@@ -703,7 +703,7 @@
                                         <div class="detail-header">
                                             <span class="detail-label"><i class="fas fa-microchip"></i> CPU</span>
                                             <span class="detail-status ${details.cpu.meets ? 'pass' : 'fail'}">
-                                                ${details.cpu.meets ? '✓' : '✗'} ${details.cpu.level || 'Unknown'}
+                                                ${details.cpu.meets ? 'PASS' : 'FAIL'} ${details.cpu.level || 'Unknown'}
                                             </span>
                                         </div>
                                         <div class="detail-values">
@@ -725,7 +725,7 @@
                                         <div class="detail-header">
                                             <span class="detail-label"><i class="fas fa-tv"></i> GPU</span>
                                             <span class="detail-status ${details.gpu.meets ? 'pass' : 'fail'}">
-                                                ${details.gpu.meets ? '✓' : '✗'} ${details.gpu.level || 'Unknown'}
+                                                ${details.gpu.meets ? 'PASS' : 'FAIL'} ${details.gpu.level || 'Unknown'}
                                             </span>
                                         </div>
                                         <div class="detail-values">
@@ -747,7 +747,7 @@
                                         <div class="detail-header">
                                             <span class="detail-label"><i class="fas fa-memory"></i> RAM</span>
                                             <span class="detail-status ${details.ram.meets ? 'pass' : 'fail'}">
-                                                ${details.ram.meets ? '✓' : '✗'} ${details.ram.level || 'Unknown'}
+                                                ${details.ram.meets ? 'PASS' : 'FAIL'} ${details.ram.level || 'Unknown'}
                                             </span>
                                         </div>
                                         <div class="detail-values">
@@ -769,7 +769,7 @@
                                         <div class="detail-header">
                                             <span class="detail-label"><i class="fas fa-hdd"></i> Storage</span>
                                             <span class="detail-status ${details.storage.meets ? 'pass' : 'fail'}">
-                                                ${details.storage.meets ? '✓' : '✗'} ${details.storage.level || 'Unknown'}
+                                                ${details.storage.meets ? 'PASS' : 'FAIL'} ${details.storage.level || 'Unknown'}
                                             </span>
                                         </div>
                                         <div class="detail-values">

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,8 +7,8 @@
     <title>Laptops - SpecMatch</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="public/styles/main.css">
-    <link rel="stylesheet" href="public/styles/catalog.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/catalog.css">
 </head>
 
 <body>
@@ -153,8 +153,8 @@
     </div>
 
     <script type="module">
-        import { api } from './public/scripts/api.js';
-        import { formatPrice, formatStorage, getUrlParams, setUrlParams, debounce } from './public/scripts/utils.js';
+        import { api } from './scripts/api.js';
+        import { formatPrice, formatStorage, getUrlParams, setUrlParams, debounce } from './scripts/utils.js';
 
         // State
         let currentPage = 1;
@@ -392,7 +392,7 @@
             if (data.total) parts.push(`${data.total.toLocaleString()} laptops found`);
             if (data.rankBy) parts.push(`Ranked by: ${data.rankBy}`);
 
-            searchMeta.innerHTML = parts.join(' • ');
+            searchMeta.innerHTML = parts.join(' | ');
         }
 
         // Update pagination
