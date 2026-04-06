@@ -40,10 +40,12 @@ app.use(cors({
         // Allow requests with no origin (mobile apps, curl, etc.)
         if (!origin) return callback(null, true);
 
-        // Check if origin is in allowed list or matches vercel preview deployments
+        // Check if origin is in allowed list or matches vercel preview deployments or those
+        // of Azure
         if (allowedOrigins.includes(origin) ||
             origin.endsWith('.vercel.app') ||
-            origin.includes('specmatch')) {
+            origin.includes('specmatch') || 
+            origin.includes('68.210.73.143')){
             return callback(null, true);
         }
 
