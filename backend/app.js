@@ -59,8 +59,8 @@ app.use(cors({
 app.use(express.json()); // Parse JSON request bodies
 
 // Serve static files from frontend
-app.use(express.static(path.join(__dirname, '../frontend')));
-app.use('/public', express.static(path.join(__dirname, '../frontend/public')));
+app.use(express.static(path.join(__dirname, './public')));
+app.use('/public', express.static(path.join(__dirname, './public')));
 
 // =============================================================================
 // DATABASE CONNECTION
