@@ -84,7 +84,7 @@ const connectDB = async () => {
 
     console.log('⏳ Connecting to MongoDB...');
     cachedConnection = await mongoose.connect(MONGO_URI, {
-        bufferCommands: false, // Fail fast if we aren't connected
+        bufferCommands: false,
         serverSelectionTimeoutMS: 5000,
     });
 

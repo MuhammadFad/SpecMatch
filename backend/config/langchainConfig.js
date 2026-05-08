@@ -1,6 +1,6 @@
 /**
  * LangChain Configuration
- * Configures Cerebras LLM with llama-3.3-70b model
+ * Configures Cerebras LLM with gpt-oss-120b model
  * Lazy-loaded to allow server to start without API key
  */
 
@@ -22,13 +22,13 @@ let _extractionLlm = null;
 
 /**
  * Main LLM instance for chat/reasoning tasks
- * Uses llama-3.3-70b via Cerebras API
+ * Uses gpt-oss-120b via Cerebras API
  */
 export const getLlm = () => {
   if (!hasApiKey) return null;
   if (!_llm) {
     _llm = new ChatCerebras({
-      model: 'llama-3.3-70b',
+      model: 'qwen-3-235b-a22b-instruct-2507',
       apiKey: process.env.CEREBRAS_API_KEY,
       temperature: 0.3,
       maxTokens: 2048,
@@ -39,7 +39,7 @@ export const getLlm = () => {
 
 // Legacy export for backward compatibility
 export const llm = hasApiKey ? new ChatCerebras({
-  model: 'llama-3.3-70b',
+  model: 'qwen-3-235b-a22b-instruct-2507',
   apiKey: process.env.CEREBRAS_API_KEY,
   temperature: 0.3,
   maxTokens: 2048,
@@ -49,17 +49,17 @@ export const llm = hasApiKey ? new ChatCerebras({
  * Router LLM - faster responses for classification
  */
 export const routerLlm = hasApiKey ? new ChatCerebras({
-  model: 'llama-3.3-70b',
+  model: 'llama3.1-8b',
   apiKey: process.env.CEREBRAS_API_KEY,
   temperature: 0.1,
-  maxTokens: 512,
+  maxTokens: 1024,
 }) : null;
 
 /**
  * Extraction LLM - structured output extraction
  */
 export const extractionLlm = hasApiKey ? new ChatCerebras({
-  model: 'llama-3.3-70b',
+  model: 'llama3.1-8b',
   apiKey: process.env.CEREBRAS_API_KEY,
   temperature: 0.1,
   maxTokens: 1024,
