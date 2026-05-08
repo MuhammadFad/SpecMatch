@@ -49,7 +49,7 @@ export const llm = hasApiKey ? new ChatCerebras({
  * Router LLM - faster responses for classification
  */
 export const routerLlm = hasApiKey ? new ChatCerebras({
-  model: 'qwen-3-32b',
+  model: 'llama-3.3-70b',
   apiKey: process.env.CEREBRAS_API_KEY,
   temperature: 0.1,
   maxTokens: 512,
